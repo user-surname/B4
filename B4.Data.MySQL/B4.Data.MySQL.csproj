@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\B4.Logger\B4.Logger.csproj" />
+    <ProjectReference Include="..\B4.Models\B4.Models.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

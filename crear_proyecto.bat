@@ -80,7 +80,11 @@ dotnet add B4.Tests reference B4.Data.PostgreSQL
 dotnet add B4.Tests reference B4.Models
 
 dotnet add B4.Data.MySQL reference B4.Logger
+dotnet add B4.Data.MySQL reference B4.Models
+
+
 dotnet add B4.Data.PostgreSQL reference B4.Logger
+dotnet add B4.Data.PostgreSQL reference B4.Models
 
 @REM Refeencias para proyecto migrations
 dotnet add B4.DBMigrations reference B4.Logger

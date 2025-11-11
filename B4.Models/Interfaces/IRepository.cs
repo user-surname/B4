@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B4.Domain.Interfaces
+namespace B4.Models.Interfaces
 {
     // T debe ser una clase
     public interface IRepository<T> where T : class
