@@ -80,7 +80,11 @@ dotnet add B4.Tests reference B4.Data.PostgreSQL
 dotnet add B4.Tests reference B4.Models
 
 dotnet add B4.Data.MySQL reference B4.Logger
+dotnet add B4.Data.MySQL reference B4.Models
+
+
 dotnet add B4.Data.PostgreSQL reference B4.Logger
+dotnet add B4.Data.PostgreSQL reference B4.Models
 
 @REM Refeencias para proyecto migrations
 dotnet add B4.DBMigrations reference B4.Logger
@@ -107,6 +111,51 @@ dotnet add B4.Models package Newtonsoft.Json
 dotnet add B4.Domain package Newtonsoft.Json
 dotnet add B4.Web package Newtonsoft.Json
 dotnet add B4.Tests package Newtonsoft.Json
-@REM dotnet add B4.DBMigrations package Newtonsoft.Json
+dotnet add B4.DBMigrations package Newtonsoft.Json
+
+
+
+@REM Crea una carpeta raíz y navega hasta ella
+@REM cd B4
+
+dotnet add B4.Logger package NLog
+dotnet add B4.Logger package NLog.Extensions.Logging
+dotnet add B4.Logger package NLog.Web.AspNetCore
+dotnet add B4.Logger package Newtonsoft.Json
+
+dotnet add B4.Api package Newtonsoft.Json
+dotnet add B4.Data.MySQL package Newtonsoft.Json
+dotnet add B4.Data.PostgreSQL package Newtonsoft.Json
+dotnet add B4.Domain package Newtonsoft.Json
+
+dotnet add B4.Web package Newtonsoft.Json
+
+dotnet add B4.Tests package Newtonsoft.Json
+
+dotnet add B4.DBMigrations package Newtonsoft.Json
+
+@REM dotnet add B4.Data package Microsoft.Extensions.DependencyInjection 
+
+@REM Dependencias para B4.DBMigrations
+@REM Dapper + DBUp
+@REM dotnet add B4.DBMigrations package Microsoft.Data.Sqlite
+dotnet add B4.DBMigrations package dbup-core
+dotnet add B4.DBMigrations package dbup-postgresql
+dotnet add B4.DBMigrations package dbup-mysql 
+@REM dotnet add B4.DBMigrations package dbup-sqlserver 
+@REM dotnet add B4.DBMigrations package dbup-sqlite 
+dotnet add B4.DBMigrations package Dapper
+dotnet add B4.DBMigrations package Microsoft.Extensions.DependencyInjection 
+
+dotnet add B4.Data.MySQL package MySql.Data
+dotnet add B4.Data.MySQL package MySql.Connector.Core
+
+dotnet add B4.Data.PostgreSQL package Npgsql
+
+@REM Dependencias para B4.Tests
+dotnet add B4.Tests package Dapper
+dotnet add B4.Tests package Microsoft.Extensions.DependencyInjection 
+
+
 
 @REM dotnet restore
