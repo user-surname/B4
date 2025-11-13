@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace B4.Data.MySQL
 { 
     // Esta clase encapsula la lógica de conexión a la base de datos

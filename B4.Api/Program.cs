@@ -1,8 +1,14 @@
-
 using B4.Data.PostgreSQL;
+using B4.DBMigrations;
 using B4.Models.Interfaces;
+using ProyectoPILOTO.Data;
+using NLog;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 builder.Services.AddControllers();
 
@@ -13,7 +19,9 @@ builder.Services.AddSwaggerGen();
 
 
 // 1. Obtener la cadena de conexión desde la configuración
-var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
 
 // 2. Registrar el repositorio
 builder.Services.AddScoped<IUsuarioRepository>(provider =>
@@ -34,7 +42,7 @@ app.UseRouting();
 //app.UseAuthorization(); 
 app.MapControllers();
 
-};
+/*
 
 app.MapGet("/weatherforecast", () =>
 {
@@ -135,6 +143,9 @@ app.MapGet("/weatherforecast", () =>
 })
 .WithName("GetWeatherForecast")
 .WithOpenApi();
+
+*/
+
 
 app.Run();
 
