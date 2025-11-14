@@ -7,16 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks;
-using B4.Models.Interfaces; // Referencia a las interfaces y entidades
+using B4.Models.Interfaces;
 
-namespace B4.Data.PostgreSQL
+namespace B4.Data.PostgreSQL.Repositories
 {
-    public class UsuarioRepositoryPostgres : IUsuarioRepository
+    public class UsuarioRepository : IUsuarioRepository
     {
         private readonly string _connectionString;
 
         // La cadena de conexión se inyecta al crear el repositorio
-        public UsuarioRepositoryPostgres(string connectionString)
+        public UsuarioRepository(string connectionString)
         {
             _connectionString = connectionString;
         }
