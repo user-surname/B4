@@ -1,13 +1,13 @@
 
-using Microsoft.AspNetCore.ResponseCompression;
-using System.IO.Compression;
 using B4.Api.Middleware;
-
-// necesario para inyeccion de dependencias
-using B4.Models.Interfaces;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.Services;
-
+using B4.DBMigrations;
+// necesario para inyeccion de dependencias
+using B4.Models.Interfaces;
+using Microsoft.AspNetCore.ResponseCompression;
+using ProyectoPILOTO.Data;
+using System.IO.Compression;
 
 // creacion builder
 var builder = WebApplication.CreateBuilder(args);
@@ -38,11 +38,9 @@ builder.Services.AddSwaggerGen();
 // 1. Obtener la cadena de conexión desde la configuración
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
-
 // 2. Registrar el repositorio
-builder.Services.AddScoped<IUsuarioRepository>(provider =>
-    new UsuarioRepository(connectionString!));
+//builder.Services.AddScoped<IUsuarioRepository>(provider =>
+//    new UsuarioRepository(connectionString!));
 // NOTA: Usa 'new' o 'ActivatorUtilities.CreateInstance' para pasar el string al constructor
 
 var app = builder.Build();
@@ -53,6 +51,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
 
 app.UseHttpsRedirection();
 app.UseRouting();
