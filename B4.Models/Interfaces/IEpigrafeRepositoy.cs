@@ -6,7 +6,7 @@ namespace B4.Models.Interfaces
 
 {
     // Hereda de IRepository<Epigrafe> para tener los métodos CRUD básicos
-    public interface IEpigrafeRepository : IRepository<Epigrafe>
+    public interface IEpigrafeRepository : IRepository<LkEpigrafe>
     {
         // Métodos específicos que no son genéricos
 
