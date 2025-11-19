@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.20251118.1 - Slava
+
+-B4.Data.MySQL -> PlantTreeRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantSubdivisionRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantillasBotonesPasosTiposRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantDivisionRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantDivisionCompanyRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantCurrencyRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantCountryRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantControllersRepository + Interface + Test: creado
+-B4.Data.MySQL -> PlantCompanyRepository + Interface + Test: creado
+-B4.Data.MySQL -> FasesRepository + Interface + Test: creado
+-B4.Data.MySQL -> ControlPlantaRepository + Interface + Test: creado
+-B4.Data.MySQL -> CiclosRepository + Interface + Test: creado
+	- TODO: B4.Tests -> La tabla DE Ciclos tiene autoincrement, mirar solucion para test
+
+## v0.20251117.1 - Slava
+
+-B4.Tests -> EpigrafesRepositoryTest: creado
+-B4.Data.MySQL -> ControlRepository + Test: creado			
+	- TODO: B4.Model.Entities -> Revisar nombre de campo Epigrafe para que no sea igual que el de la tabla Epigrafes
+
+
 ## v0.20251111.2
 
 - B4.Api
@@ -37,3 +60,5 @@
 - git-cheat-sheet, pdf y enlace
 - ajustes de dependencias: NLog,Newtonsoft.Json, postgreSQL, mySQL
 - API demo (Weatherforecast) probada
+
+
