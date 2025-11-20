@@ -1,5 +1,4 @@
-﻿/*
-namespace B4.Tests;
+﻿namespace B4.Tests;
 
 using B4.Data.MySQL;
 using B4.Data.MySQL.Repositories;
@@ -12,7 +11,7 @@ public class CiclosRepositoryTest : IDisposable
     private readonly DapperContext _context;
     private readonly CiclosRepository _repository;
 
-    // IDs insertados durante cada test → eliminados en Dispose()
+    // IDs generados automáticamente por AUTO_INCREMENT
     private readonly List<int> _insertedIds = new();
 
     public CiclosRepositoryTest()
@@ -31,76 +30,91 @@ public class CiclosRepositoryTest : IDisposable
             return;
 
         using var conn = _context.CreateConnection();
-
-        conn.Execute(
-            "DELETE FROM LK_CICLOS WHERE IdCiclo IN @ids",
-            new { ids = _insertedIds });
-
+        conn.Execute("DELETE FROM LK_CICLOS WHERE id IN @ids", new { ids = _insertedIds });
         _insertedIds.Clear();
     }
 
-    // -------------------------------------------------------------------
-    // TESTS
-    // -------------------------------------------------------------------
-
+    // -------------------------------------------------
+    // TEST: ADD
+    // -------------------------------------------------
     [Fact]
     public async Task AddAsync_ShouldInsertRecord()
     {
-        var ciclo = new LkCiclos();
+        var ciclo = new LkCiclos
         {
-            Id = 99999,
-            IdCiclo = 10,
-            IdHoja = 20,
-            NombreCiclo = "CICLO_ADD",
-            Descripcion = "Descripcion ADD"
+            IdCiclo = 99999,
+            Ciclo = "CICLO ADD",
+            Descripcion = "DESC ADD"
         };
-
-        _insertedIds.Add(ciclo.IdCiclo);
 
         await _repository.AddAsync(ciclo);
 
-        using var conn = _context.CreateConnection();
-        var result = conn.QuerySingleOrDefault<LkCiclo>(
-            "SELECT * FROM LK_CICLOS WHERE IdCiclo = 99999");
+        int newId;
+        using (var conn = _context.CreateConnection())
+        {
+            newId = conn.ExecuteScalar<int>(@"
+            SELECT id FROM LK_CICLOS 
+            ORDER BY id DESC LIMIT 1;");
+        }
+
+        _insertedIds.Add(newId);
+
+        using var conn2 = _context.CreateConnection();
+        var result = conn2.QuerySingleOrDefault<LkCiclos>("SELECT * FROM LK_CICLOS WHERE id = @id", new { id = newId });
 
         Assert.NotNull(result);
-        Assert.Equal("CICLO_ADD", result.NombreCiclo);
+        Assert.Equal("CICLO ADD", result.Ciclo);
     }
 
+    // -------------------------------------------------
+    // TEST: GET BY ID
+    // -------------------------------------------------
     [Fact]
     public async Task GetByIdAsync_ShouldReturnRecord()
     {
+        int newId;
+
         using (var conn = _context.CreateConnection())
         {
-            conn.Execute(@"
-                INSERT INTO LK_CICLOS 
-                (IdCiclo, IdPlantilla, IdHoja, NombreCiclo, Descripcion)
-                VALUES (99999, 11, 21, 'CICLO_BYID', 'DES BYID');
-            ");
+            newId = conn.ExecuteScalar<int>(@"
+                 INSERT INTO LK_CICLOS (idCiclo, Ciclo, Descripcion)
+                 VALUES (99999, 'CICLO BYID', 'DESC BYID');
+                 SELECT LAST_INSERT_ID();
+              ");
         }
 
-        _insertedIds.Add(99999);
+        _insertedIds.Add(newId);
 
-        var result = await _repository.GetByIdAsync(99999);
+        var result = await _repository.GetByIdAsync(newId);
 
         Assert.NotNull(result);
-        Assert.Equal("CICLO_BYID", result.NombreCiclo);
+        Assert.Equal("CICLO BYID", result.Ciclo);
     }
 
+    // -------------------------------------------------
+    // TEST: GET ALL
+    // -------------------------------------------------
     [Fact]
     public async Task GetAllAsync_ShouldReturnAllRecords()
     {
+        int id1, id2;
+
         using (var conn = _context.CreateConnection())
         {
-            conn.Execute(@"
-                INSERT INTO LK_CICLOS 
-                VALUES 
-                (99999, 12, 22, 'A', 'DESC A'),
-                (99998, 13, 23, 'B', 'DESC B');
-            ");
+            id1 = conn.ExecuteScalar<int>(@"
+            INSERT INTO LK_CICLOS (idCiclo, Ciclo, Descripcion)
+            VALUES (99999, 'CICLO A', 'DESC A');
+            SELECT LAST_INSERT_ID();
+        ");
+
+            id2 = conn.ExecuteScalar<int>(@"
+            INSERT INTO LK_CICLOS (idCiclo, Ciclo, Descripcion)
+            VALUES (99998, 'CICLO B', 'DESC B');
+            SELECT LAST_INSERT_ID();
+        ");
         }
 
-        _insertedIds.AddRange(new[] { 99999, 99998 });
+        _insertedIds.AddRange(new[] { id1, id2 });
 
         var result = await _repository.GetAllAsync();
 
@@ -108,58 +122,68 @@ public class CiclosRepositoryTest : IDisposable
         Assert.True(result.Count() >= 2);
     }
 
+    // -------------------------------------------------
+    // TEST: UPDATE
+    // -------------------------------------------------
     [Fact]
     public async Task UpdateAsync_ShouldModifyRecord()
     {
+        int newId;
+
         using (var conn = _context.CreateConnection())
         {
-            conn.Execute(@"
-                INSERT INTO LK_CICLOS 
-                VALUES (99999, 14, 24, 'ORIGINAL', 'DESC ORIGINAL');
-            ");
+            newId = conn.ExecuteScalar<int>(@"
+        INSERT INTO LK_CICLOS (idCiclo, Ciclo, Descripcion)
+        VALUES (99999, 'CICLO ORIG', 'DESC ORIG');
+        SELECT LAST_INSERT_ID();
+    ");
         }
 
-        _insertedIds.Add(99999);
+        _insertedIds.Add(newId);
 
         var updated = new LkCiclos
         {
+            Id = newId,
             IdCiclo = 99999,
-            IdPlantilla = 14,
-            IdHoja = 24,
-            NombreCiclo = "UPDATED",
+            Ciclo = "CICLO UPDATED",
             Descripcion = "DESC UPDATED"
         };
 
         await _repository.UpdateAsync(updated);
 
         using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingle<LkCiclos>(
-            "SELECT * FROM LK_CICLOS WHERE IdCiclo = 99999");
+        var result = conn2.QuerySingle<LkCiclos>("SELECT * FROM LK_CICLOS WHERE id = @id", new { id = newId });
 
-        Assert.Equal("UPDATED", result.NombreCiclo);
+        Assert.Equal("CICLO UPDATED", result.Ciclo);
+        Assert.Equal("DESC UPDATED", result.Descripcion);
     }
 
+    // -------------------------------------------------
+    // TEST: DELETE
+    // -------------------------------------------------
     [Fact]
     public async Task DeleteAsync_ShouldRemoveRecord()
     {
+        int newId;
+
         using (var conn = _context.CreateConnection())
         {
-            conn.Execute(@"
-                INSERT INTO LK_CICLOS 
-                VALUES (99999, 15, 25, 'DEL', 'DESC DEL');
-            ");
+            newId = conn.ExecuteScalar<int>(@"
+        INSERT INTO LK_CICLOS (idCiclo, Ciclo, Descripcion)
+        VALUES (99999, 'CICLO DEL', 'DESC DEL');
+        SELECT LAST_INSERT_ID();
+    ");
         }
 
-        _insertedIds.Add(99999);
+        _insertedIds.Add(newId);
 
-        await _repository.DeleteAsync(99999);
+        await _repository.DeleteAsync(newId);
 
         using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingleOrDefault<LkCiclo>(
-            "SELECT * FROM LK_CICLOS WHERE IdCiclo = 99999");
+        var result = conn2.QuerySingleOrDefault<LkCiclos>(
+            "SELECT * FROM LK_CICLOS WHERE id = @id",
+            new { id = newId });
 
         Assert.Null(result);
     }
 }
-
-*/

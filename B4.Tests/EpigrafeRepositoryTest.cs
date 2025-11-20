@@ -12,12 +12,12 @@ public class EpigrafeRepositoryTest : IDisposable
     private readonly EpigrafeRepository _repository;
 
     // Lista que almacena los IDs que cada test inserta en la BD.
-    // Luego ser?n borrados autom?ticamente en Dispose().
+    // Luego seran borrados automaticamente en Dispose().
     private readonly List<int> _insertedIds = new();
 
     public EpigrafeRepositoryTest()
     {
-        // Cargar configuraci?n desde appsettings.json (cadena de conexi?n de test)
+        // Cargar configuracion desde appsettings.json (cadena de conexion de test)
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
@@ -29,8 +29,8 @@ public class EpigrafeRepositoryTest : IDisposable
         _repository = new EpigrafeRepository(_context);
     }
 
-    // M?todo que se ejecuta DESPU?S de cada test.
-    // El prop?sito es limpiar SOLO los registros insertados durante ese test.
+    // Metodo que se ejecuta DESPUES de cada test.
+    // El proposito es limpiar SOLO los registros insertados durante ese test.
     public void Dispose()
     {
         // Si no insertamos nada, no hay que borrar nada
@@ -39,12 +39,12 @@ public class EpigrafeRepositoryTest : IDisposable
 
         using var conn = _context.CreateConnection();
 
-        // Borramos ?nicamente los IDs registrados en este test
+        // Borramos unicamente los IDs registrados en este test
         conn.Execute(
             "DELETE FROM LK_EPIGRAFES WHERE idEpigrafe IN @ids",
             new { ids = _insertedIds });
 
-        // Limpieza de la lista para el pr?ximo test
+        // Limpieza de la lista para el proximo test
         _insertedIds.Clear();
     }
 
@@ -55,7 +55,7 @@ public class EpigrafeRepositoryTest : IDisposable
     [Fact]
     public async Task AddAsync_ShouldInsertRecord()
     {
-        // Arrange: creamos un ep?grafe a insertar
+        // Arrange: creamos un epigrafe a insertar
         var epigrafe = new LkEpigrafe
         {
             IdEpigrafe = 99999, // ID fijo para pruebas
@@ -69,7 +69,7 @@ public class EpigrafeRepositoryTest : IDisposable
         // Registramos el ID para borrarlo al final del test
         _insertedIds.Add(epigrafe.IdEpigrafe);
 
-        // Act: llamamos al m?todo del repositorio
+        // Act: llamamos al metodo del repositorio
         await _repository.AddAsync(epigrafe);
 
         // Assert: verificamos que el registro existe en la BD

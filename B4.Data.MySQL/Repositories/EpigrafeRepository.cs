@@ -10,7 +10,7 @@ namespace B4.Data.MySQL.Repositories
 {
     public class EpigrafeRepository : IEpigrafeRepository
     {
-        // Nombre fijo de la tabla (evitamos SQL injection y facilita el mantenimiento)
+        // Nombre fijo de la tabla 
         private const string _tableName = "LK_EPIGRAFES";
 
         // Contexto que encapsula la cadena de conexión y creación de conexiones Dapper
