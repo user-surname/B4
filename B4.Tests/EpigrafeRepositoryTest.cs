@@ -67,7 +67,7 @@ public class EpigrafeRepositoryTest : IDisposable
         };
 
         // Registramos el ID para borrarlo al final del test
-        _insertedIds.Add(epigrafe.IdEpigrafe);
+        _insertedIds.Add(99999);
 
         // Act: llamamos al metodo del repositorio
         await _repository.AddAsync(epigrafe);
