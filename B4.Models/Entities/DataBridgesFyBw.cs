@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
@@ -10,7 +6,7 @@ namespace B4.Models.Entities
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
-        public string? GuidCarga { get; set; }
+        public Guid GuidCarga { get; set; }
         public DateTime FechaUltModif { get; set; }
         public int IdCompany { get; set; }
         public int Ejercicio { get; set; }
@@ -39,11 +35,26 @@ namespace B4.Models.Entities
 
         public DataBridgesFyBw() { }
 
-        public DataBridgesFyBw(int id, int idAPICarga, string? guidCarga, DateTime fechaUltModif, int idCompany, int ejercicio,
-            int idCiclo, int idFase, int idCurrency, int idEpigrafe,
-            decimal fiscalYear, decimal percentage, decimal zero, decimal zeroPercentage, decimal absolute, decimal absolutePercentage,
-            decimal vMixNew, decimal rawMaterial, decimal scrap, decimal economics, decimal currencyMix, decimal performance,
-            decimal protoTool, decimal others, string? comments, int? idCarga, int? idCargaSTGBW, int? idHoja)
+        public DataBridgesFyBw(
+            int id,
+            int idAPICarga,
+            Guid guidCarga,
+            DateTime fechaUltModif,
+            int idCompany,
+            int ejercicio,
+            int idCiclo,
+            int idFase,
+            int idCurrency,
+            int idEpigrafe,
+            decimal fiscalYear, decimal percentage, decimal zero, decimal zeroPercentage,
+            decimal absolute, decimal absolutePercentage,
+            decimal vMixNew, decimal rawMaterial, decimal scrap, decimal economics,
+            decimal currencyMix, decimal performance,
+            decimal protoTool, decimal others,
+            string? comments,
+            int? idCarga,
+            int? idCargaSTGBW,
+            int? idHoja)
         {
             Id = id;
             IdAPICarga = idAPICarga;

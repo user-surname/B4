@@ -10,7 +10,7 @@ namespace B4.Models.Entities
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
-        public string GuidCarga { get; set; }
+        public Guid GuidCarga { get; set; }
         public DateTime? FechaUltModif { get; set; }
         public int IdCompany { get; set; }
         public int Ejercicio { get; set; }
@@ -22,7 +22,7 @@ namespace B4.Models.Entities
 
         public DataComentarios() { }
 
-        public DataComentarios(int id, int idAPICarga, string guidCarga, DateTime? fechaUltModif, int idCompany,
+        public DataComentarios(int id, int idAPICarga, Guid guidCarga, DateTime? fechaUltModif, int idCompany,
             int ejercicio, int idCiclo, int idFase, int idEpigrafe, string etiqueta, string? comentario)
         {
             Id = id;

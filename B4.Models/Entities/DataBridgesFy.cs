@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
@@ -10,7 +6,7 @@ namespace B4.Models.Entities
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
-        public string? GuidCarga { get; set; }
+        public Guid GuidCarga { get; set; }
         public DateTime FechaUltModif { get; set; }
         public int IdCompany { get; set; }
         public int Ejercicio { get; set; }
@@ -44,12 +40,29 @@ namespace B4.Models.Entities
 
         public DataBridgesFy() { }
 
-        public DataBridgesFy(int id, int idAPICarga, string? guidCarga, DateTime fechaUltModif, int idCompany, int ejercicio,
-            int idCiclo, int idFase, int idCurrency, int idEpigrafe,
-            decimal actuals, decimal pctActuals, decimal budget, decimal pctBudget, decimal variance, decimal volume,
-            decimal inventoryChange, decimal mix, decimal newValue, decimal economics, decimal quickSavings,
-            decimal currencyMix, decimal exchangeRate, decimal rawMaterial, decimal scrap, decimal industrialPerformance,
-            decimal protoTooling, decimal other, decimal check, string? comments, int? idCarga, int? idCargaSTGBW, int? idHoja)
+        public DataBridgesFy(
+            int id,
+            int idAPICarga,
+            Guid guidCarga,
+            DateTime fechaUltModif,
+            int idCompany,
+            int ejercicio,
+            int idCiclo,
+            int idFase,
+            int idCurrency,
+            int idEpigrafe,
+            decimal actuals, decimal pctActuals, decimal budget, decimal pctBudget,
+            decimal variance, decimal volume,
+            decimal inventoryChange, decimal mix, decimal newValue,
+            decimal economics, decimal quickSavings,
+            decimal currencyMix, decimal exchangeRate,
+            decimal rawMaterial, decimal scrap,
+            decimal industrialPerformance,
+            decimal protoTooling, decimal other, decimal check,
+            string? comments,
+            int? idCarga,
+            int? idCargaSTGBW,
+            int? idHoja)
         {
             Id = id;
             IdAPICarga = idAPICarga;
