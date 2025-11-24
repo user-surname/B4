@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20251120.1
+
+- global.json
+	- fichero config a nivel de solucion apra unificar el sdk a utilizar
+	- agregado en carpeta: elementos de la solucion_
+
 ## v0.20251119.1 - Slava
 
 - B4.Tests -> CiclosRepositoryTest: arreglado el problema de AUTO_INCREMENT
