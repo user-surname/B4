@@ -8,15 +8,14 @@ using System;
 
 namespace B4.Data.MySQL.Repositories
 {
-    public class EpigrafeRepository : IEpigrafeRepository
+    public class PlantControllersRepository : IPlantControllersRepository
     {
-        // Nombre fijo de la tabla 
-        private const string _tableName = "LK_EPIGRAFES";
+        // Nombre fijo de la tabla
+        private const string _tableName = "LK_PLANT_CONTROLLERS";
 
-        // Contexto que encapsula la cadena de conexión y creación de conexiones Dapper
         private readonly DapperContext _context;
 
-        public EpigrafeRepository(DapperContext context)
+        public PlantControllersRepository(DapperContext context)
         {
             _context = context;
         }
@@ -24,94 +23,83 @@ namespace B4.Data.MySQL.Repositories
         // -------------------------------------------------
         // C - CREATE
         // -------------------------------------------------
-        public async Task AddAsync(LkEpigrafe entity)
+        public async Task AddAsync(LkPlantControllers entity)
         {
             const string sql = $@"
                 INSERT INTO {_tableName}
-                (idEpigrafe, idPlantilla, idHoja, PreEpigrafe, Epigrafe, EpigrafeFull)
-                VALUES (@IdEpigrafe, @IdPlantilla, @IdHoja, @PreEpigrafe, @Epigrafe, @EpigrafeFull)";
+                (idCompanyController, IdCompany, Controller, Email)
+                VALUES (@IdCompanyController, @IdCompany, @Controller, @Email)";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
-                // Ejecuta la consulta INSERT
                 await conn.ExecuteAsync(sql, entity);
             }
             catch (Exception ex)
             {
-                // Lanzamos una excepción más descriptiva para identificar el origen del error
-                throw new Exception("Error al insertar un Epígrafe en la base de datos.", ex);
+                throw new Exception("Error al insertar un controlador de empresa en la base de datos.", ex);
             }
         }
 
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<LkEpigrafe?> GetByIdAsync(int id)
+        public async Task<LkPlantControllers?> GetByIdAsync(int id)
         {
-            const string sql = $@"SELECT * FROM {_tableName} WHERE idEpigrafe = @Id";
+            const string sql = $@"SELECT * FROM {_tableName} WHERE idCompanyController = @Id";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
-                // Devuelve 1 registro o null si no existe
-                return await conn.QuerySingleOrDefaultAsync<LkEpigrafe>(sql, new { Id = id });
+                return await conn.QuerySingleOrDefaultAsync<LkPlantControllers>(sql, new { Id = id });
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al obtener el Epígrafe con id {id}.", ex);
+                throw new Exception($"Error al obtener el controlador con id {id}.", ex);
             }
         }
 
         // -------------------------------------------------
         // R - READ (todos)
         // -------------------------------------------------
-        public async Task<IEnumerable<LkEpigrafe>> GetAllAsync()
+        public async Task<IEnumerable<LkPlantControllers>> GetAllAsync()
         {
             const string sql = $@"SELECT * FROM {_tableName}";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
-                // Obtiene todos los registros de la tabla
-                return await conn.QueryAsync<LkEpigrafe>(sql);
+                return await conn.QueryAsync<LkPlantControllers>(sql);
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener la lista de Epígrafes.", ex);
+                throw new Exception("Error al obtener la lista de controladores.", ex);
             }
         }
 
         // -------------------------------------------------
         // U - UPDATE
         // -------------------------------------------------
-        public async Task UpdateAsync(LkEpigrafe entity)
+        public async Task UpdateAsync(LkPlantControllers entity)
         {
             const string sql = $@"
-                UPDATE {_tableName} SET 
-                    idPlantilla = @IdPlantilla,
-                    idHoja = @IdHoja,
-                    PreEpigrafe = @PreEpigrafe,
-                    Epigrafe = @Epigrafe,
-                    EpigrafeFull = @EpigrafeFull
-                WHERE idEpigrafe = @IdEpigrafe";
+                UPDATE {_tableName} SET
+                    IdCompany = @IdCompany,
+                    Controller = @Controller,
+                    Email = @Email
+                WHERE idCompanyController = @IdCompanyController";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
                 int rows = await conn.ExecuteAsync(sql, entity);
 
-                // Comprobamos que realmente se actualizó un registro
                 if (rows == 0)
-                    throw new Exception($"No se encontró el Epígrafe con id {entity.IdEpigrafe} para actualizar.");
+                    throw new Exception($"No se encontró el controlador con id {entity.IdCompanyController} para actualizar.");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al actualizar el Epígrafe con id {entity.IdEpigrafe}.", ex);
+                throw new Exception($"Error al actualizar el controlador con id {entity.IdCompanyController}.", ex);
             }
         }
 
@@ -120,21 +108,19 @@ namespace B4.Data.MySQL.Repositories
         // -------------------------------------------------
         public async Task DeleteAsync(int id)
         {
-            const string sql = $@"DELETE FROM {_tableName} WHERE idEpigrafe = @Id";
+            const string sql = $@"DELETE FROM {_tableName} WHERE idCompanyController = @Id";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
                 int rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                // Validamos que se eliminó algún registro
                 if (rows == 0)
-                    throw new Exception($"No se encontró el Epígrafe con id {id} para eliminar.");
+                    throw new Exception($"No se encontró el controlador con id {id} para eliminar.");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al eliminar el Epígrafe con id {id}.", ex);
+                throw new Exception($"Error al eliminar el controlador con id {id}.", ex);
             }
         }
     }

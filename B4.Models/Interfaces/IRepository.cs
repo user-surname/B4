@@ -14,6 +14,7 @@ namespace B4.Models.Interfaces
 
         // R - Read
         Task<T?> GetByIdAsync(int id);
+
         Task<IEnumerable<T>> GetAllAsync();
 
         // U - Update

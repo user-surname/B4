@@ -8,15 +8,12 @@ using System;
 
 namespace B4.Data.MySQL.Repositories
 {
-    public class EpigrafeRepository : IEpigrafeRepository
+    public class PlantTreeRepository : IPlantTreeRepository
     {
-        // Nombre fijo de la tabla 
-        private const string _tableName = "LK_EPIGRAFES";
-
-        // Contexto que encapsula la cadena de conexión y creación de conexiones Dapper
+        private const string _tableName = "LK_PLANT_TREE";
         private readonly DapperContext _context;
 
-        public EpigrafeRepository(DapperContext context)
+        public PlantTreeRepository(DapperContext context)
         {
             _context = context;
         }
@@ -24,94 +21,84 @@ namespace B4.Data.MySQL.Repositories
         // -------------------------------------------------
         // C - CREATE
         // -------------------------------------------------
-        public async Task AddAsync(LkEpigrafe entity)
+        public async Task AddAsync(LkPlantTree entity)
         {
             const string sql = $@"
                 INSERT INTO {_tableName}
-                (idEpigrafe, idPlantilla, idHoja, PreEpigrafe, Epigrafe, EpigrafeFull)
-                VALUES (@IdEpigrafe, @IdPlantilla, @IdHoja, @PreEpigrafe, @Epigrafe, @EpigrafeFull)";
+                (idTree, idDivision, idDivisionCompany, idSubdivision, idCountry)
+                VALUES (@IdTree, @IdDivision, @IdDivisionCompany, @IdSubdivision, @IdCountry)";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
-                // Ejecuta la consulta INSERT
                 await conn.ExecuteAsync(sql, entity);
             }
             catch (Exception ex)
             {
-                // Lanzamos una excepción más descriptiva para identificar el origen del error
-                throw new Exception("Error al insertar un Epígrafe en la base de datos.", ex);
+                throw new Exception("Error al insertar un registro en PlantTree.", ex);
             }
         }
 
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<LkEpigrafe?> GetByIdAsync(int id)
+        public async Task<LkPlantTree?> GetByIdAsync(int id)
         {
-            const string sql = $@"SELECT * FROM {_tableName} WHERE idEpigrafe = @Id";
+            const string sql = $@"SELECT * FROM {_tableName} WHERE idTree = @Id";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
-                // Devuelve 1 registro o null si no existe
-                return await conn.QuerySingleOrDefaultAsync<LkEpigrafe>(sql, new { Id = id });
+                return await conn.QuerySingleOrDefaultAsync<LkPlantTree>(sql, new { Id = id });
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al obtener el Epígrafe con id {id}.", ex);
+                throw new Exception($"Error al obtener el PlantTree con id {id}.", ex);
             }
         }
 
         // -------------------------------------------------
         // R - READ (todos)
         // -------------------------------------------------
-        public async Task<IEnumerable<LkEpigrafe>> GetAllAsync()
+        public async Task<IEnumerable<LkPlantTree>> GetAllAsync()
         {
             const string sql = $@"SELECT * FROM {_tableName}";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
-                // Obtiene todos los registros de la tabla
-                return await conn.QueryAsync<LkEpigrafe>(sql);
+                return await conn.QueryAsync<LkPlantTree>(sql);
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener la lista de Epígrafes.", ex);
+                throw new Exception("Error al obtener la lista de PlantTree.", ex);
             }
         }
 
         // -------------------------------------------------
         // U - UPDATE
         // -------------------------------------------------
-        public async Task UpdateAsync(LkEpigrafe entity)
+        public async Task UpdateAsync(LkPlantTree entity)
         {
             const string sql = $@"
-                UPDATE {_tableName} SET 
-                    idPlantilla = @IdPlantilla,
-                    idHoja = @IdHoja,
-                    PreEpigrafe = @PreEpigrafe,
-                    Epigrafe = @Epigrafe,
-                    EpigrafeFull = @EpigrafeFull
-                WHERE idEpigrafe = @IdEpigrafe";
+                UPDATE {_tableName} SET
+                    idDivision = @IdDivision,
+                    idDivisionCompany = @IdDivisionCompany,
+                    idSubdivision = @IdSubdivision,
+                    idCountry = @IdCountry
+                WHERE idTree = @IdTree";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
                 int rows = await conn.ExecuteAsync(sql, entity);
 
-                // Comprobamos que realmente se actualizó un registro
                 if (rows == 0)
-                    throw new Exception($"No se encontró el Epígrafe con id {entity.IdEpigrafe} para actualizar.");
+                    throw new Exception($"No se encontró el PlantTree con id {entity.IdTree} para actualizar.");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al actualizar el Epígrafe con id {entity.IdEpigrafe}.", ex);
+                throw new Exception($"Error al actualizar el PlantTree con id {entity.IdTree}.", ex);
             }
         }
 
@@ -120,22 +107,21 @@ namespace B4.Data.MySQL.Repositories
         // -------------------------------------------------
         public async Task DeleteAsync(int id)
         {
-            const string sql = $@"DELETE FROM {_tableName} WHERE idEpigrafe = @Id";
+            const string sql = $@"DELETE FROM {_tableName} WHERE idTree = @Id";
 
             try
             {
                 using var conn = _context.CreateConnection();
-
                 int rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                // Validamos que se eliminó algún registro
                 if (rows == 0)
-                    throw new Exception($"No se encontró el Epígrafe con id {id} para eliminar.");
+                    throw new Exception($"No se encontró el PlantTree con id {id} para eliminar.");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al eliminar el Epígrafe con id {id}.", ex);
+                throw new Exception($"Error al eliminar el PlantTree con id {id}.", ex);
             }
         }
     }
 }
+

@@ -5,6 +5,7 @@ using B4.Api.Middleware;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.Services;
 using B4.DBMigrations;
+using B4.Data.MySQL;
 // necesario para inyeccion de dependencias
 using B4.Models.Interfaces;
 using Microsoft.AspNetCore.ResponseCompression;
