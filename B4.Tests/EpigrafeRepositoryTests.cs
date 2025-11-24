@@ -14,7 +14,7 @@ public class EpigrafeRepositoryTests
 
     public EpigrafeRepositoryTests()
     {
-        // Cargamos configuraci?n desde appsettings.Test.json
+        // Cargamos configuracion desde appsettings.Test.json
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false)
             .Build();

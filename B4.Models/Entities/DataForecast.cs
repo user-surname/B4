@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
@@ -10,7 +6,7 @@ namespace B4.Models.Entities
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
-        public string GuidCarga { get; set; }
+        public Guid GuidCarga { get; set; }
         public DateTime FechaUltModif { get; set; }
         public int IdCompany { get; set; }
         public int Ejercicio { get; set; }
@@ -35,10 +31,21 @@ namespace B4.Models.Entities
 
         public DataForecast() { }
 
-        public DataForecast(int id, int idAPICarga, string guidCarga, DateTime fechaUltModif, int idCompany, int ejercicio,
-            int idCiclo, int idFase, int idCurrency, int idEpigrafe,
-            decimal mes00, decimal mes01, decimal mes02, decimal mes03, decimal mes04, decimal mes05, decimal mes06, decimal mes07,
-            decimal mes08, decimal mes09, decimal mes10, decimal mes11, decimal mes12, decimal mes13)
+        public DataForecast(
+            int id,
+            int idAPICarga,
+            Guid guidCarga,
+            DateTime fechaUltModif,
+            int idCompany,
+            int ejercicio,
+            int idCiclo,
+            int idFase,
+            int idCurrency,
+            int idEpigrafe,
+            decimal mes00, decimal mes01, decimal mes02, decimal mes03,
+            decimal mes04, decimal mes05, decimal mes06, decimal mes07,
+            decimal mes08, decimal mes09, decimal mes10, decimal mes11,
+            decimal mes12, decimal mes13)
         {
             Id = id;
             IdAPICarga = idAPICarga;

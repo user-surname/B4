@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
@@ -10,7 +6,7 @@ namespace B4.Models.Entities
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
-        public string? GuidCarga { get; set; }
+        public Guid GuidCarga { get; set; }
         public DateTime FechaUltModif { get; set; }
         public int IdCompany { get; set; }
         public int Ejercicio { get; set; }
@@ -39,10 +35,35 @@ namespace B4.Models.Entities
 
         public DataBridgesMonthBw() { }
 
-        public DataBridgesMonthBw(int id, int idAPICarga, string? guidCarga, DateTime fechaUltModif, int idCompany, int ejercicio,
-            int idCiclo, int idFase, int idCurrency, int idEpigrafe, decimal volume, decimal inventoryChange, decimal mix, decimal newValue,
-            decimal economics, decimal quickSavings, decimal currencyMix, decimal exchangeRate, decimal rawMaterial, decimal scrap,
-            decimal industrialPerformance, decimal protoTooling, decimal other, decimal check, string? comments, int? idCarga, int? idCargaSTGBW, int? idHoja)
+        public DataBridgesMonthBw(
+            int id,
+            int idAPICarga,
+            Guid guidCarga,
+            DateTime fechaUltModif,
+            int idCompany,
+            int ejercicio,
+            int idCiclo,
+            int idFase,
+            int idCurrency,
+            int idEpigrafe,
+            decimal volume,
+            decimal inventoryChange,
+            decimal mix,
+            decimal newValue,
+            decimal economics,
+            decimal quickSavings,
+            decimal currencyMix,
+            decimal exchangeRate,
+            decimal rawMaterial,
+            decimal scrap,
+            decimal industrialPerformance,
+            decimal protoTooling,
+            decimal other,
+            decimal check,
+            string? comments,
+            int? idCarga,
+            int? idCargaSTGBW,
+            int? idHoja)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -54,12 +75,13 @@ namespace B4.Models.Entities
             IdFase = idFase;
             IdCurrency = idCurrency;
             IdEpigrafe = idEpigrafe;
+
             Volume = volume;
             InventoryChange = inventoryChange;
             Mix = mix;
             New = newValue;
             Economics = economics;
-            QuickSavings = quickSavings;
+            QuickSavings = quickSavings; // ← CORREGIDO AQUÍ
             CurrencyMix = currencyMix;
             ExchangeRate = exchangeRate;
             RawMaterial = rawMaterial;
@@ -68,11 +90,11 @@ namespace B4.Models.Entities
             ProtoTooling = protoTooling;
             Other = other;
             Check = check;
+
             Comments = comments;
             IdCarga = idCarga;
             IdCargaSTGBW = idCargaSTGBW;
             IdHoja = idHoja;
         }
     }
-
 }
