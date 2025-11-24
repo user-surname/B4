@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución",
 	ProjectSection(SolutionItems) = preProject
 		changelog.md = changelog.md
 		git-cheat-sheet-education.pdf = git-cheat-sheet-education.pdf
+		global.json = global.json
 		README.md = README.md
 	EndProjectSection
 EndProject
