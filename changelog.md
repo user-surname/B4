@@ -8,6 +8,12 @@
 
 ## v0.20251119.1 - Slava
 
+- Migraacion a net8.0
+	- Quite "<OutputType>Exe</OutputType>" de B4.Logger para que no de error
+- Actualizacin de Nlog: NLog.Web no es compatible con .NET 8 -> Solucion: NLog.Extensions.Logging
+
+## v0.20251119.1 - Slava
+
 - B4.Tests -> CiclosRepositoryTest: arreglado el problema de AUTO_INCREMENT
 - B4.Data.MySQL -> Migracion de DbUpMigrator, Migrations y Scripts 
 
