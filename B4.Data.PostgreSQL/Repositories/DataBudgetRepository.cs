@@ -16,7 +16,7 @@ namespace B4.Data.PostgreSQL.Repositories
         }
 
         // CREATE
-        public async Task AddAsync(DataBudgetBw entity)
+        public async Task AddAsync(DataBudget entity)
         {
             var sql = $@"
                 INSERT INTO {_table}
@@ -40,24 +40,24 @@ namespace B4.Data.PostgreSQL.Repositories
         }
 
         // READ by Id
-        public async Task<DataBudgetBw?> GetByIdAsync(int id)
+        public async Task<DataBudget?> GetByIdAsync(int id)
         {
             var sql = $"SELECT * FROM {_table} WHERE id = @Id";
 
             using var conn = new NpgsqlConnection(_connectionString);
-            return await conn.QuerySingleOrDefaultAsync<DataBudgetBw>(sql, new { Id = id });
+            return await conn.QuerySingleOrDefaultAsync<DataBudget>(sql, new { Id = id });
         }
 
         // READ all
-        public async Task<IEnumerable<DataBudgetBw>> GetAllAsync()
+        public async Task<IEnumerable<DataBudget>> GetAllAsync()
         {
             var sql = $"SELECT * FROM {_table}";
             using var conn = new NpgsqlConnection(_connectionString);
-            return await conn.QueryAsync<DataBudgetBw>(sql);
+            return await conn.QueryAsync<DataBudget>(sql);
         }
 
         // UPDATE
-        public async Task UpdateAsync(DataBudgetBw entity)
+        public async Task UpdateAsync(DataBudget entity)
         {
             var sql = $@"
                 UPDATE {_table} SET

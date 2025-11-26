@@ -1,4 +1,4 @@
-using Xunit;
+﻿using Xunit;
 using Npgsql;
 using Dapper;
 using B4.Models.Entities;
@@ -83,9 +83,9 @@ public class DataBudgetRepositoryTests : IDisposable
         Assert.Null(result);
     }
 
-    private DataBudgetBw CreateSampleEntity()
+    private DataBudget CreateSampleEntity()
     {
-        return new DataBudgetBw
+        return new DataBudget
         {
             IdAPICarga = 1,
             GuidCarga = Guid.NewGuid(),

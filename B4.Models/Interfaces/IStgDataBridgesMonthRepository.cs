@@ -1,8 +1,8 @@
-using B4.Models.Entities;
+﻿using B4.Models.Entities;
 
 namespace B4.Models.Interfaces
 {
-    public interface IDataBridgesMonthBwRepository : IRepository<DataBridgesMonthBw>
+    public interface IStgDataBridgesMonthRepository : IRepository<StgDataBridgesMonth>
     {
 
         // Add any additional methods specific to DataBridgesMonthBw if needed

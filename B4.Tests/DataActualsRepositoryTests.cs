@@ -100,9 +100,9 @@ public class DataActualsRepositoryTests : IDisposable
     // ----------------------------------------------
     // 🔧 Helper: generar una entidad válida
     // ----------------------------------------------
-    private DataActualsBw CreateSampleEntity()
+    private DataActuals CreateSampleEntity()
     {
-        return new DataActualsBw
+        return new DataActuals
         {
             IdAPICarga = 1,
             GuidCarga = Guid.NewGuid(),
