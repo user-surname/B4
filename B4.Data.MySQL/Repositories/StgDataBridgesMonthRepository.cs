@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class StgDataBridgesMonthRepository : IStgDataBridgesMonthRepository
     {
         private const string _tableName = "STG_DATA_BridgesMonth";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public StgDataBridgesMonthRepository(DapperContext context)
+        public StgDataBridgesMonthRepository(MySQLDapperContext context)
         {
             _context = context;
         }

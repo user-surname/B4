@@ -9,7 +9,7 @@ using System;
 
 public class DataBridgesFyBwRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly DataBridgesFyBwRepository _repository;
 
     private readonly List<int> _insertedIds = new();
@@ -20,7 +20,7 @@ public class DataBridgesFyBwRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new DataBridgesFyBwRepository(_context);
     }
 

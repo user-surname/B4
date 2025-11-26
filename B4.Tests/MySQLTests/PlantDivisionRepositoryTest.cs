@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 public class PlantDivisionRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly PlantDivisionRepository _repository;
     private readonly List<int> _insertedIds = new();
 
@@ -22,7 +22,7 @@ public class PlantDivisionRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new PlantDivisionRepository(_context);
     }
 

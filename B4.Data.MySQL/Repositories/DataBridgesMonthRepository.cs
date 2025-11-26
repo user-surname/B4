@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class DataBridgesMonthRepository : IDataBridgesMonthRepository
     {
         private const string _tableName = "DATA_BridgesMonth";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataBridgesMonthRepository(DapperContext context)
+        public DataBridgesMonthRepository(MySQLDapperContext context)
         {
             _context = context;
         }

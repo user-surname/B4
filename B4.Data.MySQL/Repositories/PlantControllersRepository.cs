@@ -13,9 +13,9 @@ namespace B4.Data.MySQL.Repositories
         // Nombre fijo de la tabla
         private const string _tableName = "LK_PLANT_CONTROLLERS";
 
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public PlantControllersRepository(DapperContext context)
+        public PlantControllersRepository(MySQLDapperContext context)
         {
             _context = context;
         }

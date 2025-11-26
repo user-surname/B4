@@ -8,7 +8,7 @@ using Dapper;
 
 public class ControlPlantaRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly ControlPlantaRepository _repository;
 
     // Lista para IDs insertados en cada test
@@ -22,7 +22,7 @@ public class ControlPlantaRepositoryTest : IDisposable
             .Build();
 
         // Crear contexto y repositorio
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new ControlPlantaRepository(_context);
     }
 

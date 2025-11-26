@@ -1,9 +1,14 @@
 # Changelog
 
+## v0.20251126.2 - Slava
+
+- B4.Data.MySQL -> DapperContext -> MySQLDapperContext
+- B4.Api -> appsettings.json: DeafultConnection -> MySQLConnection
+
 ## v0.20251126.1 - Slava
 
-- B4.Data.MySQL -> Data(...)Repository + Test + Entity: creado
-- B4.Data.MySQL -> StgData(...)Repository + Test + Entity: creado
+- B4.Data.MySQL -> Data(...)Repository + Test + Intefice + Entity: creado
+- B4.Data.MySQL -> StgData(...)Repository + Test + Intefice + Entity: creado
 
 ## v0.20251124.1 - Slava
 

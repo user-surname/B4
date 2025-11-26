@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 public class StgDataComentariosRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly StgDataComentariosRepository _repository;
 
     private readonly List<int> _insertedIds = new();
@@ -24,7 +24,7 @@ public class StgDataComentariosRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new StgDataComentariosRepository(_context);
     }
 

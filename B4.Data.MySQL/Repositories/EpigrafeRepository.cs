@@ -14,9 +14,9 @@ namespace B4.Data.MySQL.Repositories
         private const string _tableName = "LK_EPIGRAFES";
 
         // Contexto que encapsula la cadena de conexión y creación de conexiones Dapper
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public EpigrafeRepository(DapperContext context)
+        public EpigrafeRepository(MySQLDapperContext context)
         {
             _context = context;
         }

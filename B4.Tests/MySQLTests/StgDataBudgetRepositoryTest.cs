@@ -13,7 +13,7 @@ using Xunit;
 
 public class StgDataBudgetRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly StgDataBudgetRepository _repository;
 
     private readonly List<int> _insertedIds = new();
@@ -24,7 +24,7 @@ public class StgDataBudgetRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new StgDataBudgetRepository(_context);
     }
 

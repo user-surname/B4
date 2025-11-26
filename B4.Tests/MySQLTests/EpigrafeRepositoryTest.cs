@@ -8,7 +8,7 @@ using Dapper;
 
 public class EpigrafeRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly EpigrafeRepository _repository;
 
     // Lista que almacena los IDs que cada test inserta en la BD.
@@ -23,7 +23,7 @@ public class EpigrafeRepositoryTest : IDisposable
             .Build();
 
         // Crear el contexto Dapper (MySQL)
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
 
         // Crear instancia del repositorio a testear
         _repository = new EpigrafeRepository(_context);

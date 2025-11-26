@@ -13,9 +13,9 @@ namespace B4.Data.MySQL.Repositories
         // Nombre de la tabla
         private const string _tableName = "DATA_BridgesFY_BW";
 
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataBridgesFyBwRepository(DapperContext context)
+        public DataBridgesFyBwRepository(MySQLDapperContext context)
         {
             _context = context;
         }

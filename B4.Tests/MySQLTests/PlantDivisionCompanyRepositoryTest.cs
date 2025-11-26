@@ -13,7 +13,7 @@ using Xunit;
 
 public class PlantDivisionCompanyRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly PlantDivisionCompanyRepository _repository;
 
     // Lista que almacena los IDs que cada test inserta en la BD
@@ -25,7 +25,7 @@ public class PlantDivisionCompanyRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new PlantDivisionCompanyRepository(_context);
     }
 

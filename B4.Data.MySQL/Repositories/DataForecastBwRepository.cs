@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class DataForecastBwRepository : IDataForecastBwRepository
     {
         private const string _tableName = "DATA_Forecast_BW";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataForecastBwRepository(DapperContext context)
+        public DataForecastBwRepository(MySQLDapperContext context)
         {
             _context = context;
         }

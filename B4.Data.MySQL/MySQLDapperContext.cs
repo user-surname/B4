@@ -12,7 +12,7 @@ namespace B4.Data.MySQL
 { 
     // Esta clase encapsula la lógica de conexión a la base de datos
     // y permite crear instancias de conexión cuando se necesiten en los repositorios o controladores
-    public class DapperContext
+    public class MySQLDapperContext
 {
     // Para acceder a la configuración de la aplicación (appsettings.json)
     private readonly IConfiguration _configuration;
@@ -21,12 +21,12 @@ namespace B4.Data.MySQL
     private readonly string _connectionString;
 
     // Constructor que recibe la configuración mediante inyección de dependencias
-    public DapperContext(IConfiguration configuration)
+    public MySQLDapperContext(IConfiguration configuration)
     {
         _configuration = configuration;
 
         // Obtiene la cadena de conexión llamada "DefaultConnection" del appsettings.json
-        _connectionString = _configuration.GetConnectionString("DefaultConnection");
+        _connectionString = _configuration.GetConnectionString("MySQLConnection");
     }
 
     // Método para crear y devolver una conexión a la base de datos PostgreSQL
@@ -34,4 +34,5 @@ namespace B4.Data.MySQL
     public IDbConnection CreateConnection()
         => new MySqlConnection(_connectionString);
 }
+
 }

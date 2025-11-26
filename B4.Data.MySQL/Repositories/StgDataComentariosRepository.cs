@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class StgDataComentariosRepository : IStgDataComentariosRepository
     {
         private const string _tableName = "STG_DATA_Comentarios";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public StgDataComentariosRepository(DapperContext context)
+        public StgDataComentariosRepository(MySQLDapperContext context)
         {
             _context = context;
         }

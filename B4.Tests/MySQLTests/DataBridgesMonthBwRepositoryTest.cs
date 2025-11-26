@@ -8,7 +8,7 @@
 
     public class DataBridgesMonthBwRepositoryTest : IDisposable
     {
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
         private readonly DataBridgesMonthBwRepository _repository;
 
         private readonly List<int> _insertedIds = new();
@@ -19,7 +19,7 @@
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
-            _context = new DapperContext(config);
+            _context = new MySQLDapperContext(config);
             _repository = new DataBridgesMonthBwRepository(_context);
         }
 

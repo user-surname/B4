@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class DataBudgetRepository : IDataBudgetRepository
     {
         private const string _tableName = "DATA_Budget";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataBudgetRepository(DapperContext context)
+        public DataBudgetRepository(MySQLDapperContext context)
         {
             _context = context;
         }

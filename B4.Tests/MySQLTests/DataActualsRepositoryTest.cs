@@ -12,7 +12,7 @@ namespace B4.Tests.MySQLTests
 {
     public class DataActualsRepositoryTest : IDisposable
     {
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
         private readonly DataActualsRepository _repository;
         private readonly List<int> _insertedIds = new();
 
@@ -22,7 +22,7 @@ namespace B4.Tests.MySQLTests
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
-            _context = new DapperContext(config);
+            _context = new MySQLDapperContext(config);
             _repository = new DataActualsRepository(_context);
         }
 

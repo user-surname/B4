@@ -25,7 +25,7 @@ var logger = LogManager.Setup()
     .LoadConfigurationFromFile(Path.Combine(AppContext.BaseDirectory, "nlog.config"))
     .GetCurrentClassLogger();
 
-logger.Info("🚀 Iniciando API B4...");
+logger.Info("Iniciando API B4...");
 
 builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 
@@ -51,6 +51,7 @@ builder.Services.AddSwaggerGen();
 
 // 1. Obtener la cadena de conexi�n desde la configuraci�n
 var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+builder.Services.AddSingleton<MySQLDapperContext>();
 
 // 2. Registrar el repositorio
 //builder.Services.AddScoped<IUsuarioRepository>(provider =>
@@ -85,7 +86,7 @@ app.MapControllers();
 
 app.UseCors("AllowAll");
 
-logger.Info("✔ API B4 iniciada correctamente (NLog Activo)");
+logger.Info("API B4 iniciada correctamente (NLog Activo)");
 
 app.Run();
 

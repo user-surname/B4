@@ -12,9 +12,9 @@ namespace B4.Data.MySQL.Repositories
     {
         private const string _tableName = "DATA_BridgesMonth_BW";
 
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataBridgesMonthBwRepository(DapperContext context)
+        public DataBridgesMonthBwRepository(MySQLDapperContext context)
         {
             _context = context;
         }

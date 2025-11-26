@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class DataTipoCambioRepository : IDataTipoCambioRepository
     {
         private const string _tableName = "DATA_Tipo_Cambio";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataTipoCambioRepository(DapperContext context)
+        public DataTipoCambioRepository(MySQLDapperContext context)
         {
             _context = context;
         }

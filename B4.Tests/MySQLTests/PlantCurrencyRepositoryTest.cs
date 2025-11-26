@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 public class PlantCurrencyRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly PlantCurrencyRepository _repository;
     private readonly List<int> _insertedIds = new();
 
@@ -22,7 +22,7 @@ public class PlantCurrencyRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new PlantCurrencyRepository(_context);
     }
 

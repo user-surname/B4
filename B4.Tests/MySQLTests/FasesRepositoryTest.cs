@@ -8,7 +8,7 @@ using Dapper;
 
 public class FasesRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly FasesRepository _repository;
 
     // Lista de IDs insertados durante cada test para limpiarlos después
@@ -21,7 +21,7 @@ public class FasesRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new FasesRepository(_context);
     }
 

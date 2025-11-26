@@ -8,7 +8,7 @@ using Dapper;
 
 public class PlantCompanyRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly PlantCompanyRepository _repository;
     private readonly List<int> _insertedIds = new();
 
@@ -18,7 +18,7 @@ public class PlantCompanyRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new PlantCompanyRepository(_context);
     }
 

@@ -8,7 +8,7 @@ using Dapper;
 
 public class DataBridgesFyRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly DataBridgesFyRepository _repository;
 
     // IDs generados automáticamente por AUTO_INCREMENT
@@ -20,7 +20,7 @@ public class DataBridgesFyRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new DataBridgesFyRepository(_context);
     }
 

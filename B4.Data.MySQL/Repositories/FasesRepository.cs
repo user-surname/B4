@@ -6,9 +6,9 @@ namespace B4.Data.MySQL.Repositories
 {
     public class FasesRepository
     {
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public FasesRepository(DapperContext context)
+        public FasesRepository(MySQLDapperContext context)
         {
             _context = context;
         }

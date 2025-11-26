@@ -13,9 +13,9 @@ namespace B4.Data.MySQL.Repositories
         // Nombre de la tabla
         private const string _tableName = "LK_CICLOS";
 
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public CiclosRepository(DapperContext context)
+        public CiclosRepository(MySQLDapperContext context)
         {
             _context = context;
         }

@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class DataBridgesFyBwEurRepository : IDataBridgesFyBwEurRepository
     {
         private const string _tableName = "DATA_BRIDGESFY_BW_EUR";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataBridgesFyBwEurRepository(DapperContext context)
+        public DataBridgesFyBwEurRepository(MySQLDapperContext context)
         {
             _context = context;
         }

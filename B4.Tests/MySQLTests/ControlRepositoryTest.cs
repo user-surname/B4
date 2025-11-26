@@ -13,7 +13,7 @@ using Xunit;
 
 public class ControlRepositoryTests : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly ControlRepository _repository;
 
     // Lista que almacena los IDs insertados en cada test para borrarlos después
@@ -26,7 +26,7 @@ public class ControlRepositoryTests : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new ControlRepository(_context);
     }
 

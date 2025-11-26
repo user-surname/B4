@@ -8,7 +8,7 @@ using Dapper;
 
 public class CiclosRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly CiclosRepository _repository;
 
     // IDs generados automáticamente por AUTO_INCREMENT
@@ -20,7 +20,7 @@ public class CiclosRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new CiclosRepository(_context);
     }
 

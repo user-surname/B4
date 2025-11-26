@@ -8,7 +8,7 @@ using Dapper;
 
 public class DataForecastBwRepositoryTest : IDisposable
 {
-    private readonly DapperContext _context;
+    private readonly MySQLDapperContext _context;
     private readonly DataForecastBwRepository _repository;
 
     // IDs generados automáticamente por AUTO_INCREMENT
@@ -20,7 +20,7 @@ public class DataForecastBwRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new DapperContext(config);
+        _context = new MySQLDapperContext(config);
         _repository = new DataForecastBwRepository(_context);
     }
 

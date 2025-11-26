@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class DataActualsBwRepository : IDataActualsBwRepository
     {
         private const string _tableName = "DATA_Actuals_BW";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public DataActualsBwRepository(DapperContext context)
+        public DataActualsBwRepository(MySQLDapperContext context)
         {
             _context = context;
         }

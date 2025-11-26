@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class StgDataActualsRepository : IStgDataActualsRepository
     {
         private const string _tableName = "STG_DATA_Actuals";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public StgDataActualsRepository(DapperContext context)
+        public StgDataActualsRepository(MySQLDapperContext context)
         {
             _context = context;
         }
