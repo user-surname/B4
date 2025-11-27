@@ -2,48 +2,44 @@ using Xunit;
 using Npgsql;
 using Dapper;
 using B4.Models.Entities;
+using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 
 public class DataActualsRepositoryTests : IDisposable
 {
-    private const string Conn =
-        "Host=pg-3105f5b7-elpuig-23d9.b.aivencloud.com;Port=21134;Database=defaultdb;Username=avnadmin;Password=AVNS_D8EOFxPDlpUH6LhFFLw;Ssl Mode=Require;";
-
     private readonly DataActualsRepository _repo;
     private readonly List<int> _insertedIds = new();
 
     public DataActualsRepositoryTests()
     {
-        _repo = new DataActualsRepository(Conn);
+        _repo = new DataActualsRepository(TestConfig.Conn);
     }
 
-    // 🧹 Limpieza automática después de cada test
+    // Limpieza automática
     public void Dispose()
     {
         if (_insertedIds.Count == 0)
             return;
 
-        using var conn = new NpgsqlConnection(Conn);
-        conn.Execute("DELETE FROM b4.data_actuals WHERE id = ANY(@Ids)", 
+        using var conn = new NpgsqlConnection(TestConfig.Conn);
+
+        conn.Execute("DELETE FROM b4.data_actuals WHERE id = ANY(@Ids)",  
             new { Ids = _insertedIds.ToArray() });
 
         _insertedIds.Clear();
     }
 
-    // ----------------------------------------------
-    // 🔥 TEST 1: Conexión básica
-    // ----------------------------------------------
+    // TEST 1: Conexión
     [Fact]
     public async Task Test_Connection()
     {
-        using var conn = new NpgsqlConnection(Conn);
+        using var conn = new NpgsqlConnection(TestConfig.Conn);
         await conn.OpenAsync();
+
         Assert.Equal(System.Data.ConnectionState.Open, conn.State);
     }
 
-    // ----------------------------------------------
-    // 🔥 TEST 2: Insert + GetById
-    // ----------------------------------------------
+    // TEST 2: Insert + Get
     [Fact]
     public async Task Insert_And_GetById_Should_Work()
     {
@@ -59,9 +55,7 @@ public class DataActualsRepositoryTests : IDisposable
         Assert.Equal(entity.Mes01, result.Mes01);
     }
 
-    // ----------------------------------------------
-    // 🔥 TEST 3: Update
-    // ----------------------------------------------
+    // TEST 3: Update
     [Fact]
     public async Task Update_Should_Modify_Entity()
     {
@@ -80,9 +74,7 @@ public class DataActualsRepositoryTests : IDisposable
         Assert.Equal(777m, result!.Mes02);
     }
 
-    // ----------------------------------------------
-    // 🔥 TEST 4: Delete
-    // ----------------------------------------------
+    // TEST 4: Delete
     [Fact]
     public async Task Delete_Should_Remove_Entity()
     {
@@ -94,12 +86,11 @@ public class DataActualsRepositoryTests : IDisposable
         await _repo.DeleteAsync(entity.Id);
 
         var result = await _repo.GetByIdAsync(entity.Id);
+
         Assert.Null(result);
     }
 
-    // ----------------------------------------------
-    // 🔧 Helper: generar una entidad válida
-    // ----------------------------------------------
+    // Helper
     private DataActualsBw CreateSampleEntity()
     {
         return new DataActualsBw

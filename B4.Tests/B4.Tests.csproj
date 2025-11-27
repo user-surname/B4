@@ -46,5 +46,5 @@
     <ProjectReference Include="..\B4.Data.PostgreSQL\B4.Data.PostgreSQL.csproj" />
     <ProjectReference Include="..\B4.Models\B4.Models.csproj" />
   </ItemGroup>
-
+  
 </Project>

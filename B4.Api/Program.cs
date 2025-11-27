@@ -1,23 +1,25 @@
-
 using Microsoft.AspNetCore.ResponseCompression;
 using System.IO.Compression;
+
 using B4.Api.Middleware;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.Services;
-using B4.DBMigrations;
+using B4.Data.PostgreSQL;
 using B4.Data.MySQL;
-// necesario para inyeccion de dependencias
+
+// Interfaces
 using B4.Models.Interfaces;
-using Microsoft.AspNetCore.ResponseCompression;
-using ProyectoPILOTO.Data;
-using System.IO.Compression;
-// ---- NLOG ----
+
+// NLog
 using NLog;
 using NLog.Web;
 
-// creacion builder
+// --------------------------------------------------
+// CREACIÓN DEL BUILDER
+// --------------------------------------------------
 var builder = WebApplication.CreateBuilder(args);
 
+// NLog
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
 
@@ -27,59 +29,78 @@ var logger = LogManager.Setup()
 
 logger.Info("🚀 Iniciando API B4...");
 
+// Migraciones
+DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
+
+// Middleware global
 builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 
-// servicio compresion GZIP
+// Compresión GZIP
 builder.Services.Configure<GzipCompressionProviderOptions>(options =>
 {
     options.Level = CompressionLevel.SmallestSize;
 });
 
-
-// Servicio MemoryCache para tablas maestras
+// MemoryCache tablas maestras
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
 
-
-// agregamos los controllers
 builder.Services.AddControllers();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 1. Obtener la cadena de conexi�n desde la configuraci�n
+// --------------------------------------------------
+// CONEXIÓN BASE DE DATOS
+// --------------------------------------------------
 var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
 
-// 2. Registrar el repositorio
-//builder.Services.AddScoped<IUsuarioRepository>(provider =>
-//    new UsuarioRepository(connectionString!));
-// NOTA: Usa 'new' o 'ActivatorUtilities.CreateInstance' para pasar el string al constructor
+// --------------------------------------------------
+// REGISTRO DE TODOS LOS REPOSITORIOS DATA*
+// --------------------------------------------------
 
 builder.Services.AddScoped<IDataComentariosRepository>(provider =>
-    new DataComentariosRepository(connectionString!));
+    new DataComentariosRepository(connectionString));
+
+builder.Services.AddScoped<IDataBudgetRepository>(provider =>
+    new DataBudgetRepository(connectionString));
+
+builder.Services.AddScoped<IDataForecastRepository>(provider =>
+    new DataForecastRepository(connectionString));
+
+builder.Services.AddScoped<IDataBridgesFyRepository>(provider =>
+    new DataBridgesFyRepository(connectionString));
+
+builder.Services.AddScoped<IDataBridgesFyBwRepository>(provider =>
+    new DataBridgesFyBwRepository(connectionString));
+
+builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(provider =>
+    new DataBridgesFyBwEurRepository(connectionString));
+
+builder.Services.AddScoped<IDataBridgesMonthBwRepository>(provider =>
+    new DataBridgesMonthBwRepository(connectionString));
+
+builder.Services.AddScoped<IEpigrafeRepository>(provider =>
+    new EpigrafeRepository(connectionString));
 
 
 builder.Services.AddAuthorization();
 
+// --------------------------------------------------
+// BUILD APP
+// --------------------------------------------------
 var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
-
 app.UseHttpsRedirection();
 app.UseRouting();
-
-app.UseAuthorization(); 
+app.UseAuthorization();
 
 app.MapControllers();
 
@@ -88,4 +109,3 @@ app.UseCors("AllowAll");
 logger.Info("✔ API B4 iniciada correctamente (NLog Activo)");
 
 app.Run();
-

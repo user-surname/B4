@@ -136,6 +136,21 @@ CREATE TABLE lk_epigrafes (
     epigrafefull VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS b4.lk_plant_controllers
+(
+    idcompanycontroller     INT PRIMARY KEY,
+    idcompany               INT NOT NULL,
+    controller              VARCHAR(255) NOT NULL,
+    email                   VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS b4.lk_plantillas_botones_pasos_tipos
+(
+    idpasotipo      INT PRIMARY KEY,
+    pasotipo        VARCHAR(255) NOT NULL,
+    descripcion     VARCHAR(255)
+);
+
 -- ==================================================
 -- TABLA PLANTILLAS
 -- ==================================================
