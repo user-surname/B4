@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20251127.1 - Slava
+
+- B4.Data.MySQL -> Readme: agregado
+- B4.Api -> Cadenas de conexion MySQLConnetion y PostgresConnection en appsettings.json: agregado
+
 ## v0.20251126.2 - Slava
 
 - B4.Data.MySQL -> DapperContext -> MySQLDapperContext
