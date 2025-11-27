@@ -14,9 +14,9 @@ namespace B4.Data.MySQL.Repositories
         private const string _tableName = "LK_PLANT_COMPANY";
 
         // Contexto que maneja la conexión Dapper
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public PlantCompanyRepository(DapperContext context)
+        public PlantCompanyRepository(MySQLDapperContext context)
         {
             _context = context;
         }

@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class PlantillasBotonesPasosTiposRepository : IPlantillasBotonesPasosTiposRepository
     {
         private const string _tableName = "LK_PLANTILLAS_BOTONES_PASOS_TIPOS";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public PlantillasBotonesPasosTiposRepository(DapperContext context)
+        public PlantillasBotonesPasosTiposRepository(MySQLDapperContext context)
         {
             _context = context;
         }

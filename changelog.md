@@ -1,5 +1,32 @@
 # Changelog
 
+## v0.20251127.1 - Slava
+
+- B4.Data.MySQL -> Readme: agregado
+- B4.Api -> Cadenas de conexion MySQLConnetion y PostgresConnection en appsettings.json: agregado
+
+## v0.20251126.2 - Slava
+
+- B4.Data.MySQL -> DapperContext -> MySQLDapperContext
+- B4.Api -> appsettings.json: DeafultConnection -> MySQLConnection
+
+## v0.20251126.1 - Slava
+
+- B4.Data.MySQL -> Data(...)Repository + Test + Intefice + Entity: creado
+- B4.Data.MySQL -> StgData(...)Repository + Test + Intefice + Entity: creado
+
+## v0.20251124.1 - Slava
+
+- Migraacion a net8.0
+	- Quite "<OutputType>Exe</OutputType>" de B4.Logger para que no de error
+- Actualizacin de Nlog: NLog.Web no es compatible con .NET 8 -> Solucion: NLog.Extensions.Logging
+
+## v0.20251120.1
+
+- global.json
+	- fichero config a nivel de solucion apra unificar el sdk a utilizar
+	- agregado en carpeta: elementos de la solucion_
+
 ## v0.20251119.1 - Slava
 
 - B4.Tests -> CiclosRepositoryTest: arreglado el problema de AUTO_INCREMENT

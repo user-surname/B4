@@ -14,9 +14,9 @@ namespace B4.Data.MySQL.Repositories
         private const string _tableName = "CONTROL";
 
         // Contexto para gestionar la conexión
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public ControlRepository(DapperContext context)
+        public ControlRepository(MySQLDapperContext context)
         {
             _context = context;
         }

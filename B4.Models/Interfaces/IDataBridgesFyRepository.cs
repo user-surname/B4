@@ -4,6 +4,8 @@ namespace B4.Models.Interfaces
 {
     public interface IDataBridgesFyRepository : IRepository<DataBridgesFy>
     {
-        
+
+        // Add any additional methods specific to DataBridgesFy if needed
+
     }
 }

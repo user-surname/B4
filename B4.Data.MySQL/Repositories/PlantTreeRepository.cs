@@ -11,9 +11,9 @@ namespace B4.Data.MySQL.Repositories
     public class PlantTreeRepository : IPlantTreeRepository
     {
         private const string _tableName = "LK_PLANT_TREE";
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public PlantTreeRepository(DapperContext context)
+        public PlantTreeRepository(MySQLDapperContext context)
         {
             _context = context;
         }

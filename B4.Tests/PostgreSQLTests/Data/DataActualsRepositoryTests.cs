@@ -90,10 +90,17 @@ public class DataActualsRepositoryTests : IDisposable
         Assert.Null(result);
     }
 
+<<<<<<< HEAD:B4.Tests/PostgreSQLTests/Data/DataActualsRepositoryTests.cs
     // Helper
     private DataActualsBw CreateSampleEntity()
+=======
+    // ----------------------------------------------
+    // 🔧 Helper: generar una entidad válida
+    // ----------------------------------------------
+    private DataActuals CreateSampleEntity()
+>>>>>>> c05ea3cac6f234d7828852fefbfb9d69e250ec78:B4.Tests/DataActualsRepositoryTests.cs
     {
-        return new DataActualsBw
+        return new DataActuals
         {
             IdAPICarga = 1,
             GuidCarga = Guid.NewGuid(),

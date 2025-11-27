@@ -12,9 +12,9 @@ namespace B4.Data.MySQL.Repositories
     {
         private const string _tableName = "LK_PLANT_DIVISION";
 
-        private readonly DapperContext _context;
+        private readonly MySQLDapperContext _context;
 
-        public PlantDivisionRepository(DapperContext context)
+        public PlantDivisionRepository(MySQLDapperContext context)
         {
             _context = context;
         }

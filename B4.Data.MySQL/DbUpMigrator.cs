@@ -23,7 +23,7 @@ namespace ProyectoPILOTO.Data
         public static void EnsureDatabaseUpdated(IConfiguration configuration)
         {
             // Obtiene la cadena de conexión desde appsettings.json
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var connectionString = configuration.GetConnectionString("MySQLConnection");
 
             // Configura el "upgrader" que aplicará las migraciones
             var upgrader =

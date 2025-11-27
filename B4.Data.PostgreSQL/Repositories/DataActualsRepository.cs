@@ -16,7 +16,7 @@ namespace B4.Data.PostgreSQL.Repositories
             _connectionString = connectionString;
         }
 
-        public async Task AddAsync(DataActualsBw entity)
+        public async Task AddAsync(DataActuals entity)
         {
             var sql = $@"
                 INSERT INTO {_table}
@@ -38,21 +38,21 @@ namespace B4.Data.PostgreSQL.Repositories
             entity.Id = newId;
         }
 
-        public async Task<DataActualsBw?> GetByIdAsync(int id)
+        public async Task<DataActuals?> GetByIdAsync(int id)
         {
             var sql = $"SELECT * FROM {_table} WHERE id = @Id";
             using var conn = new NpgsqlConnection(_connectionString);
-            return await conn.QuerySingleOrDefaultAsync<DataActualsBw>(sql, new { Id = id });
+            return await conn.QuerySingleOrDefaultAsync<DataActuals>(sql, new { Id = id });
         }
 
-        public async Task<IEnumerable<DataActualsBw>> GetAllAsync()
+        public async Task<IEnumerable<DataActuals>> GetAllAsync()
         {
             var sql = $"SELECT * FROM {_table}";
             using var conn = new NpgsqlConnection(_connectionString);
-            return await conn.QueryAsync<DataActualsBw>(sql);
+            return await conn.QueryAsync<DataActuals>(sql);
         }
 
-        public async Task UpdateAsync(DataActualsBw entity)
+        public async Task UpdateAsync(DataActuals entity)
         {
             var sql = $@"
                 UPDATE {_table} SET

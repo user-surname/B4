@@ -27,7 +27,7 @@ var logger = LogManager.Setup()
     .LoadConfigurationFromFile(Path.Combine(AppContext.BaseDirectory, "nlog.config"))
     .GetCurrentClassLogger();
 
-logger.Info("🚀 Iniciando API B4...");
+logger.Info("Iniciando API B4...");
 
 // Migraciones
 DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
@@ -53,6 +53,7 @@ builder.Services.AddSwaggerGen();
 // CONEXIÓN BASE DE DATOS
 // --------------------------------------------------
 var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+builder.Services.AddSingleton<MySQLDapperContext>();
 
 // --------------------------------------------------
 // REGISTRO DE TODOS LOS REPOSITORIOS DATA*
@@ -106,6 +107,6 @@ app.MapControllers();
 
 app.UseCors("AllowAll");
 
-logger.Info("✔ API B4 iniciada correctamente (NLog Activo)");
+logger.Info("API B4 iniciada correctamente (NLog Activo)");
 
 app.Run();
