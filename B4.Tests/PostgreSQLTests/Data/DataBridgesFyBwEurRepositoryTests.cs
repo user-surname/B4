@@ -4,6 +4,8 @@ using Dapper;
 using B4.Models.Entities;
 using B4.Data.PostgreSQL.Repositories;
 
+namespace B4.Tests.PostgreSQLTests.Data
+{
 public class DataBridgesFyBwEurRepositoryTests : IDisposable
 {
     private readonly DataBridgesFyBwEurRepository _repo;
@@ -98,4 +100,5 @@ public class DataBridgesFyBwEurRepositoryTests : IDisposable
             Comments = "test eur"
         };
     }
+}
 }

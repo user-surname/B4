@@ -2,9 +2,10 @@ using Xunit;
 using Npgsql;
 using Dapper;
 using B4.Models.Entities;
-using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 
+namespace B4.Tests.PostgreSQLTests.Data
+{
 public class DataActualsRepositoryTests : IDisposable
 {
     private readonly DataActualsRepository _repo;
@@ -23,8 +24,10 @@ public class DataActualsRepositoryTests : IDisposable
 
         using var conn = new NpgsqlConnection(TestConfig.Conn);
 
-        conn.Execute("DELETE FROM b4.data_actuals WHERE id = ANY(@Ids)",  
-            new { Ids = _insertedIds.ToArray() });
+        conn.Execute(
+            "DELETE FROM b4.data_actuals WHERE id = ANY(@Ids)",
+            new { Ids = _insertedIds.ToArray() }
+        );
 
         _insertedIds.Clear();
     }
@@ -90,15 +93,10 @@ public class DataActualsRepositoryTests : IDisposable
         Assert.Null(result);
     }
 
-<<<<<<< HEAD:B4.Tests/PostgreSQLTests/Data/DataActualsRepositoryTests.cs
-    // Helper
-    private DataActualsBw CreateSampleEntity()
-=======
     // ----------------------------------------------
-    // 🔧 Helper: generar una entidad válida
+    //  Helper: generar una entidad válida
     // ----------------------------------------------
     private DataActuals CreateSampleEntity()
->>>>>>> c05ea3cac6f234d7828852fefbfb9d69e250ec78:B4.Tests/DataActualsRepositoryTests.cs
     {
         return new DataActuals
         {
@@ -111,6 +109,7 @@ public class DataActualsRepositoryTests : IDisposable
             IdFase = 1,
             IdCurrency = 1,
             IdEpigrafe = 1,
+
             Mes00 = 10m,
             Mes01 = 20m,
             Mes02 = 30m,
@@ -127,4 +126,5 @@ public class DataActualsRepositoryTests : IDisposable
             Mes13 = 140m
         };
     }
+}
 }

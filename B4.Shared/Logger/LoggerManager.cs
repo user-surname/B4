@@ -1,6 +1,7 @@
 ﻿using NLog;
+using System;
 
-namespace B4.Logger
+namespace B4.Shared.Logger
 {
     public static class LoggerManager
     {

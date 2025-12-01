@@ -1,6 +1,4 @@
-﻿namespace B4.Tests.MySQLTests;
-
-using B4.Data.MySQL;
+﻿using B4.Data.MySQL;
 using B4.Data.MySQL.Repositories;
 using B4.Models.Entities;
 using Microsoft.Extensions.Configuration;
@@ -11,238 +9,240 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-public class DataBudgetRepositoryTest : IDisposable
+namespace B4.Tests.MySQLTests
 {
-    private readonly MySQLDapperContext _context;
-    private readonly DataBudgetRepository _repository;
-
-    private readonly List<int> _insertedIds = new();
-
-    public DataBudgetRepositoryTest()
+    public class DataBudgetRepositoryTest : IDisposable
     {
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build();
+        private readonly MySQLDapperContext _context;
+        private readonly DataBudgetRepository _repository;
 
-        _context = new MySQLDapperContext(config);
-        _repository = new DataBudgetRepository(_context);
-    }
+        private readonly List<int> _insertedIds = new();
 
-    public void Dispose()
-    {
-        if (_insertedIds.Count == 0) return;
-
-        using var conn = _context.CreateConnection();
-        conn.Execute("DELETE FROM DATA_Budget WHERE id IN @ids", new { ids = _insertedIds });
-        _insertedIds.Clear();
-    }
-
-    // -------------------------------------------------
-    // TEST: ADD
-    // -------------------------------------------------
-    [Fact]
-    public async Task AddAsync_ShouldInsertRecord()
-    {
-        var budget = new DataBudget
+        public DataBudgetRepositoryTest()
         {
-            IdAPICarga = 1,
-            GuidCarga = Guid.NewGuid(),
-            FechaUltModif = DateTime.Now,
-            IdCompany = 1,
-            Ejercicio = 2025,
-            IdCiclo = 1,
-            IdFase = 1,
-            IdCurrency = 1,
-            IdEpigrafe = 1,
-            Mes00 = 100,
-            Mes01 = 200,
-            Mes02 = 300,
-            Mes03 = 400,
-            Mes04 = 500,
-            Mes05 = 600,
-            Mes06 = 700,
-            Mes07 = 800,
-            Mes08 = 900,
-            Mes09 = 1000,
-            Mes10 = 1100,
-            Mes11 = 1200,
-            Mes12 = 1300,
-            Mes13 = 1400
-        };
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false)
+                .Build();
 
-        await _repository.AddAsync(budget);
-
-        int newId;
-        using (var conn = _context.CreateConnection())
-        {
-            newId = conn.ExecuteScalar<int>("SELECT id FROM DATA_Budget ORDER BY id DESC LIMIT 1;");
+            _context = new MySQLDapperContext(config);
+            _repository = new DataBudgetRepository(_context);
         }
 
-        _insertedIds.Add(newId);
-
-        using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingleOrDefault<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
-
-        Assert.NotNull(result);
-        Assert.Equal(budget.Mes00, result.Mes00);
-    }
-
-    // -------------------------------------------------
-    // TEST: GET BY ID
-    // -------------------------------------------------
-    [Fact]
-    public async Task GetByIdAsync_ShouldReturnRecord()
-    {
-        int newId;
-
-        using (var conn = _context.CreateConnection())
+        public void Dispose()
         {
-            newId = conn.ExecuteScalar<int>(@"
-                INSERT INTO DATA_Budget
-                (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
-                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
-                VALUES
-                (1, '00000000-0000-0000-0000-000000000000', NOW(), 1, 2025, 1, 1, 1, 1,
-                 10,11,12,13,14,15,16,17,18,19,20,21,22,23);
-                SELECT LAST_INSERT_ID();
-            ");
+            if (_insertedIds.Count == 0) return;
+
+            using var conn = _context.CreateConnection();
+            conn.Execute("DELETE FROM DATA_Budget WHERE id IN @ids", new { ids = _insertedIds });
+            _insertedIds.Clear();
         }
 
-        _insertedIds.Add(newId);
-
-        var result = await _repository.GetByIdAsync(newId);
-
-        Assert.NotNull(result);
-        Assert.Equal(10, result.Mes00);
-    }
-
-    // -------------------------------------------------
-    // TEST: GET ALL
-    // -------------------------------------------------
-    [Fact]
-    public async Task GetAllAsync_ShouldReturnAllRecords()
-    {
-        int id1, id2;
-
-        using (var conn = _context.CreateConnection())
+        // -------------------------------------------------
+        // TEST: ADD
+        // -------------------------------------------------
+        [Fact]
+        public async Task AddAsync_ShouldInsertRecord()
         {
-            id1 = conn.ExecuteScalar<int>(@"
-                INSERT INTO DATA_Budget
-                (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
-                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
-                VALUES
-                (1, '00000000-0000-0000-0000-000000000001', NOW(), 1, 2025, 1, 1, 1, 1,
-                 10,11,12,13,14,15,16,17,18,19,20,21,22,23);
-                SELECT LAST_INSERT_ID();
-            ");
+            var budget = new DataBudget
+            {
+                IdAPICarga = 1,
+                GuidCarga = Guid.NewGuid(),
+                FechaUltModif = DateTime.Now,
+                IdCompany = 1,
+                Ejercicio = 2025,
+                IdCiclo = 1,
+                IdFase = 1,
+                IdCurrency = 1,
+                IdEpigrafe = 1,
+                Mes00 = 100,
+                Mes01 = 200,
+                Mes02 = 300,
+                Mes03 = 400,
+                Mes04 = 500,
+                Mes05 = 600,
+                Mes06 = 700,
+                Mes07 = 800,
+                Mes08 = 900,
+                Mes09 = 1000,
+                Mes10 = 1100,
+                Mes11 = 1200,
+                Mes12 = 1300,
+                Mes13 = 1400
+            };
 
-            id2 = conn.ExecuteScalar<int>(@"
-                INSERT INTO DATA_Budget
-                (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
-                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
-                VALUES
-                (1, '00000000-0000-0000-0000-000000000002', NOW(), 1, 2025, 1, 1, 1, 1,
-                 20,21,22,23,24,25,26,27,28,29,30,31,32,33);
-                SELECT LAST_INSERT_ID();
-            ");
+            await _repository.AddAsync(budget);
+
+            int newId;
+            using (var conn = _context.CreateConnection())
+            {
+                newId = conn.ExecuteScalar<int>("SELECT id FROM DATA_Budget ORDER BY id DESC LIMIT 1;");
+            }
+
+            _insertedIds.Add(newId);
+
+            using var conn2 = _context.CreateConnection();
+            var result = conn2.QuerySingleOrDefault<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
+
+            Assert.NotNull(result);
+            Assert.Equal(budget.Mes00, result.Mes00);
         }
 
-        _insertedIds.AddRange(new[] { id1, id2 });
-
-        var result = await _repository.GetAllAsync();
-
-        Assert.NotNull(result);
-        Assert.True(result.Count() >= 2);
-    }
-
-    // -------------------------------------------------
-    // TEST: UPDATE
-    // -------------------------------------------------
-    [Fact]
-    public async Task UpdateAsync_ShouldModifyRecord()
-    {
-        int newId;
-
-        using (var conn = _context.CreateConnection())
+        // -------------------------------------------------
+        // TEST: GET BY ID
+        // -------------------------------------------------
+        [Fact]
+        public async Task GetByIdAsync_ShouldReturnRecord()
         {
-            newId = conn.ExecuteScalar<int>(@"
-                INSERT INTO DATA_Budget
-                (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
-                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
-                VALUES
-                (1, '00000000-0000-0000-0000-000000000003', NOW(), 1, 2025, 1, 1, 1, 1,
-                 10,11,12,13,14,15,16,17,18,19,20,21,22,23);
-                SELECT LAST_INSERT_ID();
-            ");
+            int newId;
+
+            using (var conn = _context.CreateConnection())
+            {
+                newId = conn.ExecuteScalar<int>(@"
+                    INSERT INTO DATA_Budget
+                    (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
+                     mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
+                    VALUES
+                    (1, '00000000-0000-0000-0000-000000000000', NOW(), 1, 2025, 1, 1, 1, 1,
+                     10,11,12,13,14,15,16,17,18,19,20,21,22,23);
+                    SELECT LAST_INSERT_ID();
+                ");
+            }
+
+            _insertedIds.Add(newId);
+
+            var result = await _repository.GetByIdAsync(newId);
+
+            Assert.NotNull(result);
+            Assert.Equal(10, result.Mes00);
         }
 
-        _insertedIds.Add(newId);
-
-        var updated = new DataBudget
+        // -------------------------------------------------
+        // TEST: GET ALL
+        // -------------------------------------------------
+        [Fact]
+        public async Task GetAllAsync_ShouldReturnAllRecords()
         {
-            Id = newId,
-            IdAPICarga = 2,
-            GuidCarga = Guid.NewGuid(),
-            FechaUltModif = DateTime.Now,
-            IdCompany = 1,
-            Ejercicio = 2025,
-            IdCiclo = 1,
-            IdFase = 1,
-            IdCurrency = 1,
-            IdEpigrafe = 1,
-            Mes00 = 999,
-            Mes01 = 11,
-            Mes02 = 12,
-            Mes03 = 13,
-            Mes04 = 14,
-            Mes05 = 15,
-            Mes06 = 16,
-            Mes07 = 17,
-            Mes08 = 18,
-            Mes09 = 19,
-            Mes10 = 20,
-            Mes11 = 21,
-            Mes12 = 22,
-            Mes13 = 23
-        };
+            int id1, id2;
 
-        await _repository.UpdateAsync(updated);
+            using (var conn = _context.CreateConnection())
+            {
+                id1 = conn.ExecuteScalar<int>(@"
+                    INSERT INTO DATA_Budget
+                    (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
+                     mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
+                    VALUES
+                    (1, '00000000-0000-0000-0000-000000000001', NOW(), 1, 2025, 1, 1, 1, 1,
+                     10,11,12,13,14,15,16,17,18,19,20,21,22,23);
+                    SELECT LAST_INSERT_ID();
+                ");
 
-        using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingle<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
+                id2 = conn.ExecuteScalar<int>(@"
+                    INSERT INTO DATA_Budget
+                    (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
+                     mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
+                    VALUES
+                    (1, '00000000-0000-0000-0000-000000000002', NOW(), 1, 2025, 1, 1, 1, 1,
+                     20,21,22,23,24,25,26,27,28,29,30,31,32,33);
+                    SELECT LAST_INSERT_ID();
+                ");
+            }
 
-        Assert.Equal(999, result.Mes00);
-    }
+            _insertedIds.AddRange(new[] { id1, id2 });
 
-    // -------------------------------------------------
-    // TEST: DELETE
-    // -------------------------------------------------
-    [Fact]
-    public async Task DeleteAsync_ShouldRemoveRecord()
-    {
-        int newId;
+            var result = await _repository.GetAllAsync();
 
-        using (var conn = _context.CreateConnection())
-        {
-            newId = conn.ExecuteScalar<int>(@"
-                INSERT INTO DATA_Budget
-                (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
-                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
-                VALUES
-                (1, '00000000-0000-0000-0000-000000000004', NOW(), 1, 2025, 1, 1, 1, 1,
-                 10,11,12,13,14,15,16,17,18,19,20,21,22,23);
-                SELECT LAST_INSERT_ID();
-            ");
+            Assert.NotNull(result);
+            Assert.True(result.Count() >= 2);
         }
 
-        _insertedIds.Add(newId);
+        // -------------------------------------------------
+        // TEST: UPDATE
+        // -------------------------------------------------
+        [Fact]
+        public async Task UpdateAsync_ShouldModifyRecord()
+        {
+            int newId;
 
-        await _repository.DeleteAsync(newId);
+            using (var conn = _context.CreateConnection())
+            {
+                newId = conn.ExecuteScalar<int>(@"
+                    INSERT INTO DATA_Budget
+                    (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
+                     mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
+                    VALUES
+                    (1, '00000000-0000-0000-0000-000000000003', NOW(), 1, 2025, 1, 1, 1, 1,
+                     10,11,12,13,14,15,16,17,18,19,20,21,22,23);
+                    SELECT LAST_INSERT_ID();
+                ");
+            }
 
-        using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingleOrDefault<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
+            _insertedIds.Add(newId);
 
-        Assert.Null(result);
+            var updated = new DataBudget
+            {
+                Id = newId,
+                IdAPICarga = 2,
+                GuidCarga = Guid.NewGuid(),
+                FechaUltModif = DateTime.Now,
+                IdCompany = 1,
+                Ejercicio = 2025,
+                IdCiclo = 1,
+                IdFase = 1,
+                IdCurrency = 1,
+                IdEpigrafe = 1,
+                Mes00 = 999,
+                Mes01 = 11,
+                Mes02 = 12,
+                Mes03 = 13,
+                Mes04 = 14,
+                Mes05 = 15,
+                Mes06 = 16,
+                Mes07 = 17,
+                Mes08 = 18,
+                Mes09 = 19,
+                Mes10 = 20,
+                Mes11 = 21,
+                Mes12 = 22,
+                Mes13 = 23
+            };
+
+            await _repository.UpdateAsync(updated);
+
+            using var conn2 = _context.CreateConnection();
+            var result = conn2.QuerySingle<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
+
+            Assert.Equal(999, result.Mes00);
+        }
+
+        // -------------------------------------------------
+        // TEST: DELETE
+        // -------------------------------------------------
+        [Fact]
+        public async Task DeleteAsync_ShouldRemoveRecord()
+        {
+            int newId;
+
+            using (var conn = _context.CreateConnection())
+            {
+                newId = conn.ExecuteScalar<int>(@"
+                    INSERT INTO DATA_Budget
+                    (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
+                     mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
+                    VALUES
+                    (1, '00000000-0000-0000-0000-000000000004', NOW(), 1, 2025, 1, 1, 1, 1,
+                     10,11,12,13,14,15,16,17,18,19,20,21,22,23);
+                    SELECT LAST_INSERT_ID();
+                ");
+            }
+
+            _insertedIds.Add(newId);
+
+            await _repository.DeleteAsync(newId);
+
+            using var conn2 = _context.CreateConnection();
+            var result = conn2.QuerySingleOrDefault<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
+
+            Assert.Null(result);
+        }
     }
 }
-

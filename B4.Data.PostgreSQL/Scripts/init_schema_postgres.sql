@@ -328,7 +328,7 @@ CREATE TABLE data_comentarios (
 );
 
 -- DATA_Tipo_Cambio
-CREATE TABLE data_tipo_cambio (
+CREATE TABLE IF NOT EXISTS b4.data_tipo_cambio (
     id SERIAL PRIMARY KEY,
     idapicarga INT NOT NULL,
     guidcarga UUID NOT NULL,
@@ -339,8 +339,103 @@ CREATE TABLE data_tipo_cambio (
     mes INT NOT NULL,
     p NUMERIC(18,5),
     fc NUMERIC(18,5),
-    fb NUMERIC(18,5)
+    fb NUMERIC(18,5),
+
+    idcarga INT,
+    idcargastgbw INT,
+    idhoja INT
 );
+
+CREATE TABLE IF NOT EXISTS b4.data_actuals_bw (
+    id SERIAL PRIMARY KEY,
+    idapicarga INT NOT NULL,
+    guidcarga UUID NOT NULL,
+    fechaultmodif TIMESTAMP DEFAULT NOW(),
+    idcompany INT NOT NULL,
+    ejercicio INT NOT NULL,
+    idciclo INT NOT NULL,
+    idfase INT NOT NULL,
+    idcurrency INT NOT NULL,
+    idepigrafe INT NOT NULL,
+    mes00 NUMERIC(18,5) DEFAULT 0,
+    mes01 NUMERIC(18,5) DEFAULT 0,
+    mes02 NUMERIC(18,5) DEFAULT 0,
+    mes03 NUMERIC(18,5) DEFAULT 0,
+    mes04 NUMERIC(18,5) DEFAULT 0,
+    mes05 NUMERIC(18,5) DEFAULT 0,
+    mes06 NUMERIC(18,5) DEFAULT 0,
+    mes07 NUMERIC(18,5) DEFAULT 0,
+    mes08 NUMERIC(18,5) DEFAULT 0,
+    mes09 NUMERIC(18,5) DEFAULT 0,
+    mes10 NUMERIC(18,5) DEFAULT 0,
+    mes11 NUMERIC(18,5) DEFAULT 0,
+    mes12 NUMERIC(18,5) DEFAULT 0,
+    mes13 NUMERIC(18,5) DEFAULT 0,
+    idcarga INT,
+    idcargastgbw INT,
+    idhoja INT
+);
+
+CREATE TABLE IF NOT EXISTS b4.data_forecast_bw (
+    id SERIAL PRIMARY KEY,
+    idapicarga INT NOT NULL,
+    guidcarga UUID NOT NULL,
+    fechaultmodif TIMESTAMP DEFAULT NOW(),
+    idcompany INT NOT NULL,
+    ejercicio INT NOT NULL,
+    idciclo INT NOT NULL,
+    idfase INT NOT NULL,
+    idcurrency INT NOT NULL,
+    idepigrafe INT NOT NULL,
+    mes00 NUMERIC(18,5) DEFAULT 0,
+    mes01 NUMERIC(18,5) DEFAULT 0,
+    mes02 NUMERIC(18,5) DEFAULT 0,
+    mes03 NUMERIC(18,5) DEFAULT 0,
+    mes04 NUMERIC(18,5) DEFAULT 0,
+    mes05 NUMERIC(18,5) DEFAULT 0,
+    mes06 NUMERIC(18,5) DEFAULT 0,
+    mes07 NUMERIC(18,5) DEFAULT 0,
+    mes08 NUMERIC(18,5) DEFAULT 0,
+    mes09 NUMERIC(18,5) DEFAULT 0,
+    mes10 NUMERIC(18,5) DEFAULT 0,
+    mes11 NUMERIC(18,5) DEFAULT 0,
+    mes12 NUMERIC(18,5) DEFAULT 0,
+    mes13 NUMERIC(18,5) DEFAULT 0,
+    idcarga INT,
+    idcargastgbw INT,
+    idhoja INT
+);
+
+CREATE TABLE IF NOT EXISTS b4.data_budget_bw (
+    id SERIAL PRIMARY KEY,
+    idapicarga INT NOT NULL,
+    guidcarga UUID NOT NULL,
+    fechaultmodif TIMESTAMP DEFAULT NOW(),
+    idcompany INT NOT NULL,
+    ejercicio INT NOT NULL,
+    idciclo INT NOT NULL,
+    idfase INT NOT NULL,
+    idcurrency INT NOT NULL,
+    idepigrafe INT NOT NULL,
+    mes00 NUMERIC(18,5) DEFAULT 0,
+    mes01 NUMERIC(18,5) DEFAULT 0,
+    mes02 NUMERIC(18,5) DEFAULT 0,
+    mes03 NUMERIC(18,5) DEFAULT 0,
+    mes04 NUMERIC(18,5) DEFAULT 0,
+    mes05 NUMERIC(18,5) DEFAULT 0,
+    mes06 NUMERIC(18,5) DEFAULT 0,
+    mes07 NUMERIC(18,5) DEFAULT 0,
+    mes08 NUMERIC(18,5) DEFAULT 0,
+    mes09 NUMERIC(18,5) DEFAULT 0,
+    mes10 NUMERIC(18,5) DEFAULT 0,
+    mes11 NUMERIC(18,5) DEFAULT 0,
+    mes12 NUMERIC(18,5) DEFAULT 0,
+    mes13 NUMERIC(18,5) DEFAULT 0,
+    idcarga INT,
+    idcargastgbw INT,
+    idhoja INT
+);
+
 
 -- ==================================================
 -- TABLAS DE STAGING (STG_DATA_*)

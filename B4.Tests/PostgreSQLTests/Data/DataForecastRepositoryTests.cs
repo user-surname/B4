@@ -4,6 +4,8 @@ using Dapper;
 using B4.Models.Entities;
 using B4.Data.PostgreSQL.Repositories;
 
+namespace B4.Tests.PostgreSQLTests.Data
+{
 public class DataForecastRepositoryTests : IDisposable
 {
     private readonly DataForecastRepository _repo;
@@ -111,4 +113,5 @@ public class DataForecastRepositoryTests : IDisposable
             Mes13 = 130m
         };
     }
+}
 }
