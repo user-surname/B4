@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities
 {
-    public class DataBridgesMonthBw
+    public class DataBridgesMonthBw : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -63,7 +63,15 @@ namespace B4.Models.Entities
             string? comments,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja)
+            int? idHoja,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -81,7 +89,7 @@ namespace B4.Models.Entities
             Mix = mix;
             New = newValue;
             Economics = economics;
-            QuickSavings = quickSavings; // ← CORREGIDO AQUÍ
+            QuickSavings = quickSavings; 
             CurrencyMix = currencyMix;
             ExchangeRate = exchangeRate;
             RawMaterial = rawMaterial;

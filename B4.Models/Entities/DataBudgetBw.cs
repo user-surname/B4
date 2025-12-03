@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities
 {
-    public class DataBudgetBw
+    public class DataBudgetBw : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -51,7 +51,15 @@ namespace B4.Models.Entities
             decimal mes12, decimal mes13,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja)
+            int? idHoja,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;

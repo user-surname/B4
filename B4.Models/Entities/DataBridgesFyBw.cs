@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities
 {
-    public class DataBridgesFyBw
+    public class DataBridgesFyBw: DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -54,7 +54,14 @@ namespace B4.Models.Entities
             string? comments,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja)
+            int? idHoja,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;

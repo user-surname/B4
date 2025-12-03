@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
-    public class DataActuals
+    public class DataActuals : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -34,10 +30,8 @@ namespace B4.Models.Entities
         public decimal Mes12 { get; set; }
         public decimal Mes13 { get; set; }
 
-        // Constructor vacío
         public DataActuals() { }
 
-        // Constructor con parámetros
         public DataActuals(
             int id,
             int idAPICarga,
@@ -49,21 +43,17 @@ namespace B4.Models.Entities
             int idFase,
             int idCurrency,
             int idEpigrafe,
-            decimal mes00,
-            decimal mes01,
-            decimal mes02,
-            decimal mes03,
-            decimal mes04,
-            decimal mes05,
-            decimal mes06,
-            decimal mes07,
-            decimal mes08,
-            decimal mes09,
-            decimal mes10,
-            decimal mes11,
-            decimal mes12,
-            decimal mes13
-        )
+            decimal mes00, decimal mes01, decimal mes02, decimal mes03,
+            decimal mes04, decimal mes05, decimal mes06, decimal mes07,
+            decimal mes08, decimal mes09, decimal mes10, decimal mes11,
+            decimal mes12, decimal mes13,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -75,6 +65,7 @@ namespace B4.Models.Entities
             IdFase = idFase;
             IdCurrency = idCurrency;
             IdEpigrafe = idEpigrafe;
+
             Mes00 = mes00;
             Mes01 = mes01;
             Mes02 = mes02;

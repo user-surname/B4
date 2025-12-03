@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
-    public class DataBudget
+    public class DataBudget : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -62,8 +62,16 @@ namespace B4.Models.Entities
             decimal mes10,
             decimal mes11,
             decimal mes12,
-            decimal mes13
-        )
+            decimal mes13,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
+        
         {
             Id = id;
             IdAPICarga = idAPICarga;

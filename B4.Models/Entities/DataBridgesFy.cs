@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities
 {
-    public class DataBridgesFy : DataBridgesFyBw
+    public class DataBridgesFy : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -14,11 +14,13 @@ namespace B4.Models.Entities
         public int IdFase { get; set; }
         public int IdCurrency { get; set; }
         public int IdEpigrafe { get; set; }
+
         public decimal Actuals { get; set; }
         public decimal PctActuals { get; set; }
         public decimal Budget { get; set; }
         public decimal PctBudget { get; set; }
         public decimal Variance { get; set; }
+
         public decimal Volume { get; set; }
         public decimal InventoryChange { get; set; }
         public decimal Mix { get; set; }
@@ -34,11 +36,12 @@ namespace B4.Models.Entities
         public decimal Other { get; set; }
         public decimal Check { get; set; }
         public string? Comments { get; set; }
+
         public int? IdCarga { get; set; }
         public int? IdCargaSTGBW { get; set; }
         public int? IdHoja { get; set; }
 
-        public DataBridgesFy() { }
+        public DataBridgesFy() {}
 
         public DataBridgesFy(
             int id,
@@ -51,6 +54,7 @@ namespace B4.Models.Entities
             int idFase,
             int idCurrency,
             int idEpigrafe,
+
             decimal actuals, decimal pctActuals, decimal budget, decimal pctBudget,
             decimal variance, decimal volume,
             decimal inventoryChange, decimal mix, decimal newValue,
@@ -60,9 +64,12 @@ namespace B4.Models.Entities
             decimal industrialPerformance,
             decimal protoTooling, decimal other, decimal check,
             string? comments,
-            int? idCarga,
-            int? idCargaSTGBW,
-            int? idHoja)
+
+            int? idCarga, int? idCargaSTGBW, int? idHoja,
+
+            DateTime createdAt, DateTime updatedAt,
+            int version, int checksum, int isZero
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -74,11 +81,13 @@ namespace B4.Models.Entities
             IdFase = idFase;
             IdCurrency = idCurrency;
             IdEpigrafe = idEpigrafe;
+
             Actuals = actuals;
             PctActuals = pctActuals;
             Budget = budget;
             PctBudget = pctBudget;
             Variance = variance;
+
             Volume = volume;
             InventoryChange = inventoryChange;
             Mix = mix;
@@ -94,6 +103,7 @@ namespace B4.Models.Entities
             Other = other;
             Check = check;
             Comments = comments;
+
             IdCarga = idCarga;
             IdCargaSTGBW = idCargaSTGBW;
             IdHoja = idHoja;

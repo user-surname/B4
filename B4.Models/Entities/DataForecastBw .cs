@@ -25,6 +25,13 @@ namespace B4.Models.Entities
             decimal mes04, decimal mes05, decimal mes06, decimal mes07,
             decimal mes08, decimal mes09, decimal mes10, decimal mes11,
             decimal mes12, decimal mes13,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero,
+
             int? idCarga = null,
             int? idCargaSTGBW = null,
             int? idHoja = null
@@ -32,7 +39,8 @@ namespace B4.Models.Entities
             id, idAPICarga, guidCarga, fechaUltModif, idCompany, ejercicio,
             idCiclo, idFase, idCurrency, idEpigrafe,
             mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
-            mes08, mes09, mes10, mes11, mes12, mes13
+            mes08, mes09, mes10, mes11, mes12, mes13,
+            createdAt, updatedAt, version, checksum, isZero
         )
         {
             IdCarga = idCarga;

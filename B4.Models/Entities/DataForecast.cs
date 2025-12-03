@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities
 {
-    public class DataForecast
+    public class DataForecast : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -45,7 +45,14 @@ namespace B4.Models.Entities
             decimal mes00, decimal mes01, decimal mes02, decimal mes03,
             decimal mes04, decimal mes05, decimal mes06, decimal mes07,
             decimal mes08, decimal mes09, decimal mes10, decimal mes11,
-            decimal mes12, decimal mes13)
+            decimal mes12, decimal mes13,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;

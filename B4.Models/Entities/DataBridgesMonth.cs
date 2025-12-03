@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
-    public class DataBridgesMonth
+    public class DataBridgesMonth : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -95,8 +95,16 @@ namespace B4.Models.Entities
             decimal accruralOthers,
             decimal oneTimeEffectOthers,
             decimal other,
-            string? comments
-        )
+            string? comments,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
+        
         {
             Id = id;
             IdAPICarga = idAPICarga;
