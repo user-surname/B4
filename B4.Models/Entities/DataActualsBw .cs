@@ -2,12 +2,8 @@
 
 namespace B4.Models.Entities
 {
-    public class DataActualsBw : DataForecastBw
+    public class DataActualsBw : DataBwBase
     {
-        public int? IdCarga { get; set; }
-        public int? IdCargaSTGBW { get; set; }
-        public int? IdHoja { get; set; }
-
         public DataActualsBw() { }
 
         public DataActualsBw(
@@ -27,15 +23,19 @@ namespace B4.Models.Entities
             decimal mes12, decimal mes13,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja)
+            int? idHoja,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            )
             : base(id, idAPICarga, guidCarga, fechaUltModif, idCompany, ejercicio,
                   idCiclo, idFase, idCurrency, idEpigrafe,
                   mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
-                  mes08, mes09, mes10, mes11, mes12, mes13)
+                  mes08, mes09, mes10, mes11, mes12, mes13,
+                  idCarga, idCargaSTGBW, idHoja, createdAt, updatedAt, version, checksum, isZero)
         {
-            IdCarga = idCarga;
-            IdCargaSTGBW = idCargaSTGBW;
-            IdHoja = idHoja;
         }
     }
 }

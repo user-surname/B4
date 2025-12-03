@@ -19,11 +19,22 @@ namespace B4.Models.Entities
         public int IdEpigrafe { get; set; }
         public string Etiqueta { get; set; }
         public string? Comentario { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public int Version { get; set; }
+        public int? Checksum { get; set; }
+        public int IsZero { get; set; }
 
         public DataComentarios() { }
 
         public DataComentarios(int id, int idAPICarga, Guid guidCarga, DateTime? fechaUltModif, int idCompany,
-            int ejercicio, int idCiclo, int idFase, int idEpigrafe, string etiqueta, string? comentario)
+            int ejercicio, int idCiclo, int idFase, int idEpigrafe, string etiqueta, string? comentario,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            )
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -36,6 +47,11 @@ namespace B4.Models.Entities
             IdEpigrafe = idEpigrafe;
             Etiqueta = etiqueta;
             Comentario = comentario;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+            Version = version;
+            Checksum = checksum;
+            IsZero = isZero;
         }
     }
 }

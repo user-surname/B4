@@ -5,7 +5,7 @@ namespace B4.Models.Interfaces
     public interface IDataActualsRepository : IRepository<DataActuals>
     {
 
-        // Add any additional methods specific to DataActuals if needed
+        // Add any additional methods specific to DataActualsBw if needed
 
     }
 }

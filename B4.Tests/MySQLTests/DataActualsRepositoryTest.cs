@@ -188,7 +188,7 @@ namespace B4.Tests.MySQLTests
             await _repository.UpdateAsync(updated);
 
             using var conn2 = _context.CreateConnection();
-            var result = conn2.QuerySingle<DataActuals>("SELECT * FROM DATA_Actuals WHERE id = @id", new { id = newId });
+            var result = conn2.QuerySingleOrDefault<DataActuals>("SELECT * FROM DATA_Actuals WHERE id = @id", new { id = newId });
 
             Assert.Equal(999, result.Mes00);
             Assert.Equal(888, result.Mes13);

@@ -6,38 +6,10 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
-    public class DataBudget
+    public class DataBudget : DataBase
     {
-        public int Id { get; set; }
-        public int IdAPICarga { get; set; }
-        public Guid GuidCarga { get; set; } = Guid.Empty;
-        public DateTime FechaUltModif { get; set; }
-        public int IdCompany { get; set; }
-        public int Ejercicio { get; set; }
-        public int IdCiclo { get; set; }
-        public int IdFase { get; set; }
-        public int IdCurrency { get; set; }
-        public int IdEpigrafe { get; set; }
-
-        public decimal Mes00 { get; set; }
-        public decimal Mes01 { get; set; }
-        public decimal Mes02 { get; set; }
-        public decimal Mes03 { get; set; }
-        public decimal Mes04 { get; set; }
-        public decimal Mes05 { get; set; }
-        public decimal Mes06 { get; set; }
-        public decimal Mes07 { get; set; }
-        public decimal Mes08 { get; set; }
-        public decimal Mes09 { get; set; }
-        public decimal Mes10 { get; set; }
-        public decimal Mes11 { get; set; }
-        public decimal Mes12 { get; set; }
-        public decimal Mes13 { get; set; }
-
-        // Constructor vacío
         public DataBudget() { }
 
-        // Constructor con parámetros
         public DataBudget(
             int id,
             int idAPICarga,
@@ -49,47 +21,22 @@ namespace B4.Models.Entities
             int idFase,
             int idCurrency,
             int idEpigrafe,
-            decimal mes00,
-            decimal mes01,
-            decimal mes02,
-            decimal mes03,
-            decimal mes04,
-            decimal mes05,
-            decimal mes06,
-            decimal mes07,
-            decimal mes08,
-            decimal mes09,
-            decimal mes10,
-            decimal mes11,
-            decimal mes12,
-            decimal mes13
-        )
+            decimal mes00, decimal mes01, decimal mes02, decimal mes03,
+            decimal mes04, decimal mes05, decimal mes06, decimal mes07,
+            decimal mes08, decimal mes09, decimal mes10, decimal mes11,
+            decimal mes12, decimal mes13,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            )
+            : base(id, idAPICarga, guidCarga, fechaUltModif, idCompany, ejercicio,
+                  idCiclo, idFase, idCurrency, idEpigrafe,
+                  mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
+                  mes08, mes09, mes10, mes11, mes12, mes13,
+                  createdAt, updatedAt, version, checksum, isZero)
         {
-            Id = id;
-            IdAPICarga = idAPICarga;
-            GuidCarga = guidCarga;
-            FechaUltModif = fechaUltModif;
-            IdCompany = idCompany;
-            Ejercicio = ejercicio;
-            IdCiclo = idCiclo;
-            IdFase = idFase;
-            IdCurrency = idCurrency;
-            IdEpigrafe = idEpigrafe;
-
-            Mes00 = mes00;
-            Mes01 = mes01;
-            Mes02 = mes02;
-            Mes03 = mes03;
-            Mes04 = mes04;
-            Mes05 = mes05;
-            Mes06 = mes06;
-            Mes07 = mes07;
-            Mes08 = mes08;
-            Mes09 = mes09;
-            Mes10 = mes10;
-            Mes11 = mes11;
-            Mes12 = mes12;
-            Mes13 = mes13;
         }
     }
 }

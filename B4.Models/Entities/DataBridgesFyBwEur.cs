@@ -37,6 +37,11 @@ namespace B4.Models.Entities
         public int? IdCarga { get; set; }
         public int? IdCargaSTGBW { get; set; }
         public int? IdHoja { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public int Version { get; set; }
+        public int? Checksum { get; set; }
+        public int IsZero { get; set; }
 
         public DataBridgesFyBwEur() { }
 
@@ -62,7 +67,13 @@ namespace B4.Models.Entities
             string? comments,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja)
+            int? idHoja,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            )
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -97,6 +108,11 @@ namespace B4.Models.Entities
             IdCarga = idCarga;
             IdCargaSTGBW = idCargaSTGBW;
             IdHoja = idHoja;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+            Version = version;
+            Checksum = checksum;
+            IsZero = isZero;
         }
     }
 }
