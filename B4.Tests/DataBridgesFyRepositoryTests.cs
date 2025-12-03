@@ -57,7 +57,6 @@ public class DataBridgesFyRepositoryTests : IDisposable
 
         Assert.NotNull(result);
         Assert.Equal(entity.IdCompany, result!.IdCompany);
-        Assert.Equal(entity.Actuals, result.Actuals);
     }
 
     // -------------------------------------------------------------
@@ -70,14 +69,14 @@ public class DataBridgesFyRepositoryTests : IDisposable
         await _repo.AddAsync(entity);
         _insertedIds.Add(entity.Id);
 
-        entity.PctActuals = 999.99m;
+        entity.IdCompany = 9;
 
         await _repo.UpdateAsync(entity);
 
         var result = await _repo.GetByIdAsync(entity.Id);
 
         Assert.NotNull(result);
-        Assert.Equal(999.99m, result!.PctActuals);
+        Assert.Equal(9, result!.IdCompany);
     }
 
     // -------------------------------------------------------------
@@ -107,38 +106,32 @@ public class DataBridgesFyRepositoryTests : IDisposable
             IdAPICarga = 1,
             GuidCarga = Guid.NewGuid(),
             FechaUltModif = DateTime.UtcNow,
-            IdCompany = 10,
+            IdCompany = 100,
             Ejercicio = 2025,
             IdCiclo = 1,
             IdFase = 1,
             IdCurrency = 1,
-            IdEpigrafe = 1,
-
-            Actuals = 100m,
-            PctActuals = 10m,
-            Budget = 200m,
-            PctBudget = 20m,
-            Variance = -100m,
-
-            Volume = 50m,
-            InventoryChange = 5m,
-            Mix = 10m,
-            New = 30m,
-            Economics = 15m,
-            QuickSavings = 3m,
-            CurrencyMix = 4m,
-            ExchangeRate = 1.10m,
-            RawMaterial = 20m,
-            Scrap = 2m,
-            IndustrialPerformance = 12m,
-            ProtoTooling = 7m,
-            Other = 8m,
-            Check = 1m,
-            Comments = "Test comment",
-
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            IdEpigrafe = 200,
+            FiscalYear = 100000.00m,
+            Percentage = 50.00m,
+            Zero = 0.00m,
+            ZeroPercentage = 0.00m,
+            Absolute = 100000.00m,
+            AbsolutePercentage = 100.00m,
+            VMixNew = 5000.00m,
+            RawMaterial = 2000.00m,
+            Scrap = 100.00m,
+            Economics = 3000.00m,
+            CurrencyMix = 4000.00m,
+            Performance = 2500.00m,
+            ProtoTool = 1500.00m,
+            Others = 800.00m,
+            Comments = "Registro de ejemplo para test",
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            Version = 1,
+            Checksum = null,
+            IsZero = 1
         };
     }
 }

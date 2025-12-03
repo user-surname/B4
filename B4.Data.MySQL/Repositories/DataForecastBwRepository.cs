@@ -9,7 +9,7 @@ using System;
 namespace B4.Data.MySQL.Repositories
 {
     public class DataForecastBwRepository
-        : DataBwRepositoryBase<DataForecastBw>, IDataForecastBwRepository
+        : DataBwBaseRepository<DataForecastBw>, IDataForecastBwRepository
     {
         public DataForecastBwRepository(MySQLDapperContext context)
             : base(context, "DATA_Forecast_BW")

@@ -9,7 +9,7 @@ using System;
 namespace B4.Data.MySQL.Repositories
 {
     public class DataActualsBwRepository
-        : DataBwRepositoryBase<DataActualsBw>, IDataActualsBwRepository
+        : DataBwBaseRepository<DataActualsBw>
     {
         public DataActualsBwRepository(MySQLDapperContext context)
             : base(context, "DATA_Actuals_BW")

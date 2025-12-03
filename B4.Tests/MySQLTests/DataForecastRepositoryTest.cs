@@ -193,7 +193,7 @@ public class DataForecastRepositoryTest : IDisposable
         await _repository.UpdateAsync(updated);
 
         using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingle<DataForecast>("SELECT * FROM DATA_Forecast WHERE id = @id", new { id = newId });
+        var result = conn2.QuerySingleOrDefault<DataForecast>("SELECT * FROM DATA_Forecast WHERE id = @id", new { id = newId });
 
         Assert.Equal(999, result.Mes00);
     }

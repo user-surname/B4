@@ -32,6 +32,11 @@ namespace B4.Models.Entities
         public int? IdCarga { get; set; }
         public int? IdCargaSTGBW { get; set; }
         public int? IdHoja { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public int Version { get; set; }
+        public int? Checksum { get; set; }
+        public int IsZero { get; set; }
 
         public DataBridgesMonthBw() { }
 
@@ -63,7 +68,13 @@ namespace B4.Models.Entities
             string? comments,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja)
+            int? idHoja,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            )
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -75,7 +86,6 @@ namespace B4.Models.Entities
             IdFase = idFase;
             IdCurrency = idCurrency;
             IdEpigrafe = idEpigrafe;
-
             Volume = volume;
             InventoryChange = inventoryChange;
             Mix = mix;
@@ -90,11 +100,15 @@ namespace B4.Models.Entities
             ProtoTooling = protoTooling;
             Other = other;
             Check = check;
-
             Comments = comments;
             IdCarga = idCarga;
             IdCargaSTGBW = idCargaSTGBW;
             IdHoja = idHoja;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+            Version = version;
+            Checksum = checksum;
+            IsZero = isZero;
         }
     }
 }

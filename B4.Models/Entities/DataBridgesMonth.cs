@@ -18,7 +18,6 @@ namespace B4.Models.Entities
         public int IdFase { get; set; }
         public int IdCurrency { get; set; }
         public int IdEpigrafe { get; set; }
-
         public decimal Actuals { get; set; }
         public decimal PctActuals { get; set; }
         public decimal Budget { get; set; }
@@ -48,8 +47,12 @@ namespace B4.Models.Entities
         public decimal AccruralOthers { get; set; }
         public decimal OneTimeEffectOthers { get; set; }
         public decimal Other { get; set; }
-
         public string? Comments { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public int Version { get; set; }
+        public int? Checksum { get; set; }
+        public int IsZero { get; set; }
 
         // Constructor vacío
         public DataBridgesMonth() { }
@@ -95,7 +98,12 @@ namespace B4.Models.Entities
             decimal accruralOthers,
             decimal oneTimeEffectOthers,
             decimal other,
-            string? comments
+            string? comments,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
         )
         {
             Id = id;
@@ -108,7 +116,6 @@ namespace B4.Models.Entities
             IdFase = idFase;
             IdCurrency = idCurrency;
             IdEpigrafe = idEpigrafe;
-
             Actuals = actuals;
             PctActuals = pctActuals;
             Budget = budget;
@@ -138,8 +145,12 @@ namespace B4.Models.Entities
             AccruralOthers = accruralOthers;
             OneTimeEffectOthers = oneTimeEffectOthers;
             Other = other;
-
             Comments = comments;
+            CreatedAt = createdAt;
+            UpdatedAt = updatedAt;
+            Version = version;
+            Checksum = checksum;
+            IsZero = isZero;
         }
     }
 }

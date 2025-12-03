@@ -209,7 +209,7 @@ public class DataBudgetRepositoryTest : IDisposable
         await _repository.UpdateAsync(updated);
 
         using var conn2 = _context.CreateConnection();
-        var result = conn2.QuerySingle<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
+        var result = conn2.QuerySingleOrDefault<DataBudget>("SELECT * FROM DATA_Budget WHERE id = @id", new { id = newId });
 
         Assert.Equal(999, result.Mes00);
     }

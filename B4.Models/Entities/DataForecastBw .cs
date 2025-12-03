@@ -2,12 +2,8 @@
 
 namespace B4.Models.Entities
 {
-    public class DataForecastBw : DataForecast
+    public class DataForecastBw : DataBwBase
     {
-        public int? IdCarga { get; set; }
-        public int? IdCargaSTGBW { get; set; }
-        public int? IdHoja { get; set; }
-
         public DataForecastBw() { }
 
         public DataForecastBw(
@@ -25,19 +21,20 @@ namespace B4.Models.Entities
             decimal mes04, decimal mes05, decimal mes06, decimal mes07,
             decimal mes08, decimal mes09, decimal mes10, decimal mes11,
             decimal mes12, decimal mes13,
-            int? idCarga = null,
-            int? idCargaSTGBW = null,
-            int? idHoja = null
-        ) : base(
-            id, idAPICarga, guidCarga, fechaUltModif, idCompany, ejercicio,
-            idCiclo, idFase, idCurrency, idEpigrafe,
-            mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
-            mes08, mes09, mes10, mes11, mes12, mes13
-        )
+            int? idCarga,
+            int? idCargaSTGBW,
+            int? idHoja,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero)
+            : base(id, idAPICarga, guidCarga, fechaUltModif, idCompany, ejercicio,
+                  idCiclo, idFase, idCurrency, idEpigrafe,
+                  mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
+                  mes08, mes09, mes10, mes11, mes12, mes13,
+                  idCarga, idCargaSTGBW, idHoja, createdAt, updatedAt, version, checksum, isZero)
         {
-            IdCarga = idCarga;
-            IdCargaSTGBW = idCargaSTGBW;
-            IdHoja = idHoja;
         }
     }
 }

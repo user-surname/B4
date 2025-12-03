@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using B4.Data.MySQL;
+using B4.Models.Entities;
+using B4.Models.Interfaces;
 using Dapper;
-using B4.Data.MySQL;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace B4.Data.MySQL.Repositories
 {
-    public abstract class DataBwRepositoryBase<T>
+    public abstract class DataBwBaseRepository<T> : IDataBwBaseRepository<T> where T : DataBwBase
     {
         protected readonly MySQLDapperContext _context;
         protected readonly string _tableName;
 
-        protected DataBwRepositoryBase(MySQLDapperContext context, string tableName)
+        protected DataBwBaseRepository(MySQLDapperContext context, string tableName)
         {
             _context = context;
             _tableName = tableName;
