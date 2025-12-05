@@ -8,7 +8,7 @@ using B4.Models.Entities.DataEtities;
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
     public class DataForecastRepository
-        : DataBaseRepository<DataForecast>
+        : DataFinancialRepository<DataForecast>
     {
         public DataForecastRepository(MySQLDapperContext context)
             : base(context, "DATA_Forecast")

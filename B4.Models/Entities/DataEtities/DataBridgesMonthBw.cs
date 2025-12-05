@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataBridgesMonthBw
+    public class DataBridgesMonthBw : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -32,11 +32,6 @@ namespace B4.Models.Entities.DataEtities
         public int? IdCarga { get; set; }
         public int? IdCargaSTGBW { get; set; }
         public int? IdHoja { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public int Version { get; set; }
-        public int? Checksum { get; set; }
-        public int IsZero { get; set; }
 
         public DataBridgesMonthBw() { }
 
@@ -91,7 +86,7 @@ namespace B4.Models.Entities.DataEtities
             Mix = mix;
             New = newValue;
             Economics = economics;
-            QuickSavings = quickSavings; // ← CORREGIDO AQUÍ
+            QuickSavings = quickSavings; 
             CurrencyMix = currencyMix;
             ExchangeRate = exchangeRate;
             RawMaterial = rawMaterial;

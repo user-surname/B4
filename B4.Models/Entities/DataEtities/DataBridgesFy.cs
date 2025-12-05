@@ -7,8 +7,8 @@ using System;
 
 namespace B4.Models.Entities.DataEtities
 {
-       public class DataBridgesFy
-        {
+       public class DataBridgesFy : DataBase
+    {
             public int Id { get; set; }
             public int IdAPICarga { get; set; }
             public Guid? GuidCarga { get; set; }
@@ -34,11 +34,6 @@ namespace B4.Models.Entities.DataEtities
             public decimal ProtoTool { get; set; }
             public decimal Others { get; set; }
             public string? Comments { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public DateTime UpdatedAt { get; set; }
-            public int Version { get; set; }
-            public int? Checksum { get; set; }
-            public int IsZero { get; set; }
 
             public DataBridgesFy() { }
 
@@ -85,7 +80,6 @@ namespace B4.Models.Entities.DataEtities
                 IdFase = idFase;
                 IdCurrency = idCurrency;
                 IdEpigrafe = idEpigrafe;
-
                 FiscalYear = fiscalYear;
                 Percentage = percentage;
                 Zero = zero;
@@ -100,7 +94,6 @@ namespace B4.Models.Entities.DataEtities
                 Performance = performance;
                 ProtoTool = protoTool;
                 Others = others;
-
                 Comments = comments;
                 CreatedAt = createdAt;
                 UpdatedAt = updatedAt;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataTipoCambio
+    public class DataTipoCambio : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -22,11 +22,6 @@ namespace B4.Models.Entities.DataEtities
         public int? IdCarga { get; set; }
         public int? IdCargaSTGBW { get; set; }
         public int? IdHoja { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public int Version { get; set; }
-        public int? Checksum { get; set; }
-        public int IsZero { get; set; }
 
         // Constructor vacío
         public DataTipoCambio() { }

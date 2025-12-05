@@ -8,7 +8,7 @@ using B4.Models.Interfaces.DataInterfaces;
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
     public class DataBudgetBwRepository
-        : DataBwBaseRepository<DataBudgetBw>, IDataBudgetBwRepository
+        : DataFinancialRepository<DataBudgetBw>, IDataBudgetBwRepository
     {
         public DataBudgetBwRepository(MySQLDapperContext context)
             : base(context, "DATA_Budget_BW")

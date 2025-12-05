@@ -68,10 +68,7 @@ public class DataBudgetBwRepositoryTest : IDisposable
             Mes10 = 1100,
             Mes11 = 1200,
             Mes12 = 1300,
-            Mes13 = 1400,
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            Mes13 = 1400
         };
 
         await _repository.AddAsync(budget);
@@ -207,10 +204,7 @@ public class DataBudgetBwRepositoryTest : IDisposable
             Mes10 = 20,
             Mes11 = 21,
             Mes12 = 22,
-            Mes13 = 23,
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            Mes13 = 23
         };
 
         await _repository.UpdateAsync(updated);

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataBridgesMonth
+    public class DataBridgesMonth : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -48,11 +48,6 @@ namespace B4.Models.Entities.DataEtities
         public decimal OneTimeEffectOthers { get; set; }
         public decimal Other { get; set; }
         public string? Comments { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public int Version { get; set; }
-        public int? Checksum { get; set; }
-        public int IsZero { get; set; }
 
         // Constructor vacío
         public DataBridgesMonth() { }

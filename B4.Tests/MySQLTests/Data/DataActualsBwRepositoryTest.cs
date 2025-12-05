@@ -64,10 +64,7 @@ public class DataActualsBwRepositoryTest : IDisposable
             Mes10 = 11,
             Mes11 = 12,
             Mes12 = 13,
-            Mes13 = 14,
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            Mes13 = 14
         };
 
         await _repository.AddAsync(entity);
@@ -233,10 +230,7 @@ public class DataActualsBwRepositoryTest : IDisposable
             Mes10 = 9,
             Mes11 = 9,
             Mes12 = 9,
-            Mes13 = 9,
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            Mes13 = 9
         };
 
         await _repository.UpdateAsync(updated);

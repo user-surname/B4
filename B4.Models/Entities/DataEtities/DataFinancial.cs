@@ -2,8 +2,8 @@
 
 namespace B4.Models.Entities.DataEtities
 {
-    // Clase base para los datos comunes
-    public abstract class DataFinancial
+    public abstract class DataFinancial : DataBase
+
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -15,7 +15,6 @@ namespace B4.Models.Entities.DataEtities
         public int IdFase { get; set; }
         public int IdCurrency { get; set; }
         public int IdEpigrafe { get; set; }
-
         public decimal Mes00 { get; set; }
         public decimal Mes01 { get; set; }
         public decimal Mes02 { get; set; }
@@ -29,12 +28,7 @@ namespace B4.Models.Entities.DataEtities
         public decimal Mes10 { get; set; }
         public decimal Mes11 { get; set; }
         public decimal Mes12 { get; set; }
-        public decimal Mes13 { get; set; }
-        public DateTime CreatedAt { get; set; }       
-        public DateTime UpdatedAt { get; set; }       
-        public int Version { get; set; }              
-        public int? Checksum { get; set; }            
-        public int IsZero { get; set; }               
+        public decimal Mes13 { get; set; }           
 
         public DataFinancial() { }
 
@@ -53,12 +47,12 @@ namespace B4.Models.Entities.DataEtities
             decimal mes04, decimal mes05, decimal mes06, decimal mes07,
             decimal mes08, decimal mes09, decimal mes10, decimal mes11,
             decimal mes12, decimal mes13,
-            DateTime createdAt, 
+            DateTime createdAt,
             DateTime updatedAt,
             int version,
             int? checksum,
             int isZero
-            )
+            ) : base (createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -84,11 +78,6 @@ namespace B4.Models.Entities.DataEtities
             Mes11 = mes11;
             Mes12 = mes12;
             Mes13 = mes13;
-            CreatedAt = createdAt;
-            UpdatedAt = updatedAt;
-            Version = version;
-            Checksum = checksum;
-            IsZero = isZero;
         }
     }
 }

@@ -106,10 +106,7 @@ namespace B4.Tests.PostgreSQLTests.Data
                 Mes10 = 110,
                 Mes11 = 120,
                 Mes12 = 130,
-                Mes13 = 140,
-                IdCarga = null,
-                IdCargaSTGBW = null,
-                IdHoja = null
+                Mes13 = 140
             };
         }
     }

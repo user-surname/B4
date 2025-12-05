@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataComentarios
+    public class DataComentarios : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -19,11 +19,6 @@ namespace B4.Models.Entities.DataEtities
         public int IdEpigrafe { get; set; }
         public string Etiqueta { get; set; }
         public string? Comentario { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public int Version { get; set; }
-        public int? Checksum { get; set; }
-        public int IsZero { get; set; }
 
         public DataComentarios() { }
 

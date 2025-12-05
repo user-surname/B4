@@ -8,7 +8,7 @@ using B4.Models.Interfaces.DataInterfaces;
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
     public class DataForecastBwRepository
-        : DataBwBaseRepository<DataForecastBw>, IDataForecastBwRepository
+        : DataFinancialRepository<DataForecastBw>, IDataForecastBwRepository
     {
         public DataForecastBwRepository(MySQLDapperContext context)
             : base(context, "DATA_Forecast_BW")

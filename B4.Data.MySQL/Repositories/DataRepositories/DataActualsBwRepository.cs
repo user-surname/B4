@@ -8,7 +8,7 @@ using B4.Models.Entities.DataEtities;
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
     public class DataActualsBwRepository
-        : DataBwBaseRepository<DataActualsBw>
+        : DataFinancialRepository<DataActualsBw>
     {
         public DataActualsBwRepository(MySQLDapperContext context)
             : base(context, "DATA_Actuals_BW")

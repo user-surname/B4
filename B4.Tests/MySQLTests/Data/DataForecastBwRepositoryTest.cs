@@ -64,10 +64,7 @@ public class DataForecastBwRepositoryTest : IDisposable
             Mes10 = 0,
             Mes11 = 0,
             Mes12 = 0,
-            Mes13 = 0,
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            Mes13 = 0
         };
 
         await _repository.AddAsync(forecast);
@@ -205,10 +202,7 @@ public class DataForecastBwRepositoryTest : IDisposable
             Mes10 = 1,
             Mes11 = 1,
             Mes12 = 1,
-            Mes13 = 1,
-            IdCarga = null,
-            IdCargaSTGBW = null,
-            IdHoja = null
+            Mes13 = 1
         };
 
         await _repository.UpdateAsync(updated);
