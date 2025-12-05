@@ -2,7 +2,7 @@
 
 namespace B4.Models.Interfaces.DataInterfaces
 {
-    public interface IDataBaseRepository<T> : IRepository<T> where T : DataBase
+    public interface IDataBaseRepository<T> : IRepository<T> where T : DataFinancial
 
     {
 

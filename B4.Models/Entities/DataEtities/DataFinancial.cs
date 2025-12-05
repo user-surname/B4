@@ -3,7 +3,7 @@
 namespace B4.Models.Entities.DataEtities
 {
     // Clase base para los datos comunes
-    public abstract class DataBase
+    public abstract class DataFinancial
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -36,9 +36,9 @@ namespace B4.Models.Entities.DataEtities
         public int? Checksum { get; set; }            
         public int IsZero { get; set; }               
 
-        public DataBase() { }
+        public DataFinancial() { }
 
-        public DataBase(
+        public DataFinancial(
             int id,
             int idAPICarga,
             Guid guidCarga,

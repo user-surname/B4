@@ -7,7 +7,7 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public abstract class DataBaseRepository<T> : IDataBaseRepository<T> where T : DataBase
+    public abstract class DataBaseRepository<T> : IDataBaseRepository<T> where T : Models.Entities.DataEtities.DataFinancial
 
     {
         protected readonly MySQLDapperContext _context;

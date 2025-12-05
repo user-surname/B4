@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataForecast : DataBase
+    public class DataForecast : DataFinancial
     {
         public DataForecast() { }
 

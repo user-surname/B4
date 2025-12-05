@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataBudget : DataBase
+    public class DataBudget : DataFinancial
     {
         public DataBudget() { }
 
