@@ -1,7 +1,7 @@
 using Dapper;
 using Npgsql;
-using B4.Models.Entities;
-using B4.Models.Interfaces;
+using B4.Models.Entities.DataEtities;
+using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.PostgreSQL.Repositories
 {

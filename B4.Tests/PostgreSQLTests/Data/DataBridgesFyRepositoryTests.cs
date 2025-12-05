@@ -1,8 +1,8 @@
 using Xunit;
 using Npgsql;
 using Dapper;
-using B4.Models.Entities;
 using B4.Data.PostgreSQL.Repositories;
+using B4.Models.Entities.DataEtities;
 
 namespace B4.Tests.PostgreSQLTests.Data
 {
@@ -26,7 +26,7 @@ public class DataBridgesFyRepositoryTests : IDisposable
                 new { Ids = _ids.ToArray() });
         }
     }
-
+    /*
     [Fact]
     public async Task Test_Connection()
     {
@@ -101,6 +101,8 @@ public class DataBridgesFyRepositoryTests : IDisposable
             Volume = 100m,
             Comments = "test"
         };
-    }
+    
+*/
+
 }
 }

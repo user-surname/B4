@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using B4.Models.Interfaces;
+using B4.Models.Interfaces.LkInterfaces;
 
 namespace B4.Api.Controllers
 {

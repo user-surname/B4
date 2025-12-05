@@ -4,7 +4,6 @@
     20251111 - pendiente implementacion especifica para B4
  */
 
-using B4.Models.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,6 +21,7 @@ using Microsoft.Extensions.Caching.Memory;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using NLog;
 using System.Reflection.Metadata.Ecma335;
+using B4.Models.Interfaces.LkInterfaces;
 
 
 namespace B4.Data.Services

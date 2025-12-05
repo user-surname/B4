@@ -8,11 +8,12 @@ using B4.Data.PostgreSQL;
 using B4.Data.MySQL;
 
 // Interfaces
-using B4.Models.Interfaces;
 
 // NLog
 using NLog;
 using NLog.Web;
+using B4.Models.Interfaces.DataInterfaces;
+using B4.Models.Interfaces.LkInterfaces;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
