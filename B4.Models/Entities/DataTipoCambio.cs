@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities
 {
-    public class DataTipoCambio
+    public class DataTipoCambio : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -41,8 +41,15 @@ namespace B4.Models.Entities
             decimal? fb,
             int? idCarga,
             int? idCargaSTGBW,
-            int? idHoja
-        )
+            int? idHoja,
+
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int checksum,
+            int isZero
+        ) : base(createdAt, updatedAt, version, checksum, isZero)
+        
         {
             Id = id;
             IdAPICarga = idAPICarga;
