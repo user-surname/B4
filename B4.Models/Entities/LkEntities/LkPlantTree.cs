@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkPlantTree
+    public class LkPlantTree : LkBase
     {
         public int IdTree { get; set; }
         public int IdDivision { get; set; }
@@ -16,7 +16,8 @@ namespace B4.Models.Entities.LkEntities
 
         public LkPlantTree() { }
 
-        public LkPlantTree(int idTree, int idDivision, int idDivisionCompany, int idSubdivision, int idCountry)
+        public LkPlantTree(int idTree, int idDivision, int idDivisionCompany, int idSubdivision, int idCountry,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             IdTree = idTree;
             IdDivision = idDivision;

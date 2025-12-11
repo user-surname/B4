@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class StgDataBridgesMonth
+    public class StgDataBridgesMonth : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -63,7 +63,13 @@ namespace B4.Models.Entities.DataEtities
             decimal economicsLTAS, decimal economicsBPs, decimal economicsComponentEffect, decimal stockValuation,
             decimal quickSavings, decimal currencyMix, decimal exchangeRate, decimal rawMaterial, decimal scrap,
             decimal performanceGSD, decimal performanceQuality, decimal performanceOther, decimal performanceLaunchingCost,
-            decimal protoTooling, decimal accruralOthers, decimal oneTimeEffectOthers, decimal other, string comments)
+            decimal protoTooling, decimal accruralOthers, decimal oneTimeEffectOthers, decimal other, string comments,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;

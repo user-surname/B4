@@ -7,12 +7,12 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class StgDataComentariosRepository : IStgDataComentariosRepository
+    public class StgDataComentariosRepository : DataRepository<StgDataComentarios>, IStgDataComentariosRepository
     {
         private const string _tableName = "STG_DATA_Comentarios";
         private readonly MySQLDapperContext _context;
 
-        public StgDataComentariosRepository(MySQLDapperContext context)
+        public StgDataComentariosRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -41,38 +41,38 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<StgDataComentarios?> GetByIdAsync(int id)
-        {
-            const string sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
+        //public async Task<StgDataComentarios?> GetByIdAsync(int id)
+        //{
+        //    const string sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<StgDataComentarios>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener el comentario con Id {id} de STG_DATA_Comentarios.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<StgDataComentarios>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener el comentario con Id {id} de STG_DATA_Comentarios.", ex);
+        //    }
+        //}
 
-        // -------------------------------------------------
-        // R - READ (todos)
-        // -------------------------------------------------
-        public async Task<IEnumerable<StgDataComentarios>> GetAllAsync()
-        {
-            const string sql = $@"SELECT * FROM {_tableName}";
+        //// -------------------------------------------------
+        //// R - READ (todos)
+        //// -------------------------------------------------
+        //public async Task<IEnumerable<StgDataComentarios>> GetAllAsync()
+        //{
+        //    const string sql = $@"SELECT * FROM {_tableName}";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<StgDataComentarios>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la lista de comentarios de STG_DATA_Comentarios.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<StgDataComentarios>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener la lista de comentarios de STG_DATA_Comentarios.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -110,23 +110,23 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // D - DELETE
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            const string sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
+        //public async Task DeleteAsync(int id)
+        //{
+        //    const string sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                int rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        int rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                if (rows == 0)
-                    throw new Exception($"No se encontró el comentario con Id {id} para eliminar en STG_DATA_Comentarios.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar el comentario con Id {id} en STG_DATA_Comentarios.", ex);
-            }
-        }
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró el comentario con Id {id} para eliminar en STG_DATA_Comentarios.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar el comentario con Id {id} en STG_DATA_Comentarios.", ex);
+        //    }
+        //}
     }
 }
 

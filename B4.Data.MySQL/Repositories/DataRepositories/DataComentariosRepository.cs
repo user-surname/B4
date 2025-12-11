@@ -7,13 +7,13 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class DataComentariosRepository : IDataComentariosRepository
+    public class DataComentariosRepository : DataRepository<DataComentarios>, IDataComentariosRepository
     {
         private const string _tableName = "DATA_Comentarios";
 
         private readonly MySQLDapperContext _context;
 
-        public DataComentariosRepository(MySQLDapperContext context)
+        public DataComentariosRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -25,8 +25,8 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         {
             const string sql = $@"
                 INSERT INTO {_tableName}
-                (IdAPICarga, guidCarga, FechaUltModif, IdCompany, Ejercicio, IdCiclo, IdFase, IdEpigrafe, Etiqueta, Comentario)
-                VALUES (@IdAPICarga, @guidCarga, @FechaUltModif, @IdCompany, @Ejercicio, @IdCiclo, @IdFase, @IdEpigrafe, @Etiqueta, @Comentario)";
+                (IdAPICarga, guidCarga, FechaUltModif, IdCompany, Ejercicio, IdCiclo, IdFase, IdEpigrafe, Etiqueta, Comentario, checksum, iszero)
+                VALUES (@IdAPICarga, @guidCarga, @FechaUltModif, @IdCompany, @Ejercicio, @IdCiclo, @IdFase, @IdEpigrafe, @Etiqueta, @Comentario, @checksum, @iszero)";
 
             try
             {
@@ -42,38 +42,38 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<DataComentarios?> GetByIdAsync(int id)
-        {
-            const string sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
+        //public async Task<DataComentarios?> GetByIdAsync(int id)
+        //{
+        //    const string sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<DataComentarios>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener el comentario con Id {id}.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<DataComentarios>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener el comentario con Id {id}.", ex);
+        //    }
+        //}
 
-        // -------------------------------------------------
-        // R - READ (todos)
-        // -------------------------------------------------
-        public async Task<IEnumerable<DataComentarios>> GetAllAsync()
-        {
-            const string sql = $@"SELECT * FROM {_tableName}";
+        //// -------------------------------------------------
+        //// R - READ (todos)
+        //// -------------------------------------------------
+        //public async Task<IEnumerable<DataComentarios>> GetAllAsync()
+        //{
+        //    const string sql = $@"SELECT * FROM {_tableName}";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<DataComentarios>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la lista de comentarios.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<DataComentarios>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener la lista de comentarios.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -91,7 +91,9 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                     IdFase = @IdFase,
                     IdEpigrafe = @IdEpigrafe,
                     Etiqueta = @Etiqueta,
-                    Comentario = @Comentario
+                    Comentario = @Comentario,
+                    checksum = @checksum,
+                    iszero = @iszero
                 WHERE Id = @Id";
 
             try
@@ -111,23 +113,23 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // D - DELETE
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            const string sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
+        //public async Task DeleteAsync(int id)
+        //{
+        //    const string sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                int rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        int rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                if (rows == 0)
-                    throw new Exception($"No se encontró el comentario con Id {id} para eliminar.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar el comentario con Id {id}.", ex);
-            }
-        }
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró el comentario con Id {id} para eliminar.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar el comentario con Id {id}.", ex);
+        //    }
+        //}
     }
 }
 

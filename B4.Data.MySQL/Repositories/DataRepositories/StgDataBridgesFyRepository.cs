@@ -7,12 +7,12 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class StgDataBridgesFyRepository : IStgDataBridgesFyRepository
+    public class StgDataBridgesFyRepository : DataRepository<StgDataBridgesFy>, IStgDataBridgesFyRepository
     {
         private const string _tableName = "STG_DATA_BridgesFY";
         private readonly MySQLDapperContext _context;
 
-        public StgDataBridgesFyRepository(MySQLDapperContext context)
+        public StgDataBridgesFyRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -50,38 +50,38 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<StgDataBridgesFy?> GetByIdAsync(int id)
-        {
-            var sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
+        //public async Task<StgDataBridgesFy?> GetByIdAsync(int id)
+        //{
+        //    var sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<StgDataBridgesFy>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener StgDataBridgesFy con Id {id}.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<StgDataBridgesFy>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener StgDataBridgesFy con Id {id}.", ex);
+        //    }
+        //}
 
-        // -------------------------------------------------
-        // R - READ (todos)
-        // -------------------------------------------------
-        public async Task<IEnumerable<StgDataBridgesFy>> GetAllAsync()
-        {
-            var sql = $@"SELECT * FROM {_tableName}";
+        //// -------------------------------------------------
+        //// R - READ (todos)
+        //// -------------------------------------------------
+        //public async Task<IEnumerable<StgDataBridgesFy>> GetAllAsync()
+        //{
+        //    var sql = $@"SELECT * FROM {_tableName}";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<StgDataBridgesFy>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la lista de StgDataBridgesFy.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<StgDataBridgesFy>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener la lista de StgDataBridgesFy.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -133,23 +133,23 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // D - DELETE
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            var sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
+        //public async Task DeleteAsync(int id)
+        //{
+        //    var sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                var rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        var rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                if (rows == 0)
-                    throw new Exception($"No se encontró StgDataBridgesFy con Id {id} para eliminar.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar StgDataBridgesFy con Id {id}.", ex);
-            }
-        }
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró StgDataBridgesFy con Id {id} para eliminar.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar StgDataBridgesFy con Id {id}.", ex);
+        //    }
+        //}
     }
 }
 

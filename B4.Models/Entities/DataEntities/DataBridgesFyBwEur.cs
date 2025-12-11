@@ -2,7 +2,7 @@
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataBridgesMonthBw : DataBase
+    public class DataBridgesFyBwEur : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -14,6 +14,11 @@ namespace B4.Models.Entities.DataEtities
         public int IdFase { get; set; }
         public int IdCurrency { get; set; }
         public int IdEpigrafe { get; set; }
+        public decimal Actuals { get; set; }
+        public decimal PctActuals { get; set; }
+        public decimal Budget { get; set; }
+        public decimal PctBudget { get; set; }
+        public decimal Variance { get; set; }
         public decimal Volume { get; set; }
         public decimal InventoryChange { get; set; }
         public decimal Mix { get; set; }
@@ -33,9 +38,9 @@ namespace B4.Models.Entities.DataEtities
         public int? IdCargaSTGBW { get; set; }
         public int? IdHoja { get; set; }
 
-        public DataBridgesMonthBw() { }
+        public DataBridgesFyBwEur() { }
 
-        public DataBridgesMonthBw(
+        public DataBridgesFyBwEur(
             int id,
             int idAPICarga,
             Guid guidCarga,
@@ -46,20 +51,14 @@ namespace B4.Models.Entities.DataEtities
             int idFase,
             int idCurrency,
             int idEpigrafe,
-            decimal volume,
-            decimal inventoryChange,
-            decimal mix,
-            decimal newValue,
-            decimal economics,
-            decimal quickSavings,
-            decimal currencyMix,
-            decimal exchangeRate,
-            decimal rawMaterial,
-            decimal scrap,
+            decimal actuals, decimal pctActuals, decimal budget, decimal pctBudget,
+            decimal variance, decimal volume,
+            decimal inventoryChange, decimal mix, decimal newValue,
+            decimal economics, decimal quickSavings,
+            decimal currencyMix, decimal exchangeRate,
+            decimal rawMaterial, decimal scrap,
             decimal industrialPerformance,
-            decimal protoTooling,
-            decimal other,
-            decimal check,
+            decimal protoTooling, decimal other, decimal check,
             string? comments,
             int? idCarga,
             int? idCargaSTGBW,
@@ -69,7 +68,7 @@ namespace B4.Models.Entities.DataEtities
             int version,
             int? checksum,
             int isZero
-            )
+            ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -81,12 +80,17 @@ namespace B4.Models.Entities.DataEtities
             IdFase = idFase;
             IdCurrency = idCurrency;
             IdEpigrafe = idEpigrafe;
+            Actuals = actuals;
+            PctActuals = pctActuals;
+            Budget = budget;
+            PctBudget = pctBudget;
+            Variance = variance;
             Volume = volume;
             InventoryChange = inventoryChange;
             Mix = mix;
             New = newValue;
             Economics = economics;
-            QuickSavings = quickSavings; 
+            QuickSavings = quickSavings;
             CurrencyMix = currencyMix;
             ExchangeRate = exchangeRate;
             RawMaterial = rawMaterial;
@@ -99,11 +103,6 @@ namespace B4.Models.Entities.DataEtities
             IdCarga = idCarga;
             IdCargaSTGBW = idCargaSTGBW;
             IdHoja = idHoja;
-            CreatedAt = createdAt;
-            UpdatedAt = updatedAt;
-            Version = version;
-            Checksum = checksum;
-            IsZero = isZero;
         }
     }
 }

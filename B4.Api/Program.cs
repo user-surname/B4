@@ -1,19 +1,21 @@
-using Microsoft.AspNetCore.ResponseCompression;
-using System.IO.Compression;
-
 using B4.Api.Middleware;
+using B4.Data.MySQL;
+using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.Services;
-using B4.Data.PostgreSQL;
-using B4.Data.MySQL;
+using B4.Models.Interfaces.DataInterfaces;
+using B4.Models.Interfaces.LkInterfaces;
+using B4.Shared;
+using Microsoft.AspNetCore.ResponseCompression;
 
 // Interfaces
 
 // NLog
 using NLog;
 using NLog.Web;
-using B4.Models.Interfaces.DataInterfaces;
-using B4.Models.Interfaces.LkInterfaces;
+using ProyectoPILOTO.Data;
+using System.IO.Compression;
+using System.Threading;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -31,7 +33,11 @@ var logger = LogManager.Setup()
 logger.Info("Iniciando API B4...");
 
 // Migraciones
-DbUpMigrator.EnsureDatabaseUpdated(builder.Configuration);
+
+var sharedConfig = SharedConfig.Load();
+
+ProyectoPILOTO.Data.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
+
 
 // Middleware global
 builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();

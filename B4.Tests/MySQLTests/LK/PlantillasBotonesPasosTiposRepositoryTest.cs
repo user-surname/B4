@@ -91,7 +91,7 @@ public class PlantillasBotonesPasosTiposRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANTILLAS_BOTONES_PASOS_TIPOS VALUES
+                INSERT INTO LK_PLANTILLAS_BOTONES_PASOS_TIPOS (idPasoTipo, Pasotipo, descripcion) VALUES
                 (99999, 'TIPO3', 'Desc 3'),
                 (99998, 'TIPO4', 'Desc 4');
             ");
@@ -111,7 +111,7 @@ public class PlantillasBotonesPasosTiposRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANTILLAS_BOTONES_PASOS_TIPOS VALUES
+                INSERT INTO LK_PLANTILLAS_BOTONES_PASOS_TIPOS (idPasoTipo, Pasotipo, descripcion) VALUES
                 (99999, 'ORIGINAL', 'Desc original');
             ");
         }
@@ -141,7 +141,7 @@ public class PlantillasBotonesPasosTiposRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANTILLAS_BOTONES_PASOS_TIPOS VALUES
+                INSERT INTO LK_PLANTILLAS_BOTONES_PASOS_TIPOS (idPasoTipo, Pasotipo, descripcion) VALUES 
                 (99999, 'DEL', 'Desc DEL');
             ");
         }

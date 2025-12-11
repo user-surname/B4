@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class StgDataBridgesFy
+    public class StgDataBridgesFy : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -45,7 +45,13 @@ namespace B4.Models.Entities.DataEtities
             int idCiclo, int idFase, int idCurrency, int idEpigrafe, decimal fiscalYear, decimal percentage,
             decimal zero, decimal zeroPercentage, decimal absolute, decimal absolutePercentage, decimal vMixNew,
             decimal rawMaterial, decimal scrap, decimal economics, decimal currencyMix, decimal performance,
-            decimal protoTool, decimal others, string comments)
+            decimal protoTool, decimal others, string comments,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;

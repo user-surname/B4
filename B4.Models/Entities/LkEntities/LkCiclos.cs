@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkCiclos
+    public class LkCiclos : LkBase
     {
         public int Id { get; set; }
         public int IdCiclo { get; set; }
@@ -15,7 +15,8 @@ namespace B4.Models.Entities.LkEntities
 
         public LkCiclos() { }
 
-        public LkCiclos(int id, int idCiclo, string ciclo, string descripcion)
+        public LkCiclos(int id, int idCiclo, string ciclo, string descripcion,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             Id = id;
             IdCiclo = idCiclo;

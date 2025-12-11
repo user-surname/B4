@@ -111,7 +111,7 @@ public class EpigrafeRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_EPIGRAFES VALUES 
+                INSERT INTO LK_EPIGRAFES (idEpigrafe, idPlantilla, idHoja, PreEpigrafe, Epigrafe, EpigrafeFull) VALUES 
                 (99999, 12, 22, 'P3', 'A', 'P3 A'),
                 (99998, 13, 23, 'P4', 'B', 'P4 B');
             ");
@@ -135,7 +135,7 @@ public class EpigrafeRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_EPIGRAFES 
+                INSERT INTO LK_EPIGRAFES (idEpigrafe, idPlantilla, idHoja, PreEpigrafe, Epigrafe, EpigrafeFull)
                 VALUES (99999, 14, 24, 'P5', 'ORIGINAL', 'P5 ORIGINAL');
             ");
         }
@@ -172,7 +172,7 @@ public class EpigrafeRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_EPIGRAFES 
+                INSERT INTO LK_EPIGRAFES (idEpigrafe, idPlantilla, idHoja, PreEpigrafe, Epigrafe, EpigrafeFull)
                 VALUES (99999, 15, 25, 'P6', 'DEL', 'P6 DEL');
             ");
         }

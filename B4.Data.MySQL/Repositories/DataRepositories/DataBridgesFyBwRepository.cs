@@ -7,14 +7,14 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class DataBridgesFyBwRepository : IDataBridgesFyBwRepository
+    public class DataBridgesFyBwRepository : DataRepository<DataBridgesFyBw>, IDataBridgesFyBwRepository
     {
         // Nombre de la tabla
         private const string _tableName = "DATA_BridgesFY_BW";
 
         private readonly MySQLDapperContext _context;
 
-        public DataBridgesFyBwRepository(MySQLDapperContext context)
+        public DataBridgesFyBwRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -28,11 +28,11 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                 INSERT INTO {_tableName}
                 (IdAPICarga, guidCarga, FechaUltModif, IdCompany, Ejercicio, IdCiclo, IdFase, IdCurrency, IdEpigrafe,
                  FiscalYear, Percentage, Zero, ZeroPercentage, Absolute, AbsolutePercentage, VMixNew, RawMaterial, Scrap, Economics,
-                 CurrencyMix, Performance, ProtoTool, Others, Comments, idCarga, idCargaSTGBW, idHoja)
+                 CurrencyMix, Performance, ProtoTool, Others, Comments, idCarga, idCargaSTGBW, idHoja, checksum, iszero)
                 VALUES
                 (@IdAPICarga, @guidCarga, @FechaUltModif, @IdCompany, @Ejercicio, @IdCiclo, @IdFase, @IdCurrency, @IdEpigrafe,
                  @FiscalYear, @Percentage, @Zero, @ZeroPercentage, @Absolute, @AbsolutePercentage, @VMixNew, @RawMaterial, @Scrap, @Economics,
-                 @CurrencyMix, @Performance, @ProtoTool, @Others, @Comments, @idCarga, @idCargaSTGBW, @idHoja)";
+                 @CurrencyMix, @Performance, @ProtoTool, @Others, @Comments, @idCarga, @idCargaSTGBW, @idHoja, @checksum, @iszero)";
 
             try
             {
@@ -48,38 +48,38 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<DataBridgesFyBw?> GetByIdAsync(int id)
-        {
-            const string sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
+        //public async Task<DataBridgesFyBw?> GetByIdAsync(int id)
+        //{
+        //    const string sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<DataBridgesFyBw>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener el registro con Id {id} en DATA_BridgesFY_BW.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<DataBridgesFyBw>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener el registro con Id {id} en DATA_BridgesFY_BW.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // R - READ (todos)
         // -------------------------------------------------
-        public async Task<IEnumerable<DataBridgesFyBw>> GetAllAsync()
-        {
-            const string sql = $@"SELECT * FROM {_tableName}";
+        //public async Task<IEnumerable<DataBridgesFyBw>> GetAllAsync()
+        //{
+        //    const string sql = $@"SELECT * FROM {_tableName}";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<DataBridgesFyBw>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la lista de registros en DATA_BridgesFY_BW.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<DataBridgesFyBw>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener la lista de registros en DATA_BridgesFY_BW.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -114,7 +114,9 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                     Comments = @Comments,
                     idCarga = @idCarga,
                     idCargaSTGBW = @idCargaSTGBW,
-                    idHoja = @idHoja
+                    idHoja = @idHoja,
+                    checksum = @checksum,
+                    iszero = @iszero
                 WHERE Id = @Id";
 
             try
@@ -134,22 +136,22 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // D - DELETE
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            const string sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
+        //public async Task DeleteAsync(int id)
+        //{
+        //    const string sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                int rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        int rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                if (rows == 0)
-                    throw new Exception($"No se encontró el registro con Id {id} para eliminar.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar el registro con Id {id} en DATA_BridgesFY_BW.", ex);
-            }
-        }
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró el registro con Id {id} para eliminar.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar el registro con Id {id} en DATA_BridgesFY_BW.", ex);
+        //    }
+        //}
     }
 }

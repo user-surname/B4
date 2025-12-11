@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkPlantControllers
+    public class LkPlantControllers : LkBase
     {
         public int IdCompanyController { get; set; }
         public int IdCompany { get; set; }
@@ -17,7 +17,8 @@ namespace B4.Models.Entities.LkEntities
         public LkPlantControllers() { }
 
         // Constructor con parámetros
-        public LkPlantControllers(int idCompanyController, int idCompany, string controller, string email)
+        public LkPlantControllers(int idCompanyController, int idCompany, string controller, string email,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             IdCompanyController = idCompanyController;
             IdCompany = idCompany;

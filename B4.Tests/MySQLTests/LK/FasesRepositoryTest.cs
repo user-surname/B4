@@ -91,7 +91,7 @@ public class FasesRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_FASES VALUES
+                INSERT INTO LK_FASES (idFase, Fase, FaseAlias) VALUES 
                 (99999, 'FASE A', 'A'),
                 (99998, 'FASE B', 'B');
             ");
@@ -111,7 +111,7 @@ public class FasesRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_FASES VALUES
+                INSERT INTO LK_FASES (idFase, Fase, FaseAlias) VALUES 
                 (99999, 'FASE ORIGINAL', 'ORIG');
             ");
         }
@@ -141,7 +141,7 @@ public class FasesRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_FASES VALUES
+                INSERT INTO LK_FASES (idFase, Fase, FaseAlias) VALUES
                 (99999, 'FASE DELETE', 'DEL');
             ");
         }

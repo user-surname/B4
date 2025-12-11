@@ -6,17 +6,18 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkPlantCountry
+    public class LkPlantCountry : LkBase
     {
         public int IdCountry { get; set; }
         public string Country { get; set; }
 
         public LkPlantCountry() { }
 
-        public LkPlantCountry(int idCountry, string country)
+        public LkPlantCountry(int idCountry, string country,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             IdCountry = idCountry;
-            Country = country;
+            Country = country; 
         }
     }
 }

@@ -7,12 +7,12 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class StgDataBridgesMonthRepository : IStgDataBridgesMonthRepository
+    public class StgDataBridgesMonthRepository : DataRepository<StgDataBridgesMonth>, IStgDataBridgesMonthRepository
     {
         private const string _tableName = "STG_DATA_BridgesMonth";
         private readonly MySQLDapperContext _context;
 
-        public StgDataBridgesMonthRepository(MySQLDapperContext context)
+        public StgDataBridgesMonthRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -52,36 +52,36 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<StgDataBridgesMonth?> GetByIdAsync(int id)
-        {
-            var sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<StgDataBridgesMonth>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener el registro con Id {id}.", ex);
-            }
-        }
+        //public async Task<StgDataBridgesMonth?> GetByIdAsync(int id)
+        //{
+        //    var sql = $@"SELECT * FROM {_tableName} WHERE Id = @Id";
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<StgDataBridgesMonth>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener el registro con Id {id}.", ex);
+        //    }
+        //}
 
-        // -------------------------------------------------
-        // R - READ (todos)
-        // -------------------------------------------------
-        public async Task<IEnumerable<StgDataBridgesMonth>> GetAllAsync()
-        {
-            var sql = $@"SELECT * FROM {_tableName}";
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<StgDataBridgesMonth>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener todos los registros de STG_DATA_BridgesMonth.", ex);
-            }
-        }
+        //// -------------------------------------------------
+        //// R - READ (todos)
+        //// -------------------------------------------------
+        //public async Task<IEnumerable<StgDataBridgesMonth>> GetAllAsync()
+        //{
+        //    var sql = $@"SELECT * FROM {_tableName}";
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<StgDataBridgesMonth>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener todos los registros de STG_DATA_BridgesMonth.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -147,21 +147,21 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // D - DELETE
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            var sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
-            try
-            {
-                using var conn = _context.CreateConnection();
-                var rows = await conn.ExecuteAsync(sql, new { Id = id });
-                if (rows == 0)
-                    throw new Exception($"No se encontró el registro con Id {id} para eliminar.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar el registro con Id {id}.", ex);
-            }
-        }
+        //public async Task DeleteAsync(int id)
+        //{
+        //    var sql = $@"DELETE FROM {_tableName} WHERE Id = @Id";
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        var rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró el registro con Id {id} para eliminar.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar el registro con Id {id}.", ex);
+        //    }
+        //}
     }
 }
 

@@ -17,5 +17,6 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
 
 
         }
+
     }
 }

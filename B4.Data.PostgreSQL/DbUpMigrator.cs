@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
 using DbUp.Postgresql;
+using System.Threading;
+
 
 
 namespace B4.Data.PostgreSQL
@@ -11,7 +13,7 @@ namespace B4.Data.PostgreSQL
     {
         public static void EnsureDatabaseUpdated(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("PostgresAiven");
+            var connectionString = configuration.GetConnectionString("PostgresConnection");
 
             var upgrader =
                 DeployChanges.To

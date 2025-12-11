@@ -7,12 +7,12 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class DataBridgesFyRepository : IDataBridgesFyRepository
+    public class DataBridgesFyRepository : DataRepository<DataBridgesFy>, IDataBridgesFyRepository
     {
         private const string _tableName = "DATA_BridgesFY";
         private readonly MySQLDapperContext _context;
 
-        public DataBridgesFyRepository(MySQLDapperContext context)
+        public DataBridgesFyRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -28,13 +28,13 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                  IdCiclo, IdFase, IdCurrency, IdEpigrafe,
                  FiscalYear, Percentage, Zero, ZeroPercentage, Absolute, AbsolutePercentage,
                  VMixNew, RawMaterial, Scrap, Economics, CurrencyMix, Performance, ProtoTool,
-                 Others, Comments)
+                 Others, Comments, checksum, iszero)
                 VALUES
                 (@IdAPICarga, @GuidCarga, @FechaUltModif, @IdCompany, @Ejercicio,
                  @IdCiclo, @IdFase, @IdCurrency, @IdEpigrafe,
                  @FiscalYear, @Percentage, @Zero, @ZeroPercentage, @Absolute, @AbsolutePercentage,
                  @VMixNew, @RawMaterial, @Scrap, @Economics, @CurrencyMix, @Performance, @ProtoTool,
-                 @Others, @Comments);
+                 @Others, @Comments, @checksum, @iszero);
             ";
 
             try
@@ -51,38 +51,38 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<DataBridgesFy?> GetByIdAsync(int id)
-        {
-            const string sql = @"SELECT * FROM DATA_BridgesFY WHERE Id = @Id";
+        //public async Task<DataBridgesFy?> GetByIdAsync(int id)
+        //{
+        //    const string sql = @"SELECT * FROM DATA_BridgesFY WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<DataBridgesFy>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener DataBridgesFY con Id {id}.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<DataBridgesFy>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener DataBridgesFY con Id {id}.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // R - READ (todos)
         // -------------------------------------------------
-        public async Task<IEnumerable<DataBridgesFy>> GetAllAsync()
-        {
-            const string sql = @"SELECT * FROM DATA_BridgesFY";
+        //public async Task<IEnumerable<DataBridgesFy>> GetAllAsync()
+        //{
+        //    const string sql = @"SELECT * FROM DATA_BridgesFY";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<DataBridgesFy>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener la lista de DataBridgesFY.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<DataBridgesFy>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener la lista de DataBridgesFY.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -114,7 +114,9 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                     Performance = @Performance,
                     ProtoTool = @ProtoTool,
                     Others = @Others,
-                    Comments = @Comments
+                    Comments = @Comments,
+                    checksum = @checksum,
+                    iszero = @iszero
                 WHERE Id = @Id;
             ";
 
@@ -133,25 +135,25 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         }
 
         // -------------------------------------------------
-        // D - DELETE
+        // D - DELETE+
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            const string sql = @"DELETE FROM DATA_BridgesFY WHERE Id = @Id";
+        //public async Task DeleteAsync(int id)
+        //{
+        //    const string sql = @"DELETE FROM DATA_BridgesFY WHERE Id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                var rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        var rows = await conn.ExecuteAsync(sql, new { Id = id });
 
-                if (rows == 0)
-                    throw new Exception($"No se encontró DataBridgesFY con Id {id} para eliminar.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar DataBridgesFY con Id {id}.", ex);
-            }
-        }
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró DataBridgesFY con Id {id} para eliminar.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar DataBridgesFY con Id {id}.", ex);
+        //    }
+        //}
     }
 }
 

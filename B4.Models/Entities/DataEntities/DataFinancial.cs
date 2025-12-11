@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class StgDataActuals
+    public abstract class DataFinancial : DataBase
+
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
-        public Guid GuidCarga { get; set; }
+        public Guid GuidCarga { get; set; } = Guid.Empty;
         public DateTime FechaUltModif { get; set; }
         public int IdCompany { get; set; }
         public int Ejercicio { get; set; }
@@ -31,13 +28,11 @@ namespace B4.Models.Entities.DataEtities
         public decimal Mes10 { get; set; }
         public decimal Mes11 { get; set; }
         public decimal Mes12 { get; set; }
-        public decimal Mes13 { get; set; }
+        public decimal Mes13 { get; set; }           
 
-        // Constructor sin parámetros
-        public StgDataActuals() { }
+        public DataFinancial() { }
 
-        // Constructor con parámetros
-        public StgDataActuals(
+        public DataFinancial(
             int id,
             int idAPICarga,
             Guid guidCarga,
@@ -48,21 +43,16 @@ namespace B4.Models.Entities.DataEtities
             int idFase,
             int idCurrency,
             int idEpigrafe,
-            decimal mes00,
-            decimal mes01,
-            decimal mes02,
-            decimal mes03,
-            decimal mes04,
-            decimal mes05,
-            decimal mes06,
-            decimal mes07,
-            decimal mes08,
-            decimal mes09,
-            decimal mes10,
-            decimal mes11,
-            decimal mes12,
-            decimal mes13
-        )
+            decimal mes00, decimal mes01, decimal mes02, decimal mes03,
+            decimal mes04, decimal mes05, decimal mes06, decimal mes07,
+            decimal mes08, decimal mes09, decimal mes10, decimal mes11,
+            decimal mes12, decimal mes13,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            ) : base (createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -88,6 +78,39 @@ namespace B4.Models.Entities.DataEtities
             Mes11 = mes11;
             Mes12 = mes12;
             Mes13 = mes13;
+
+            // Creamos un array con todos los meses
+            decimal[] meses = new decimal[]
+            {
+                Mes00, Mes01, Mes02, Mes03, Mes04, Mes05, Mes06, Mes07,
+                Mes08, Mes09, Mes10, Mes11, Mes12, Mes13
+            };
+
+            // Calculamos la suma usando valores absolutos
+            decimal suma = meses.Sum(m => Math.Abs(m));
+
+            // Actualizamos isZero: 0 si todos son cero, 1 si hay algún valor distinto de cero
+            IsZero = meses.All(m => m == 0) ? 0 : 1;
+            Checksum = (int)suma;
+
         }
+
+        public void auditionCalculation()
+        {
+            // Creamos un array con todos los meses
+            decimal[] meses = new decimal[]
+            {
+                Mes00, Mes01, Mes02, Mes03, Mes04, Mes05, Mes06, Mes07,
+                Mes08, Mes09, Mes10, Mes11, Mes12, Mes13
+            };
+
+            // Calculamos la suma usando valores absolutos
+            decimal suma = meses.Sum(m => Math.Abs(m));
+
+            // Actualizamos isZero: 0 si todos son cero, 1 si hay algún valor distinto de cero
+            IsZero = meses.All(m => m == 0) ? 0 : 1;
+            Checksum = (int)suma;
+        }
+
     }
 }

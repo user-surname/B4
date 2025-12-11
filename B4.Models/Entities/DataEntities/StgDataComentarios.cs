@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class StgDataComentarios
+    public class StgDataComentarios : DataBase
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }
@@ -29,7 +29,13 @@ namespace B4.Models.Entities.DataEtities
         public StgDataComentarios(
             int id, int idAPICarga, Guid guidCarga, DateTime? fechaUltModif,
             int idCompany, int ejercicio, int idCiclo, int idFase, int idEpigrafe,
-            string etiqueta, string comentario)
+            string etiqueta, string comentario,
+            DateTime createdAt,
+            DateTime updatedAt,
+            int version,
+            int? checksum,
+            int isZero
+            ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;

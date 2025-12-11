@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataActuals : DataFinancial
+    public class StgDataActuals : DataFinancial
     {
-        public DataActuals() { }
+        public StgDataActuals() { }
 
-        public DataActuals(
+        public StgDataActuals(
             int id,
             int idAPICarga,
             Guid guidCarga,
@@ -36,7 +36,6 @@ namespace B4.Models.Entities.DataEtities
                   mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
                   mes08, mes09, mes10, mes11, mes12, mes13,
                   createdAt, updatedAt, version, checksum, isZero)
-        {
-        }
+        { }
     }
 }

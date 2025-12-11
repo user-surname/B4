@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkPlantillasBotonesPasosTipos
+    public class LkPlantillasBotonesPasosTipos : LkBase
     {
         public int IdPasoTipo { get; set; }
         public string Pasotipo { get; set; } = string.Empty;
@@ -16,7 +16,8 @@ namespace B4.Models.Entities.LkEntities
         public LkPlantillasBotonesPasosTipos() { }
 
         // Constructor con parámetros
-        public LkPlantillasBotonesPasosTipos(int idPasoTipo, string pasotipo, string? descripcion = null)
+        public LkPlantillasBotonesPasosTipos(int idPasoTipo, string pasotipo,
+            DateTime createdAt, DateTime updatedAt, long isActive, string? descripcion = null) : base(createdAt, updatedAt, isActive)
         {
             IdPasoTipo = idPasoTipo;
             Pasotipo = pasotipo;

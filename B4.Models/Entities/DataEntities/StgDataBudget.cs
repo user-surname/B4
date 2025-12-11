@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace B4.Models.Entities.DataEtities
 {
-    public class DataActualsBw : DataFinancial
+    public class StgDataBudget : DataFinancial
     {
-        public DataActualsBw() { }
+        public StgDataBudget() { }
 
-        public DataActualsBw(
+        public StgDataBudget(
             int id,
             int idAPICarga,
             Guid guidCarga,
@@ -32,7 +36,6 @@ namespace B4.Models.Entities.DataEtities
                   mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07,
                   mes08, mes09, mes10, mes11, mes12, mes13,
                   createdAt, updatedAt, version, checksum, isZero)
-        {
-        }
+        { }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkFases
+    public class LkFases : LkBase
     {
         public int IdFase { get; set; }
         public string Fase { get; set; }
@@ -14,7 +14,8 @@ namespace B4.Models.Entities.LkEntities
 
         public LkFases() { }
 
-        public LkFases(int idFase, string fase, string? faseAlias)
+        public LkFases(int idFase, string fase, string? faseAlias,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             IdFase = idFase;
             Fase = fase;

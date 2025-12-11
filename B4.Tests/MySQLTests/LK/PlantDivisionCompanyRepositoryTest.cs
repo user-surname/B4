@@ -88,7 +88,7 @@ public class PlantDivisionCompanyRepositoryTest : IDisposable
     {
         using var conn = _context.CreateConnection();
         conn.Execute(@"
-            INSERT INTO LK_PLANT_DIVISION_COMPANY VALUES 
+            INSERT INTO LK_PLANT_DIVISION_COMPANY (idDivisionCompany, DivisionCompany) VALUES 
             (99999, 'A COMPANY'),
             (99998, 'B COMPANY');
         ");
@@ -105,7 +105,7 @@ public class PlantDivisionCompanyRepositoryTest : IDisposable
     {
         using var conn = _context.CreateConnection();
         conn.Execute(@"
-            INSERT INTO LK_PLANT_DIVISION_COMPANY VALUES 
+            INSERT INTO LK_PLANT_DIVISION_COMPANY (idDivisionCompany, DivisionCompany) VALUES 
             (99999, 'ORIGINAL COMPANY');
         ");
         _insertedIds.Add(99999);
@@ -130,7 +130,7 @@ public class PlantDivisionCompanyRepositoryTest : IDisposable
     {
         using var conn = _context.CreateConnection();
         conn.Execute(@"
-            INSERT INTO LK_PLANT_DIVISION_COMPANY VALUES 
+            INSERT INTO LK_PLANT_DIVISION_COMPANY (idDivisionCompany, DivisionCompany) VALUES 
             (99999, 'DEL COMPANY');
         ");
         _insertedIds.Add(99999);

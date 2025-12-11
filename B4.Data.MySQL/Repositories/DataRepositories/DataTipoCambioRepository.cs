@@ -7,12 +7,12 @@ using B4.Models.Interfaces.DataInterfaces;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
-    public class DataTipoCambioRepository : IDataTipoCambioRepository
+    public class DataTipoCambioRepository : DataRepository<DataTipoCambio>, IDataTipoCambioRepository
     {
         private const string _tableName = "DATA_Tipo_Cambio";
         private readonly MySQLDapperContext _context;
 
-        public DataTipoCambioRepository(MySQLDapperContext context)
+        public DataTipoCambioRepository(MySQLDapperContext context) : base(context, _tableName)
         {
             _context = context;
         }
@@ -24,9 +24,9 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         {
             var sql = $@"
                 INSERT INTO {_tableName} 
-                (idAPICarga, guidCarga, FechaUltModif, ejercicio, idCurrency, CalendarDay, mes, P, FC, FB, idCarga, idCargaSTGBW, idHoja)
+                (idAPICarga, guidCarga, FechaUltModif, ejercicio, idCurrency, CalendarDay, mes, P, FC, FB, idCarga, idCargaSTGBW, idHoja, checksum, iszero)
                 VALUES
-                (@idAPICarga, @guidCarga, @FechaUltModif, @Ejercicio, @IdCurrency, @CalendarDay, @Mes, @P, @FC, @FB, @IdCarga, @IdCargaSTGBW, @IdHoja)";
+                (@idAPICarga, @guidCarga, @FechaUltModif, @Ejercicio, @IdCurrency, @CalendarDay, @Mes, @P, @FC, @FB, @IdCarga, @IdCargaSTGBW, @IdHoja, @checksum, @iszero)";
 
             try
             {
@@ -42,38 +42,38 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // R - READ (por ID)
         // -------------------------------------------------
-        public async Task<DataTipoCambio?> GetByIdAsync(int id)
-        {
-            var sql = $@"SELECT * FROM {_tableName} WHERE id = @Id";
+        //public async Task<DataTipoCambio?> GetByIdAsync(int id)
+        //{
+        //    var sql = $@"SELECT * FROM {_tableName} WHERE id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QuerySingleOrDefaultAsync<DataTipoCambio>(sql, new { Id = id });
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al obtener el registro con Id {id}.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QuerySingleOrDefaultAsync<DataTipoCambio>(sql, new { Id = id });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al obtener el registro con Id {id}.", ex);
+        //    }
+        //}
 
-        // -------------------------------------------------
-        // R - READ (todos)
-        // -------------------------------------------------
-        public async Task<IEnumerable<DataTipoCambio>> GetAllAsync()
-        {
-            var sql = $@"SELECT * FROM {_tableName}";
+        //// -------------------------------------------------
+        //// R - READ (todos)
+        //// -------------------------------------------------
+        //public async Task<IEnumerable<DataTipoCambio>> GetAllAsync()
+        //{
+        //    var sql = $@"SELECT * FROM {_tableName}";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                return await conn.QueryAsync<DataTipoCambio>(sql);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener todos los registros de DATA_Tipo_Cambio.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        return await conn.QueryAsync<DataTipoCambio>(sql);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception("Error al obtener todos los registros de DATA_Tipo_Cambio.", ex);
+        //    }
+        //}
 
         // -------------------------------------------------
         // U - UPDATE
@@ -94,7 +94,9 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                     FB = @FB,
                     idCarga = @IdCarga,
                     idCargaSTGBW = @IdCargaSTGBW,
-                    idHoja = @IdHoja
+                    idHoja = @IdHoja,
+                    checksum = @checksum,
+                    iszero = @iszero
                 WHERE id = @Id";
 
             try
@@ -113,22 +115,22 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------------------------------
         // D - DELETE
         // -------------------------------------------------
-        public async Task DeleteAsync(int id)
-        {
-            var sql = $@"DELETE FROM {_tableName} WHERE id = @Id";
+        //public async Task DeleteAsync(int id)
+        //{
+        //    var sql = $@"DELETE FROM {_tableName} WHERE id = @Id";
 
-            try
-            {
-                using var conn = _context.CreateConnection();
-                var rows = await conn.ExecuteAsync(sql, new { Id = id });
-                if (rows == 0)
-                    throw new Exception($"No se encontró el registro con Id {id} para eliminar.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Error al eliminar el registro con Id {id}.", ex);
-            }
-        }
+        //    try
+        //    {
+        //        using var conn = _context.CreateConnection();
+        //        var rows = await conn.ExecuteAsync(sql, new { Id = id });
+        //        if (rows == 0)
+        //            throw new Exception($"No se encontró el registro con Id {id} para eliminar.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new Exception($"Error al eliminar el registro con Id {id}.", ex);
+        //    }
+        //}
     }
 }
 

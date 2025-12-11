@@ -92,7 +92,7 @@ public class PlantTreeRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANT_TREE VALUES 
+                INSERT INTO LK_PLANT_TREE (idTree, idDivision, idDivisionCompany, idSubdivision, idCountry) VALUES 
                 (99999, 1, 2, 3, 4),
                 (99998, 5, 6, 7, 8);");
         }
@@ -111,7 +111,7 @@ public class PlantTreeRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANT_TREE VALUES 
+                INSERT INTO LK_PLANT_TREE (idTree, idDivision, idDivisionCompany, idSubdivision, idCountry) VALUES 
                 (99999, 1, 2, 3, 4);");
         }
 
@@ -142,7 +142,7 @@ public class PlantTreeRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANT_TREE VALUES 
+                INSERT INTO LK_PLANT_TREE (idTree, idDivision, idDivisionCompany, idSubdivision, idCountry) VALUES 
                 (99999, 1, 2, 3, 4);");
         }
 

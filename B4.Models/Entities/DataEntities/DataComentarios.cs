@@ -29,7 +29,7 @@ namespace B4.Models.Entities.DataEtities
             int version,
             int? checksum,
             int isZero
-            )
+            ) : base(createdAt, updatedAt, version, checksum, isZero)
         {
             Id = id;
             IdAPICarga = idAPICarga;
@@ -42,11 +42,6 @@ namespace B4.Models.Entities.DataEtities
             IdEpigrafe = idEpigrafe;
             Etiqueta = etiqueta;
             Comentario = comentario;
-            CreatedAt = createdAt;
-            UpdatedAt = updatedAt;
-            Version = version;
-            Checksum = checksum;
-            IsZero = isZero;
         }
     }
 }

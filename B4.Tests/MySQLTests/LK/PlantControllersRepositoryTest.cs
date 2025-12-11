@@ -89,7 +89,7 @@ public class PlantControllersRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANT_CONTROLLERS VALUES
+                INSERT INTO LK_PLANT_CONTROLLERS (idCompanyController, IdCompany, Controller, Email) VALUES 
                 (99999, 1, 'A', 'a@example.com'),
                 (99998, 2, 'B', 'b@example.com');");
         }
@@ -108,7 +108,7 @@ public class PlantControllersRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANT_CONTROLLERS
+                INSERT INTO LK_PLANT_CONTROLLERS (idCompanyController, IdCompany, Controller, Email)
                 VALUES (99999, 1, 'Original', 'original@example.com');");
         }
 
@@ -138,7 +138,7 @@ public class PlantControllersRepositoryTest : IDisposable
         using (var conn = _context.CreateConnection())
         {
             conn.Execute(@"
-                INSERT INTO LK_PLANT_CONTROLLERS
+                INSERT INTO LK_PLANT_CONTROLLERS (idCompanyController, IdCompany, Controller, Email)
                 VALUES (99999, 1, 'Delete', 'delete@example.com');");
         }
 

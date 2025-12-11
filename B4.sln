@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11222.16 d18.3
+VisualStudioVersion = 18.3.11222.16
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B4.Web", "B4.Web\B4.Web.csproj", "{6BBAE626-4552-4BCD-8D1D-B97AB2FC2063}"
 EndProject
@@ -71,5 +71,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
+		SolutionGuid = {86D7D857-7568-4773-B4DF-40662B033150}
 	EndGlobalSection
 EndGlobal

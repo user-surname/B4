@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace B4.Models.Entities.LkEntities
 {
     // LK_PLANT_COMPANY
-    public class LkPlantCompany
+    public class LkPlantCompany : LkBase
     {
         public int IdCompany { get; set; }
         public string CompanyCode { get; set; }
@@ -33,11 +33,12 @@ namespace B4.Models.Entities.LkEntities
 
         public LkPlantCompany() { }
 
-        public LkPlantCompany(int idCompany, string companyCode, string managementCompany, int idCurrency, string company, bool? active,
-            int idDivision, int idDivisionCompany, int idSubdivision, int idCountry, string location,
+        public LkPlantCompany(int idCompany, string companyCode, string managementCompany, int idCurrency, string company,
+            bool? active, int idDivision, int idDivisionCompany, int idSubdivision, int idCountry, string location,
             string? obs, string? regionalValidatorPwd, string? region, string? regionalValidator,
             string? regionalValidatorEmail, string? contributorPwd, string? managementCompanyBackup,
-            string? regionBackup, string? countryBackup, int? idRegValidator)
+            string? regionBackup, string? countryBackup, int? idRegValidator,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             IdCompany = idCompany;
             CompanyCode = companyCode;
@@ -62,5 +63,5 @@ namespace B4.Models.Entities.LkEntities
             IdRegValidator = idRegValidator;
         }
     }
-
 }
+

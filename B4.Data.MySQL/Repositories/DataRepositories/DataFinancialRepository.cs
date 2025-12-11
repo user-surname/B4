@@ -27,10 +27,10 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
             var sql = $@"
                 INSERT INTO {_tableName} 
                 (idAPICarga, guidCarga, FechaUltModif, idCompany, ejercicio, idCiclo, idFase, idCurrency, idEpigrafe,
-                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13)
+                 mes00, mes01, mes02, mes03, mes04, mes05, mes06, mes07, mes08, mes09, mes10, mes11, mes12, mes13, checksum, iszero)
                 VALUES
                 (@idAPICarga, @guidCarga, @FechaUltModif, @idCompany, @ejercicio, @idCiclo, @idFase, @idCurrency, @idEpigrafe,
-                 @mes00, @mes01, @mes02, @mes03, @mes04, @mes05, @mes06, @mes07, @mes08, @mes09, @mes10, @mes11, @mes12, @mes13)";
+                 @mes00, @mes01, @mes02, @mes03, @mes04, @mes05, @mes06, @mes07, @mes08, @mes09, @mes10, @mes11, @mes12, @mes13, @checksum, @iszero)";
 
             try
             {
@@ -48,6 +48,8 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         // -------------------------
         public async Task<T?> GetByIdAsync(int id)
         {
+
+        
             var sql = $@"SELECT * FROM {_tableName} WHERE id = @Id";
             try
             {
@@ -58,6 +60,7 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
             {
                 throw new Exception($"Error al obtener el registro con Id {id} de " + _tableName, ex);
             }
+        
         }
 
         // -------------------------
@@ -96,6 +99,8 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
                     mes00 = @Mes00, mes01 = @Mes01, mes02 = @Mes02, mes03 = @Mes03, mes04 = @Mes04,
                     mes05 = @Mes05, mes06 = @Mes06, mes07 = @Mes07, mes08 = @Mes08, mes09 = @Mes09,
                     mes10 = @Mes10, mes11 = @Mes11, mes12 = @Mes12, mes13 = @Mes13,
+                    checksum = @checksum,
+                    iszero = @iszero
                 WHERE id = @Id";
 
             try

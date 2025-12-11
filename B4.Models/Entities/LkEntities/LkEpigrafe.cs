@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace B4.Models.Entities.LkEntities
 {
-    public class LkEpigrafe
+    public class LkEpigrafe : LkBase
     {
         public int IdEpigrafe { get; set; }
         public int IdPlantilla { get; set; }
@@ -17,7 +17,8 @@ namespace B4.Models.Entities.LkEntities
 
         public LkEpigrafe() { }
 
-        public LkEpigrafe(int idEpigrafe, int idPlantilla, int idHoja, string? preEpigrafe, string epigrafe, string epigrafeFull)
+        public LkEpigrafe(int idEpigrafe, int idPlantilla, int idHoja, string? preEpigrafe, string epigrafe, string epigrafeFull,
+            DateTime createdAt, DateTime updatedAt, long isActive) : base(createdAt, updatedAt, isActive)
         {
             IdEpigrafe = idEpigrafe;
             IdPlantilla = idPlantilla;
