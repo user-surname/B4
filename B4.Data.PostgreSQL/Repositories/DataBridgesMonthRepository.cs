@@ -1,19 +1,23 @@
 using Dapper;
+using Npgsql;
 using B4.Models.Entities;
 using B4.Models.Interfaces;
 
 namespace B4.Data.PostgreSQL.Repositories
 {
-    public class DataBridgesMonthBwRepository 
-        : BaseRepository<DataBridgesMonthBw>, IDataBridgesMonthBwRepository
+    public class DataBridgesMonthRepository 
+        : BaseRepository<DataBridgesMonth>, IDataBridgesMonthRepository
     {
-        public DataBridgesMonthBwRepository(string cs)
-            : base(cs, "\"b4\".\"data_bridges_month_bw\"") { }
+        public DataBridgesMonthRepository(string connectionString)
+            : base(connectionString, "b4.data_bridges_month")
+        {
+        }
 
-        public async Task AddAsync(DataBridgesMonthBw entity)
+        public override async Task AddAsync(DataBridgesMonth entity)
         {
             var sql = @"
-                INSERT INTO ""b4"".""data_bridges_month_bw"" (
+                INSERT INTO b4.data_bridges_month
+                (
                     idapicarga, guidcarga, fechaultmodif,
                     idcompany, ejercicio, idciclo, idfase,
                     idcurrency, idepigrafe,
@@ -23,7 +27,8 @@ namespace B4.Data.PostgreSQL.Repositories
                     prototooling, other, ""check"", comments,
                     idcarga, idcargastgbw, idhoja
                 )
-                VALUES (
+                VALUES
+                (
                     @IdAPICarga, @GuidCarga, @FechaUltModif,
                     @IdCompany, @Ejercicio, @IdCiclo, @IdFase,
                     @IdCurrency, @IdEpigrafe,
@@ -33,16 +38,17 @@ namespace B4.Data.PostgreSQL.Repositories
                     @ProtoTooling, @Other, @Check, @Comments,
                     @IdCarga, @IdCargaSTGBW, @IdHoja
                 )
-                RETURNING id;";
+                RETURNING id;
+            ";
 
             using var conn = GetConnection();
-            entity.Id = await conn.ExecuteScalarAsync<int>(sql);
+            entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
         }
 
-        public async Task UpdateAsync(DataBridgesMonthBw entity)
+        public override async Task UpdateAsync(DataBridgesMonth entity)
         {
             var sql = @"
-                UPDATE ""b4"".""data_bridges_month_bw"" SET
+                UPDATE b4.data_bridges_month SET
                     idapicarga=@IdAPICarga,
                     guidcarga=@GuidCarga,
                     fechaultmodif=@FechaUltModif,
@@ -70,7 +76,8 @@ namespace B4.Data.PostgreSQL.Repositories
                     idcarga=@IdCarga,
                     idcargastgbw=@IdCargaSTGBW,
                     idhoja=@IdHoja
-                WHERE id=@Id";
+                WHERE id=@Id
+            ";
 
             using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);

@@ -1,24 +1,19 @@
 using Dapper;
-using Npgsql;
-using B4.Models.Entities.DataEtities;
-using B4.Models.Interfaces.DataInterfaces;
+using B4.Models.Entities;
+using B4.Models.Interfaces;
 
 namespace B4.Data.PostgreSQL.Repositories
 {
-    public class DataTipoCambioRepository : IDataTipoCambioRepository
+    public class DataTipoCambioRepository 
+        : BaseRepository<DataTipoCambio>, IDataTipoCambioRepository
     {
-        private readonly string _connectionString;
-        private const string _table = "b4.data_tipo_cambio";
-
-        public DataTipoCambioRepository(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
+        public DataTipoCambioRepository(string cs)
+            : base(cs, "b4.data_tipo_cambio") { }
 
         public async Task AddAsync(DataTipoCambio entity)
         {
-            var sql = $@"
-                INSERT INTO {_table}
+            var sql = @"
+                INSERT INTO b4.data_tipo_cambio
                 (idapicarga, guidcarga, fechaultmodif,
                  ejercicio, idcurrency, calendarday, mes,
                  p, fc, fb, idcarga, idcargastgbw, idhoja)
@@ -28,27 +23,14 @@ namespace B4.Data.PostgreSQL.Repositories
                  @P, @FC, @FB, @IdCarga, @IdCargaSTGBW, @IdHoja)
                 RETURNING id;";
 
-            using var conn = new NpgsqlConnection(_connectionString);
+            using var conn = GetConnection();
             entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
-        }
-
-        public async Task<DataTipoCambio?> GetByIdAsync(int id)
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            return await conn.QuerySingleOrDefaultAsync<DataTipoCambio>(
-                $"SELECT * FROM {_table} WHERE id=@Id", new { Id = id });
-        }
-
-        public async Task<IEnumerable<DataTipoCambio>> GetAllAsync()
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            return await conn.QueryAsync<DataTipoCambio>($"SELECT * FROM {_table}");
         }
 
         public async Task UpdateAsync(DataTipoCambio entity)
         {
-            var sql = $@"
-                UPDATE {_table} SET
+            var sql = @"
+                UPDATE b4.data_tipo_cambio SET
                     idapicarga=@IdAPICarga,
                     guidcarga=@GuidCarga,
                     fechaultmodif=@FechaUltModif,
@@ -60,14 +42,8 @@ namespace B4.Data.PostgreSQL.Repositories
                     idcarga=@IdCarga, idcargastgbw=@IdCargaSTGBW, idhoja=@IdHoja
                 WHERE id=@Id";
 
-            using var conn = new NpgsqlConnection(_connectionString);
+            using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            using var conn = new NpgsqlConnection(_connectionString);
-            await conn.ExecuteAsync($"DELETE FROM {_table} WHERE id=@Id", new { Id = id });
         }
     }
 }
