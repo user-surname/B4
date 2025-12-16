@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Dapper;
 using System;
 using B4.Data.MySQL.Repositories.DataRepositories;
-using B4.Models.Entities.DataEtities;
+using B4.Models.Entities.DataEntities;
 
 public class DataBridgesFyBwRepositoryTest : IDisposable
 {

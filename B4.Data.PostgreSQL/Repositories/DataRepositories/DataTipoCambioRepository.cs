@@ -1,14 +1,14 @@
 using Dapper;
-using B4.Models.Entities;
-using B4.Models.Interfaces;
+using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces.DataInterfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
     public class DataTipoCambioRepository 
         : BaseRepository<DataTipoCambio>, IDataTipoCambioRepository
     {
-        public DataTipoCambioRepository(string cs)
-            : base(cs, "b4.data_tipo_cambio") { }
+        public DataTipoCambioRepository(PostgreSQLDapperContext context)
+            : base(context, "b4.data_tipo_cambio") { }
 
         public async Task AddAsync(DataTipoCambio entity)
         {

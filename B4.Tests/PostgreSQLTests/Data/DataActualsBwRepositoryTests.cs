@@ -1,37 +1,43 @@
 using Xunit;
 using Npgsql;
 using Dapper;
-using B4.Data.PostgreSQL.Repositories;
-using B4.Models.Entities.DataEtities;
+using Microsoft.Extensions.Configuration;
+using B4.Data.PostgreSQL;
+using B4.Data.PostgreSQL.Repositories.DataRepositories;
+using B4.Models.Entities.DataEntities;
 
 namespace B4.Tests.PostgreSQLTests.Data
 {
     public class DataActualsBwRepositoryTests : IDisposable
     {
         private readonly DataActualsBwRepository _repo;
+        private readonly PostgreSQLDapperContext _context;
         private readonly List<int> _insertedIds = new();
 
         public DataActualsBwRepositoryTests()
         {
-            _repo = new DataActualsBwRepository(TestConfig.Conn);
+            _context = new PostgreSQLDapperContext(TestConfig.Configuration);
+            _repo = new DataActualsBwRepository(_context);
         }
 
         public void Dispose()
         {
             if (_insertedIds.Count > 0)
             {
-                using var conn = new NpgsqlConnection(TestConfig.Conn);
-                conn.Execute("DELETE FROM b4.data_actuals_bw WHERE id = ANY(@Ids)",
-                    new { Ids = _insertedIds.ToArray() });
+                using var conn = _context.CreateConnection();
+                conn.Execute(
+                    "DELETE FROM b4.data_actuals_bw WHERE id = ANY(@Ids)",
+                    new { Ids = _insertedIds.ToArray() }
+                );
             }
         }
 
         [Fact]
         public async Task Test_Connection()
         {
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
-            await conn.OpenAsync();
-            Assert.Equal(System.Data.ConnectionState.Open, conn.State);
+            using var conn = _context.CreateConnection();
+            var result = await conn.ExecuteScalarAsync<int>("SELECT 1");
+            Assert.Equal(1, result);
         }
 
         [Fact]
@@ -57,7 +63,6 @@ namespace B4.Tests.PostgreSQLTests.Data
             _insertedIds.Add(entity.Id);
 
             entity.Mes02 = 987m;
-
             await _repo.UpdateAsync(entity);
 
             var result = await _repo.GetByIdAsync(entity.Id);

@@ -9,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 using B4.Data.MySQL.Repositories.DataRepositories;
-using B4.Models.Entities.DataEtities;
+using B4.Models.Entities.DataEntities;
 
 public class DataBudgetBwRepositoryTest : IDisposable
 {

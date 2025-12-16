@@ -12,7 +12,7 @@ public class CiclosRepositoryTests : IDisposable
 
     public CiclosRepositoryTests()
     {
-        _repo = new CiclosRepository(new DapperContext(TestConfig.Configuration));
+        _repo = new CiclosRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
     }
 
     public void Dispose()

@@ -1,6 +1,6 @@
 using Dapper;
 using Npgsql;
-using B4.Models.Entities;
+using B4.Models.Entities.DataEntities;
 
 
 namespace B4.Data.PostgreSQL.Repositories
@@ -8,8 +8,8 @@ namespace B4.Data.PostgreSQL.Repositories
     public abstract class BaseFinancialRepository<T> : BaseRepository<T> 
         where T : DataBaseFinanciero
     {
-        protected BaseFinancialRepository(string connectionString, string table)
-            : base(connectionString, table) { }
+        protected BaseFinancialRepository(PostgreSQLDapperContext context, string table)
+            : base(context, table) { }
 
         // CREATE para entidades financieras
         public override async Task AddAsync(T entity)

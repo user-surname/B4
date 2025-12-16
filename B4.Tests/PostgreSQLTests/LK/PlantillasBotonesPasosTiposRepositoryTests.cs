@@ -12,7 +12,7 @@ public class PlantillasBotonesPasosTiposRepositoryTests : IDisposable
 
     public PlantillasBotonesPasosTiposRepositoryTests()
     {
-        _repo = new PlantillasBotonesPasosTiposRepository(new DapperContext(TestConfig.Configuration));
+        _repo = new PlantillasBotonesPasosTiposRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
     }
 
     public void Dispose()

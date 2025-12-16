@@ -1,20 +1,20 @@
 using Xunit;
 using Npgsql;
 using Dapper;
-using B4.Data.PostgreSQL.Repositories;
-using B4.Models.Entities.DataEtities;
+using B4.Data.PostgreSQL;
+using B4.Data.PostgreSQL.Repositories.DataRepositories;
+using B4.Models.Entities.DataEntities;
 
 public class DataBridgesFyRepositoryTests : IDisposable
 {
-    private const string Conn =
-        "Host=pg-3105f5b7-elpuig-23d9.b.aivencloud.com;Port=21134;Database=defaultdb;Username=avnadmin;Password=AVNS_D8EOFxPDlpUH6LhFFLw;Ssl Mode=Require;";
-
     private readonly DataBridgesFyRepository _repo;
+    private readonly PostgreSQLDapperContext _context;
     private readonly List<int> _insertedIds = new();
 
     public DataBridgesFyRepositoryTests()
     {
-        _repo = new DataBridgesFyRepository(Conn);
+        _context = new PostgreSQLDapperContext(TestConfig.Configuration);
+        _repo = new DataBridgesFyRepository(_context);
     }
 
     // 🔥 Se ejecuta después de cada test
@@ -23,9 +23,11 @@ public class DataBridgesFyRepositoryTests : IDisposable
         if (_insertedIds.Count == 0)
             return;
 
-        using var conn = new NpgsqlConnection(Conn);
-        conn.Execute("DELETE FROM b4.data_bridges_fy WHERE id = ANY(@Ids)",
-            new { Ids = _insertedIds.ToArray() });
+        using var conn = new NpgsqlConnection(TestConfig.Conn);
+        conn.Execute(
+            "DELETE FROM b4.data_bridges_fy WHERE id = ANY(@Ids)",
+            new { Ids = _insertedIds.ToArray() }
+        );
 
         _insertedIds.Clear();
     }
@@ -36,7 +38,7 @@ public class DataBridgesFyRepositoryTests : IDisposable
     [Fact]
     public async Task Test_Connection()
     {
-        using var conn = new NpgsqlConnection(Conn);
+        using var conn = new NpgsqlConnection(TestConfig.Conn);
         await conn.OpenAsync();
 
         Assert.Equal(System.Data.ConnectionState.Open, conn.State);
@@ -57,6 +59,7 @@ public class DataBridgesFyRepositoryTests : IDisposable
 
         Assert.NotNull(result);
         Assert.Equal(entity.IdCompany, result!.IdCompany);
+        Assert.Equal(entity.FiscalYear, result.FiscalYear);
     }
 
     // -------------------------------------------------------------
@@ -69,14 +72,14 @@ public class DataBridgesFyRepositoryTests : IDisposable
         await _repo.AddAsync(entity);
         _insertedIds.Add(entity.Id);
 
-        entity.IdCompany = 9;
+        entity.Performance = 9999m;
 
         await _repo.UpdateAsync(entity);
 
         var result = await _repo.GetByIdAsync(entity.Id);
 
         Assert.NotNull(result);
-        Assert.Equal(9, result!.IdCompany);
+        Assert.Equal(9999m, result!.Performance);
     }
 
     // -------------------------------------------------------------
@@ -95,7 +98,6 @@ public class DataBridgesFyRepositoryTests : IDisposable
         Assert.Null(result);
     }
 
-
     // -------------------------------------------------------------
     // Helper: Crea una entidad válida para pruebas
     // -------------------------------------------------------------
@@ -112,25 +114,27 @@ public class DataBridgesFyRepositoryTests : IDisposable
             IdFase = 1,
             IdCurrency = 1,
             IdEpigrafe = 200,
-            FiscalYear = 100000.00m,
-            Percentage = 50.00m,
-            Zero = 0.00m,
-            ZeroPercentage = 0.00m,
-            Absolute = 100000.00m,
-            AbsolutePercentage = 100.00m,
-            VMixNew = 5000.00m,
-            RawMaterial = 2000.00m,
-            Scrap = 100.00m,
-            Economics = 3000.00m,
-            CurrencyMix = 4000.00m,
-            Performance = 2500.00m,
-            ProtoTool = 1500.00m,
-            Others = 800.00m,
+
+            FiscalYear = 100000m,
+            Percentage = 50m,
+            Zero = 0m,
+            ZeroPercentage = 0m,
+            Absolute = 100000m,
+            AbsolutePercentage = 100m,
+            VMixNew = 5000m,
+            RawMaterial = 2000m,
+            Scrap = 100m,
+            Economics = 3000m,
+            CurrencyMix = 4000m,
+            Performance = 2500m,
+            ProtoTool = 1500m,
+            Others = 800m,
             Comments = "Registro de ejemplo para test",
+
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Version = 1,
-            Checksum = null,
+            Checksum = 1,
             IsZero = 1
         };
     }

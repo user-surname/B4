@@ -1,8 +1,10 @@
 using System;
 
-namespace B4.Models.Entities
+namespace B4.Models.Entities.DataEntities
+
 {
     public abstract class DataBaseFinanciero : DataBase
+
     {
         public int Id { get; set; }
         public int IdAPICarga { get; set; }

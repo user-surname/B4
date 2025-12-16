@@ -1,7 +1,7 @@
 using B4.Api.Middleware;
 using B4.Data.MySQL;
-using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
+using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.Services;
 using B4.Models.Interfaces.DataInterfaces;
 using B4.Models.Interfaces.LkInterfaces;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 // NLog
 using NLog;
 using NLog.Web;
-using ProyectoPILOTO.Data;
+
 using System.IO.Compression;
 using System.Threading;
 
@@ -66,29 +66,21 @@ builder.Services.AddSingleton<MySQLDapperContext>();
 // REGISTRO DE TODOS LOS REPOSITORIOS DATA*
 // --------------------------------------------------
 
-builder.Services.AddScoped<IDataComentariosRepository>(provider =>
-    new DataComentariosRepository(connectionString));
+builder.Services.AddScoped<IDataComentariosRepository>();
 
-builder.Services.AddScoped<IDataBudgetRepository>(provider =>
-    new DataBudgetRepository(connectionString));
+builder.Services.AddScoped<IDataBudgetRepository>();
 
-builder.Services.AddScoped<IDataForecastRepository>(provider =>
-    new DataForecastRepository(connectionString));
+builder.Services.AddScoped<IDataForecastRepository>();
 
-builder.Services.AddScoped<IDataBridgesFyRepository>(provider =>
-    new DataBridgesFyRepository(connectionString));
+builder.Services.AddScoped<IDataBridgesFyRepository>();
 
-builder.Services.AddScoped<IDataBridgesFyBwRepository>(provider =>
-    new DataBridgesFyBwRepository(connectionString));
+builder.Services.AddScoped<IDataBridgesFyBwRepository>();
 
-builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(provider =>
-    new DataBridgesFyBwEurRepository(connectionString));
+builder.Services.AddScoped<IDataBridgesFyBwEurRepository>();
 
-builder.Services.AddScoped<IDataBridgesMonthBwRepository>(provider =>
-    new DataBridgesMonthBwRepository(connectionString));
+builder.Services.AddScoped<IDataBridgesMonthBwRepository>();
 
-builder.Services.AddScoped<IEpigrafeRepository>(provider =>
-    new EpigrafeRepository(connectionString));
+builder.Services.AddScoped<IEpigrafeRepository>();
 
 
 builder.Services.AddAuthorization();

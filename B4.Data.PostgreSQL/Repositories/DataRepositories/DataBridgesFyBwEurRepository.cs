@@ -1,26 +1,26 @@
 using Dapper;
-using B4.Models.Entities;
-using B4.Models.Interfaces;
+using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces.DataInterfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
-    public class DataBridgesFyRepository 
-        : BaseRepository<DataBridgesFy>, IDataBridgesFyRepository
+    public class DataBridgesFyBwEurRepository 
+        : BaseRepository<DataBridgesFyBwEur>, IDataBridgesFyBwEurRepository
     {
-        public DataBridgesFyRepository(string cs)
-            : base(cs, "b4.data_bridges_fy") { }
+        public DataBridgesFyBwEurRepository(PostgreSQLDapperContext context)
+            : base(context, "b4.data_bridges_fy_bw_eur") { }
 
-        public async Task AddAsync(DataBridgesFy entity)
+        public async Task AddAsync(DataBridgesFyBwEur entity)
         {
             var sql = @"
-                INSERT INTO b4.data_bridges_fy
+                INSERT INTO b4.data_bridges_fy_bw_eur
                 (idapicarga, guidcarga, fechaultmodif,
                  idcompany, ejercicio, idciclo, idfase,
                  idcurrency, idepigrafe,
                  actuals, pctactuals, budget, pctbudget, variance,
                  volume, inventorychange, mix, new, economics, quicksavings,
                  currencymix, exchangerate, rawmaterial, scrap, industrialperformance,
-                 prototooling, ""other"", ""check"", comments,
+                 prototooling, other, ""check"", comments,
                  idcarga, idcargastgbw, idhoja)
                 VALUES
                 (@IdAPICarga, @GuidCarga, @FechaUltModif,
@@ -34,13 +34,13 @@ namespace B4.Data.PostgreSQL.Repositories
                 RETURNING id;";
 
             using var conn = GetConnection();
-            entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
+            entity.Id = await conn.ExecuteScalarAsync<int>(sql);
         }
 
-        public async Task UpdateAsync(DataBridgesFy entity)
+        public async Task UpdateAsync(DataBridgesFyBwEur entity)
         {
             var sql = @"
-                UPDATE b4.data_bridges_fy SET
+                UPDATE b4.data_bridges_fy_bw_eur SET
                     idapicarga=@IdAPICarga,
                     guidcarga=@GuidCarga,
                     fechaultmodif=@FechaUltModif,
@@ -67,7 +67,7 @@ namespace B4.Data.PostgreSQL.Repositories
                     scrap=@Scrap,
                     industrialperformance=@IndustrialPerformance,
                     prototooling=@ProtoTooling,
-                    ""other""=@Other,
+                    other=@Other,
                     ""check""=@Check,
                     comments=@Comments,
                     idcarga=@IdCarga,

@@ -12,7 +12,7 @@ public class PlantCurrencyRepositoryTests : IDisposable
 
     public PlantCurrencyRepositoryTests()
     {
-        _repo = new PlantCurrencyRepository(new DapperContext(TestConfig.Configuration));
+        _repo = new PlantCurrencyRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
     }
 
     public void Dispose()

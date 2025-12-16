@@ -1,20 +1,20 @@
 ﻿using Xunit;
 using Npgsql;
 using Dapper;
-using B4.Data.PostgreSQL.Repositories;
-using B4.Models.Entities.DataEtities;
+using B4.Data.PostgreSQL;
+using B4.Data.PostgreSQL.Repositories.DataRepositories;
+using B4.Models.Entities.DataEntities;
 
 public class DataBudgetRepositoryTests : IDisposable
 {
-    private const string Conn =
-        "Host=pg-3105f5b7-elpuig-23d9.b.aivencloud.com;Port=21134;Database=defaultdb;Username=avnadmin;Password=AVNS_D8EOFxPDlpUH6LhFFLw;Ssl Mode=Require;";
-
     private readonly DataBudgetRepository _repo;
+    private readonly PostgreSQLDapperContext _context;
     private readonly List<int> _insertedIds = new();
 
     public DataBudgetRepositoryTests()
     {
-        _repo = new DataBudgetRepository(Conn);
+        _context = new PostgreSQLDapperContext(TestConfig.Configuration);
+        _repo = new DataBudgetRepository(_context);
     }
 
     public void Dispose()
@@ -22,21 +22,30 @@ public class DataBudgetRepositoryTests : IDisposable
         if (_insertedIds.Count == 0)
             return;
 
-        using var conn = new NpgsqlConnection(Conn);
-        conn.Execute("DELETE FROM b4.data_budget WHERE id = ANY(@Ids)",
-            new { Ids = _insertedIds.ToArray() });
+        using var conn = new NpgsqlConnection(TestConfig.Conn);
+        conn.Execute(
+            "DELETE FROM b4.data_budget WHERE id = ANY(@Ids)",
+            new { Ids = _insertedIds.ToArray() }
+        );
 
         _insertedIds.Clear();
     }
 
+    // -------------------------------------------------------------
+    // TEST 1: Conexión
+    // -------------------------------------------------------------
     [Fact]
     public async Task Test_Connection()
     {
-        using var conn = new NpgsqlConnection(Conn);
+        using var conn = new NpgsqlConnection(TestConfig.Conn);
         await conn.OpenAsync();
+
         Assert.Equal(System.Data.ConnectionState.Open, conn.State);
     }
 
+    // -------------------------------------------------------------
+    // TEST 2: Insert + GetById
+    // -------------------------------------------------------------
     [Fact]
     public async Task Insert_And_GetById_Should_Work()
     {
@@ -52,6 +61,9 @@ public class DataBudgetRepositoryTests : IDisposable
         Assert.Equal(entity.Mes03, result.Mes03);
     }
 
+    // -------------------------------------------------------------
+    // TEST 3: Update
+    // -------------------------------------------------------------
     [Fact]
     public async Task Update_Should_Modify_Entity()
     {
@@ -63,12 +75,16 @@ public class DataBudgetRepositoryTests : IDisposable
         entity.Mes05 = 999m;
 
         await _repo.UpdateAsync(entity);
+
         var result = await _repo.GetByIdAsync(entity.Id);
 
         Assert.NotNull(result);
         Assert.Equal(999m, result!.Mes05);
     }
 
+    // -------------------------------------------------------------
+    // TEST 4: Delete
+    // -------------------------------------------------------------
     [Fact]
     public async Task Delete_Should_Remove_Entity()
     {
@@ -83,6 +99,9 @@ public class DataBudgetRepositoryTests : IDisposable
         Assert.Null(result);
     }
 
+    // -------------------------------------------------------------
+    // Helper: entidad válida
+    // -------------------------------------------------------------
     private DataBudget CreateSampleEntity()
     {
         return new DataBudget
@@ -96,6 +115,7 @@ public class DataBudgetRepositoryTests : IDisposable
             IdFase = 3,
             IdCurrency = 1,
             IdEpigrafe = 1,
+
             Mes00 = 5m,
             Mes01 = 10m,
             Mes02 = 15m,

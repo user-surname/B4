@@ -12,7 +12,7 @@ public class FasesRepositoryTests : IDisposable
 
     public FasesRepositoryTests()
     {
-        _repo = new FasesRepository(new DapperContext(TestConfig.Configuration));
+        _repo = new FasesRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
     }
 
     public void Dispose()

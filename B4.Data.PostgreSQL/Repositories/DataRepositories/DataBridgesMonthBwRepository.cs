@@ -1,23 +1,19 @@
 using Dapper;
-using Npgsql;
-using B4.Models.Entities;
-using B4.Models.Interfaces;
+using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces.DataInterfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
-    public class DataBridgesMonthRepository 
-        : BaseRepository<DataBridgesMonth>, IDataBridgesMonthRepository
+    public class DataBridgesMonthBwRepository 
+        : BaseRepository<DataBridgesMonthBw>, IDataBridgesMonthBwRepository
     {
-        public DataBridgesMonthRepository(string connectionString)
-            : base(connectionString, "b4.data_bridges_month")
-        {
-        }
+        public DataBridgesMonthBwRepository(PostgreSQLDapperContext context)
+            : base(context, "\"b4\".\"data_bridges_month_bw\"") { }
 
-        public override async Task AddAsync(DataBridgesMonth entity)
+        public async Task AddAsync(DataBridgesMonthBw entity)
         {
             var sql = @"
-                INSERT INTO b4.data_bridges_month
-                (
+                INSERT INTO ""b4"".""data_bridges_month_bw"" (
                     idapicarga, guidcarga, fechaultmodif,
                     idcompany, ejercicio, idciclo, idfase,
                     idcurrency, idepigrafe,
@@ -27,8 +23,7 @@ namespace B4.Data.PostgreSQL.Repositories
                     prototooling, other, ""check"", comments,
                     idcarga, idcargastgbw, idhoja
                 )
-                VALUES
-                (
+                VALUES (
                     @IdAPICarga, @GuidCarga, @FechaUltModif,
                     @IdCompany, @Ejercicio, @IdCiclo, @IdFase,
                     @IdCurrency, @IdEpigrafe,
@@ -38,17 +33,16 @@ namespace B4.Data.PostgreSQL.Repositories
                     @ProtoTooling, @Other, @Check, @Comments,
                     @IdCarga, @IdCargaSTGBW, @IdHoja
                 )
-                RETURNING id;
-            ";
+                RETURNING id;";
 
             using var conn = GetConnection();
-            entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
+            entity.Id = await conn.ExecuteScalarAsync<int>(sql);
         }
 
-        public override async Task UpdateAsync(DataBridgesMonth entity)
+        public async Task UpdateAsync(DataBridgesMonthBw entity)
         {
             var sql = @"
-                UPDATE b4.data_bridges_month SET
+                UPDATE ""b4"".""data_bridges_month_bw"" SET
                     idapicarga=@IdAPICarga,
                     guidcarga=@GuidCarga,
                     fechaultmodif=@FechaUltModif,
@@ -76,8 +70,7 @@ namespace B4.Data.PostgreSQL.Repositories
                     idcarga=@IdCarga,
                     idcargastgbw=@IdCargaSTGBW,
                     idhoja=@IdHoja
-                WHERE id=@Id
-            ";
+                WHERE id=@Id";
 
             using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);
