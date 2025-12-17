@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Dapper;
+﻿using B4.Models.Entities.DataEntities;
 using B4.Models.Interfaces;
+using B4.Models.Interfaces.DataInterfaces;
+using Dapper;
 using System;
-using B4.Models.Entities.DataEntities;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {
     public class DataForecastRepository
-        : DataFinancialRepository<DataForecast>
+        : DataFinancialRepository<DataForecast>, IDataForecastRepository
     {
         public DataForecastRepository(MySQLDapperContext context)
             : base(context, "DATA_Forecast")

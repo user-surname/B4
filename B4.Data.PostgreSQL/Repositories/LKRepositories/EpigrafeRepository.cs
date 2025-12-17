@@ -2,7 +2,7 @@ using Dapper;
 using B4.Models.Entities.LkEntities;
 using B4.Models.Interfaces.LkInterfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.PostgreSQL.Repositories.LKRepositories
 {
     public class EpigrafeRepository
         : BaseLkRepository<LkEpigrafe>, IEpigrafeRepository
