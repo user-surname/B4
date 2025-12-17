@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace B4.Models.Entities.DataEntities
 
@@ -80,5 +82,33 @@ namespace B4.Models.Entities.DataEntities
             IdCargaSTGBW = idCargaSTGBW;
             IdHoja = idHoja;
         }
+
+        protected IEnumerable<decimal> GetMeses()
+        {
+            return new[]
+            {
+                Mes00, Mes01, Mes02, Mes03,
+                Mes04, Mes05, Mes06, Mes07,
+                Mes08, Mes09, Mes10, Mes11,
+                Mes12, Mes13
+            };
+        }
+            
+        protected void IncreaseVersion()
+        {
+            Version = Version <= 0 ? 1 : Version + 1;
+        }
+
+        public void RecalculateFinancialFields(bool increaseVersion = true)
+        {
+            var meses = GetMeses();
+
+            Checksum = (int)meses.Sum(m => Math.Abs(m));
+            IsZero = meses.Any(m => m != 0m) ? 1 : 0;
+
+            if (increaseVersion)
+                IncreaseVersion();
+        }
+
     }
 }

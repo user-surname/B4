@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace B4.Models.Entities.LkEntities
+﻿namespace B4.Models.Entities.LkEntities
 {
     public abstract class LkBase
     {
-
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public long IsActive { get; set; }
+        public long IsActive { get; set; } // 1 = activo, 0 = inactivo
 
-        public LkBase() {}
+        public LkBase() { }
 
         public LkBase(DateTime createdAt, DateTime updatedAt, long isActive)
         {
@@ -22,5 +15,7 @@ namespace B4.Models.Entities.LkEntities
             IsActive = isActive;
         }
 
+        public void Activate() => IsActive = 1;
+        public void Deactivate() => IsActive = 0;
     }
 }

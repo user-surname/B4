@@ -12,9 +12,13 @@ namespace B4.Data.PostgreSQL.Repositories
 
         public override async Task AddAsync(LkPlantCountry entity)
         {
+            PrepareForInsert(entity);
+
             const string sql = @"
-                INSERT INTO b4.lk_plant_country (idcountry, country)
-                VALUES (@IdCountry, @Country);";
+                INSERT INTO b4.lk_plant_country
+                    (idcountry, country, createdat, updatedat, isactive)
+                VALUES
+                    (@IdCountry, @Country, @CreatedAt, @UpdatedAt, @IsActive);";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);
@@ -22,9 +26,13 @@ namespace B4.Data.PostgreSQL.Repositories
 
         public override async Task UpdateAsync(LkPlantCountry entity)
         {
+            PrepareForUpdate(entity);
+
             const string sql = @"
                 UPDATE b4.lk_plant_country 
-                SET country=@Country
+                SET country=@Country,
+                    updatedat=@UpdatedAt,
+                    isactive=@IsActive
                 WHERE idcountry=@IdCountry;";
 
             using var conn = _context.CreateConnection();

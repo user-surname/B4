@@ -12,9 +12,13 @@ namespace B4.Data.PostgreSQL.Repositories
 
         public override async Task AddAsync(LkPlantDivision entity)
         {
+            PrepareForInsert(entity);
+
             const string sql = @"
-                INSERT INTO b4.lk_plant_division (iddivision, division)
-                VALUES (@IdDivision, @Division);";
+                INSERT INTO b4.lk_plant_division
+                    (iddivision, division, createdat, updatedat, isactive)
+                VALUES
+                    (@IdDivision, @Division, @CreatedAt, @UpdatedAt, @IsActive);";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);
@@ -22,9 +26,13 @@ namespace B4.Data.PostgreSQL.Repositories
 
         public override async Task UpdateAsync(LkPlantDivision entity)
         {
+            PrepareForUpdate(entity);
+
             const string sql = @"
                 UPDATE b4.lk_plant_division 
-                SET division=@Division
+                SET division=@Division,
+                    updatedat=@UpdatedAt,
+                    isactive=@IsActive
                 WHERE iddivision=@IdDivision;";
 
             using var conn = _context.CreateConnection();

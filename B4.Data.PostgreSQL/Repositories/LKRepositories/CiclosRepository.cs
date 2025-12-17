@@ -4,7 +4,7 @@ using B4.Models.Interfaces.LkInterfaces;
 
 namespace B4.Data.PostgreSQL.Repositories
 {
-    public class CiclosRepository 
+    public class CiclosRepository
         : BaseLkRepository<LkCiclos>, ICiclosRepository
     {
         public CiclosRepository(PostgreSQLDapperContext ctx)
@@ -12,9 +12,13 @@ namespace B4.Data.PostgreSQL.Repositories
 
         public override async Task AddAsync(LkCiclos entity)
         {
+            PrepareForInsert(entity);
+
             const string sql = @"
-                INSERT INTO b4.lk_ciclos (idciclo, ciclo, descripcion)
-                VALUES (@IdCiclo, @Ciclo, @Descripcion);";
+                INSERT INTO b4.lk_ciclos
+                    (idciclo, ciclo, descripcion, createdat, updatedat, isactive)
+                VALUES
+                    (@IdCiclo, @Ciclo, @Descripcion, @CreatedAt, @UpdatedAt, @IsActive);";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);
@@ -22,10 +26,14 @@ namespace B4.Data.PostgreSQL.Repositories
 
         public override async Task UpdateAsync(LkCiclos entity)
         {
+            PrepareForUpdate(entity);
+
             const string sql = @"
                 UPDATE b4.lk_ciclos SET 
                     ciclo=@Ciclo,
-                    descripcion=@Descripcion
+                    descripcion=@Descripcion,
+                    updatedat=@UpdatedAt,
+                    isactive=@IsActive
                 WHERE idciclo=@IdCiclo;";
 
             using var conn = _context.CreateConnection();
