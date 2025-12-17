@@ -36,7 +36,7 @@ logger.Info("Iniciando API B4...");
 
 var sharedConfig = SharedConfig.Load();
 
-ProyectoPILOTO.Data.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
+B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
 
 
 // Middleware global

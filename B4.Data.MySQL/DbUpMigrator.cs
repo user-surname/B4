@@ -14,7 +14,7 @@ using System.Linq;
 using System.Reflection;
 using B4.Data.MySQL;
 
-namespace ProyectoPILOTO.Data
+namespace B4.Data.MySQL
 {
     // Clase estática para gestionar las migraciones de base de datos
     public static class DbUpMigrator

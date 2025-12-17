@@ -79,23 +79,11 @@ namespace B4.Models.Entities.DataEtities
             Mes12 = mes12;
             Mes13 = mes13;
 
-            // Creamos un array con todos los meses
-            decimal[] meses = new decimal[]
-            {
-                Mes00, Mes01, Mes02, Mes03, Mes04, Mes05, Mes06, Mes07,
-                Mes08, Mes09, Mes10, Mes11, Mes12, Mes13
-            };
-
-            // Calculamos la suma usando valores absolutos
-            decimal suma = meses.Sum(m => Math.Abs(m));
-
-            // Actualizamos isZero: 0 si todos son cero, 1 si hay algún valor distinto de cero
-            IsZero = meses.All(m => m == 0) ? 0 : 1;
-            Checksum = (int)suma;
+            auditCalculation();
 
         }
 
-        public void auditionCalculation()
+        public void auditCalculation()
         {
             // Creamos un array con todos los meses
             decimal[] meses = new decimal[]
