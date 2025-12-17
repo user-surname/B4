@@ -1,5 +1,6 @@
 using B4.Api.Middleware;
 using B4.Data.MySQL;
+using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.Services;
@@ -7,15 +8,12 @@ using B4.Models.Interfaces.DataInterfaces;
 using B4.Models.Interfaces.LkInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.ResponseCompression;
-
-// Interfaces
-
-// NLog
+using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Web;
-
+using System;
+using System.IO;
 using System.IO.Compression;
-using System.Threading;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -30,82 +28,132 @@ var logger = LogManager.Setup()
     .LoadConfigurationFromFile(Path.Combine(AppContext.BaseDirectory, "nlog.config"))
     .GetCurrentClassLogger();
 
-logger.Info("Iniciando API B4...");
-
-// Migraciones
-
-var sharedConfig = SharedConfig.Load();
-
-B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
-
-
-// Middleware global
-builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
-
-// Compresión GZIP
-builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+try
 {
-    options.Level = CompressionLevel.SmallestSize;
-});
+    logger.Info("Iniciando API B4...");
 
-// MemoryCache tablas maestras
-builder.Services.AddMemoryCache();
-builder.Services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
+    // Migraciones MySQL
+    var sharedConfig = SharedConfig.Load();
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+    // Obtener qué base de datos usar: MySQL o PostgreSQL
+    var bbdd = sharedConfig["bbdd"]?.Trim();
 
-// --------------------------------------------------
-// CONEXIÓN BASE DE DATOS
-// --------------------------------------------------
-var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
-builder.Services.AddSingleton<MySQLDapperContext>();
+    if (string.IsNullOrWhiteSpace(bbdd))
+    {
+        logger.Error("No se encontró la clave 'bbdd' en el archivo de configuración.");
+        throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
+    }
 
-// --------------------------------------------------
-// REGISTRO DE TODOS LOS REPOSITORIOS DATA*
-// --------------------------------------------------
+    try
+    {
+        if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.Info("Iniciando migraciones para MySQL...");
+            B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
+            logger.Info("Base de datos MySQL actualizada correctamente.");
+        }
+        else if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+        {
+            logger.Info("Iniciando migraciones para PostgreSQL...");
+            B4.Data.PostgreSQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
+            logger.Info("Base de datos PostgreSQL actualizada correctamente.");
+        }
+        else
+        {
+            logger.Error("Valor desconocido para 'bbdd' en configuración: {0}", bbdd);
+            throw new InvalidOperationException($"Valor desconocido para 'bbdd': {bbdd}");
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.Fatal(ex, $"Error durante la actualización de la base de datos {bbdd}.");
+        throw;
+    }
 
-builder.Services.AddScoped<IDataComentariosRepository>();
+    // Middleware global
+    builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 
-builder.Services.AddScoped<IDataBudgetRepository>();
+    // Compresión GZIP
+    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
+    {
+        options.Level = CompressionLevel.SmallestSize;
+    });
 
-builder.Services.AddScoped<IDataForecastRepository>();
+    // MemoryCache tablas maestras
+    builder.Services.AddMemoryCache();
+    builder.Services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
 
-builder.Services.AddScoped<IDataBridgesFyRepository>();
+    // Controllers y Swagger
+    builder.Services.AddControllers();
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new Microsoft.OpenApi.OpenApiInfo
+        {
+            Title = "B4 API",
+            Version = "v1",
+            Description = "Documentación de la API B4"
+        });
+    });
 
-builder.Services.AddScoped<IDataBridgesFyBwRepository>();
+    // --------------------------------------------------
+    // CONEXIÓN BASE DE DATOS PostgreSQL
+    // --------------------------------------------------
 
-builder.Services.AddScoped<IDataBridgesFyBwEurRepository>();
+    var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
+    builder.Services.AddSingleton<MySQLDapperContext>();
 
-builder.Services.AddScoped<IDataBridgesMonthBwRepository>();
+    // --------------------------------------------------
+    // REGISTRO DE TODOS LOS REPOSITORIOS DATA*
+    // --------------------------------------------------
+    builder.Services.AddScoped<IDataComentariosRepository>();
+    builder.Services.AddScoped<IDataBudgetRepository>();
+    builder.Services.AddScoped<IDataForecastRepository>();
+    builder.Services.AddScoped<IDataBridgesFyRepository>();
+    builder.Services.AddScoped<IDataBridgesFyBwRepository>();
+    builder.Services.AddScoped<IDataBridgesFyBwEurRepository>();
+    builder.Services.AddScoped<IDataBridgesMonthBwRepository>();
+    builder.Services.AddScoped<IEpigrafeRepository>();
 
-builder.Services.AddScoped<IEpigrafeRepository>();
+    builder.Services.AddAuthorization();
 
+    // --------------------------------------------------
+    // BUILD APP
+    // --------------------------------------------------
+    var app = builder.Build();
 
-builder.Services.AddAuthorization();
+    // Middleware global
+    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
-// --------------------------------------------------
-// BUILD APP
-// --------------------------------------------------
-var app = builder.Build();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
 
-app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+    app.UseHttpsRedirection();
+    app.UseRouting();
+    app.UseAuthorization();
+    app.UseCors("AllowAll");
+    app.MapControllers();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    logger.Info("API B4 iniciada correctamente (NLog Activo)");
+
+    try
+    {
+        app.Run();
+    }
+    catch (Exception ex)
+    {
+        logger.Fatal(ex, "Error crítico al iniciar la aplicación.");
+        throw;
+    }
 }
-
-app.UseHttpsRedirection();
-app.UseRouting();
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.UseCors("AllowAll");
-
-logger.Info("API B4 iniciada correctamente (NLog Activo)");
-
-app.Run();
+catch (Exception ex)
+{
+    logger.Fatal(ex, "Error crítico durante el inicio de la API B4.");
+}
+finally
+{
+    LogManager.Shutdown();
+}
