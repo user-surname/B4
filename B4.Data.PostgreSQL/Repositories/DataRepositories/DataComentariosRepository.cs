@@ -1,14 +1,14 @@
 using Dapper;
-using B4.Models.Entities;
-using B4.Models.Interfaces;
+using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces.DataInterfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
     public class DataComentariosRepository 
         : BaseRepository<DataComentarios>, IDataComentariosRepository
     {
-        public DataComentariosRepository(string connectionString)
-            : base(connectionString, "b4.data_comentarios") { }
+        public DataComentariosRepository(PostgreSQLDapperContext context)
+            : base(context, "b4.data_comentarios") { }
 
         // CREATE
         public async Task AddAsync(DataComentarios entity)

@@ -1,29 +1,32 @@
+using B4.Models.Interfaces;
 using Dapper;
-using Npgsql;
+using System.Data;
 
 namespace B4.Data.PostgreSQL.Repositories
 {
-    public abstract class BaseRepository<T>
+    public abstract class BaseRepository<T> : IRepository<T>
+        where T : class
     {
-        protected readonly string _connectionString;
+        protected readonly PostgreSQLDapperContext _context;
         protected readonly string _table;
 
-        protected BaseRepository(string connectionString, string table)
+        protected BaseRepository(PostgreSQLDapperContext context, string table)
         {
-            _connectionString = connectionString;
+            _context = context;
             _table = table;
         }
 
-        protected NpgsqlConnection GetConnection()
-            => new NpgsqlConnection(_connectionString);
+        protected IDbConnection GetConnection()
+            => _context.CreateConnection();
 
         // ---------------------------
         // R - GET BY ID
         // ---------------------------
         public virtual async Task<T?> GetByIdAsync(int id)
         {
-            using var conn = GetConnection();
             var sql = $"SELECT * FROM {_table} WHERE id = @Id";
+
+            using var conn = GetConnection();
             return await conn.QuerySingleOrDefaultAsync<T>(sql, new { Id = id });
         }
 
@@ -32,8 +35,10 @@ namespace B4.Data.PostgreSQL.Repositories
         // ---------------------------
         public virtual async Task<IEnumerable<T>> GetAllAsync()
         {
+            var sql = $"SELECT * FROM {_table} LIMIT 2000";
+
             using var conn = GetConnection();
-            return await conn.QueryAsync<T>($"SELECT * FROM {_table} LIMIT 2000");
+            return await conn.QueryAsync<T>(sql);
         }
 
         // ---------------------------
@@ -41,9 +46,10 @@ namespace B4.Data.PostgreSQL.Repositories
         // ---------------------------
         public virtual async Task DeleteAsync(int id)
         {
-            using var conn = GetConnection();
             var sql = $"DELETE FROM {_table} WHERE id = @Id";
-            int affected = await conn.ExecuteAsync(sql, new { Id = id });
+
+            using var conn = GetConnection();
+            var affected = await conn.ExecuteAsync(sql, new { Id = id });
 
             if (affected == 0)
                 throw new Exception($"No existe registro con ID {id} en {_table}");

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using B4.Data.MySQL;
 using B4.Data.MySQL.Repositories.DataRepositories;
-using B4.Models.Entities.DataEtities;
+using B4.Models.Entities.DataEntities;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System;
 
-namespace B4.Models.Entities.DataEtities
+namespace B4.Models.Entities.DataEntities
 {
        public class DataBridgesFy : DataBase
     {
@@ -66,7 +66,7 @@ namespace B4.Models.Entities.DataEtities
                 DateTime createdAt,
                 DateTime updatedAt,
                 int version,
-                int? checksum,
+                int checksum,
                 int isZero
             ) : base(createdAt, updatedAt, version, checksum, isZero)
         {

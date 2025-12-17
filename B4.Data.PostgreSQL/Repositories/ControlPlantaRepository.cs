@@ -6,9 +6,9 @@ namespace B4.Data.PostgreSQL.Repositories
 {
     public class ControlPlantaRepository : IControlPlantaRepository
     {
-        private readonly DapperContext _context;
+        private readonly PostgreSQLDapperContext _context;
 
-        public ControlPlantaRepository(DapperContext context)
+        public ControlPlantaRepository(PostgreSQLDapperContext context)
         {
             _context = context;
         }

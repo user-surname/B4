@@ -1,8 +1,8 @@
-﻿using B4.Models.Entities.DataEtities;
+﻿using B4.Models.Entities.DataEntities;
 
 namespace B4.Models.Interfaces.DataInterfaces
 {
-    public interface IDataFinancialRepository<T> : IRepository<T> where T : DataFinancial
+    public interface IDataFinancialRepository<T> : IRepository<T> where T : DataBaseFinanciero
 
     {
 

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using B4.Models.Interfaces;
 using System;
-using B4.Models.Entities.DataEtities;
+using B4.Models.Entities.DataEntities;
 
 namespace B4.Data.MySQL.Repositories.DataRepositories
 {

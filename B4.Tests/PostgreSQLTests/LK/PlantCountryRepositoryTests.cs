@@ -12,7 +12,7 @@ public class PlantCountryRepositoryTests : IDisposable
 
     public PlantCountryRepositoryTests()
     {
-        _repo = new PlantCountryRepository(new DapperContext(TestConfig.Configuration));
+        _repo = new PlantCountryRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
     }
 
     public void Dispose()

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B4.Models.Entities.DataEtities
+namespace B4.Models.Entities.DataEntities
 {
     public class DataTipoCambio : DataBase
     {
@@ -45,7 +45,7 @@ namespace B4.Models.Entities.DataEtities
             DateTime createdAt,
             DateTime updatedAt,
             int version,
-            int? checksum,
+            int checksum,
             int isZero
         ) : base(createdAt, updatedAt, version, checksum, isZero)
         {

@@ -12,7 +12,7 @@ public class PlantControllersRepositoryTests : IDisposable
 
     public PlantControllersRepositoryTests()
     {
-        _repo = new PlantControllersRepository(new DapperContext(TestConfig.Configuration));
+        _repo = new PlantControllersRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
     }
 
     public void Dispose()

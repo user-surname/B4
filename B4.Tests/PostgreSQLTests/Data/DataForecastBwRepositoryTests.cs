@@ -1,39 +1,47 @@
 using Xunit;
 using Npgsql;
 using Dapper;
-using B4.Data.PostgreSQL.Repositories;
-using B4.Models.Entities.DataEtities;
+using B4.Data.PostgreSQL;
+using B4.Data.PostgreSQL.Repositories.DataRepositories;
+using B4.Models.Entities.DataEntities;
 
 namespace B4.Tests.PostgreSQLTests.Data
 {
     public class DataForecastBwRepositoryTests : IDisposable
     {
         private readonly DataForecastBwRepository _repo;
+        private readonly PostgreSQLDapperContext _context;
         private readonly List<int> _insertedIds = new();
 
         public DataForecastBwRepositoryTests()
         {
-            _repo = new DataForecastBwRepository(TestConfig.Conn);
+            _context = new PostgreSQLDapperContext(TestConfig.Configuration);
+            _repo = new DataForecastBwRepository(_context);
         }
 
         public void Dispose()
         {
-            if (_insertedIds.Count > 0)
-            {
-                using var conn = new NpgsqlConnection(TestConfig.Conn);
-                conn.Execute("DELETE FROM b4.data_forecast_bw WHERE id = ANY(@Ids)",
-                    new { Ids = _insertedIds.ToArray() });
-            }
+            if (_insertedIds.Count == 0)
+                return;
+
+            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            conn.Execute(
+                "DELETE FROM b4.data_forecast_bw WHERE id = ANY(@Ids)",
+                new { Ids = _insertedIds.ToArray() }
+            );
         }
 
+        // TEST 1: conexión
         [Fact]
         public async Task Test_Connection()
         {
             using var conn = new NpgsqlConnection(TestConfig.Conn);
             await conn.OpenAsync();
+
             Assert.Equal(System.Data.ConnectionState.Open, conn.State);
         }
 
+        // TEST 2: insert + get
         [Fact]
         public async Task Insert_And_Get_Should_Work()
         {
@@ -48,6 +56,7 @@ namespace B4.Tests.PostgreSQLTests.Data
             Assert.Equal(entity.Mes01, result!.Mes01);
         }
 
+        // TEST 3: update
         [Fact]
         public async Task Update_Should_Work()
         {
@@ -66,6 +75,7 @@ namespace B4.Tests.PostgreSQLTests.Data
             Assert.Equal(777m, result!.Mes02);
         }
 
+        // TEST 4: delete
         [Fact]
         public async Task Delete_Should_Work()
         {
@@ -93,20 +103,21 @@ namespace B4.Tests.PostgreSQLTests.Data
                 IdFase = 1,
                 IdCurrency = 1,
                 IdEpigrafe = 1,
-                Mes00 = 10,
-                Mes01 = 11,
-                Mes02 = 12,
-                Mes03 = 13,
-                Mes04 = 14,
-                Mes05 = 15,
-                Mes06 = 16,
-                Mes07 = 17,
-                Mes08 = 18,
-                Mes09 = 19,
-                Mes10 = 20,
-                Mes11 = 21,
-                Mes12 = 22,
-                Mes13 = 23
+
+                Mes00 = 10m,
+                Mes01 = 11m,
+                Mes02 = 12m,
+                Mes03 = 13m,
+                Mes04 = 14m,
+                Mes05 = 15m,
+                Mes06 = 16m,
+                Mes07 = 17m,
+                Mes08 = 18m,
+                Mes09 = 19m,
+                Mes10 = 20m,
+                Mes11 = 21m,
+                Mes12 = 22m,
+                Mes13 = 23m
             };
         }
     }

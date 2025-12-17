@@ -1,14 +1,14 @@
 using Dapper;
-using B4.Models.Entities;
-using B4.Models.Interfaces;
+using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces.DataInterfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
     public class DataBridgesFyBwRepository 
         : BaseRepository<DataBridgesFyBw>, IDataBridgesFyBwRepository
     {
-        public DataBridgesFyBwRepository(string cs)
-            : base(cs, "b4.data_bridges_fy_bw") { }
+        public DataBridgesFyBwRepository(PostgreSQLDapperContext context)
+            : base(context, "b4.data_bridges_fy_bw") { }
 
         public async Task AddAsync(DataBridgesFyBw entity)
         {
