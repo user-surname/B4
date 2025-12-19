@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.20251219.1 - Slava
+
+- B4.Data.MySQL -> Nueva estructura de Repositories 
+- B4.Data.Models -> Nueva estructura de entidades y Interfaces
+- B4.Api -> condicional para conectarse a la bbdd a taves del Shared, inyeccion de dependencias y control de exepciones
+- B4.Shared -> SharedConfig: classe para las cadenas de conexion
+
 ## v0.20251127.1 - Slava
 
 - B4.Data.MySQL -> Readme: agregado
