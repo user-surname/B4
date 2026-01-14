@@ -1,0 +1,126 @@
+using Microsoft.AspNetCore.Mvc;
+using B4.Api.Dto.GetDto;
+using B4.Api.Dto.PostDto;
+using B4.Models.Interfaces.DataInterfaces;
+using B4.Models.Entities.DataEntities;
+
+namespace B4.Api.Controllers;
+
+[ApiController]
+[Route("api/v1/[controller]")]
+public class DataActualsController : ControllerBase
+{
+    private readonly IDataActualsRepository _repo;
+
+    public ActualsController(IDataActualsRepository repo)
+    {
+        _repo = repo;
+    }
+
+    // --------------------------------------------------
+    // GET /api/v1/Actuals/{planta}/{ejercicio}
+    // --------------------------------------------------
+    [HttpGet("{planta:int}/{ejercicio:int}")]
+    public async Task<IActionResult> Get(int planta, int ejercicio)
+    {
+        var rows = await _repo.GetAllAsync();
+
+        var grouped = rows
+            .Where(x => x.IdCompany == planta && x.Ejercicio == ejercicio)
+            .GroupBy(x => x.IdEpigrafe);
+
+        var response = new DataActualsGetDto
+        {
+            head = new DataActualsGetDto.HeadDto
+            {
+                ts = DateTime.Now,
+                p = planta.ToString(),
+                e = ejercicio,
+                c = 0,
+                f = "0",
+                m = "PLN"
+            }
+        };
+
+        foreach (var g in grouped)
+        {
+            var r = g.First();
+
+            response.detail.Add(new DataActualsGetDto.DetailDto
+            {
+                e = g.Key,
+                v = new[]
+                {
+                    r.Mes00, r.Mes01, r.Mes02, r.Mes03,
+                    r.Mes04, r.Mes05, r.Mes06, r.Mes07,
+                    r.Mes08, r.Mes09, r.Mes10, r.Mes11,
+                    r.Mes12, r.Mes13
+                }
+            });
+        }
+
+        return Ok(response);
+    }
+
+    // --------------------------------------------------
+    // POST /api/v1/Actuals/{planta}/{ejercicio}/{mes}/{tipo}
+    // --------------------------------------------------
+    [HttpPost("{planta:int}/{ejercicio:int}/{mes:int}/{tipo}")]
+    public async Task<IActionResult> Post(
+        int planta,
+        int ejercicio,
+        int mes,
+        string tipo,
+        [FromBody] List<DataActualsPostDto> rows)
+    {
+        if (rows == null || rows.Count == 0)
+            return Ok(new { inserted = 0 });
+
+        var guid = Guid.NewGuid();
+        var now = DateTime.UtcNow;
+        int inserted = 0;
+
+        foreach (var r in rows)
+        {
+            var entity = new DataActuals(
+                id: 0,
+                idAPICarga: 0,
+                guidCarga: guid,
+                fechaUltModif: now,
+                idCompany: planta,
+                ejercicio: ejercicio,
+                idCiclo: 0,
+                idFase: 0,
+                idCurrency: 0,
+                idEpigrafe: r.e,
+                mes00: 0,
+                mes01: r.m1,
+                mes02: r.m2,
+                mes03: r.m3,
+                mes04: r.m4,
+                mes05: r.m5,
+                mes06: r.m6,
+                mes07: r.m7,
+                mes08: r.m8,
+                mes09: r.m9,
+                mes10: r.m10,
+                mes11: r.m11,
+                mes12: r.m12,
+                mes13: r.m13,
+                idCarga: null,
+                idCargaSTGBW: null,
+                idHoja: null,
+                createdAt: now,
+                updatedAt: now,
+                version: 1,
+                checksum: 0,
+                isZero: 0
+            );
+
+            await _repo.AddAsync(entity);
+            inserted++;
+        }
+
+        return Ok(new { inserted });
+    }
+}
