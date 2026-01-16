@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
@@ -62,7 +62,7 @@ namespace B4.Api.Middleware
             int count = 0;
             try
             {
-                if (!string.IsNullOrEmpty(originalResponseBody) && originalResponseBody != "{}")
+                if (!string.IsNullOrWhiteSpace(originalResponseBody) && originalResponseBody.Trim() != "{}")
                 {
                     using var doc = JsonDocument.Parse(originalResponseBody);
 
@@ -75,7 +75,41 @@ namespace B4.Api.Middleware
                         count = 1;
                 }
             }
-            catch { }
+            catch
+            {
+                // si no es JSON, count se queda a 0
+            }
+
+            // ✅ data seguro: si NO es JSON, lo guardamos como texto en { raw = "..." }
+            object? dataObj = null;
+
+            if (!string.IsNullOrWhiteSpace(originalResponseBody))
+            {
+                var trimmed = originalResponseBody.Trim();
+
+                if (trimmed != "{}")
+                {
+                    var looksJson =
+                        (trimmed.StartsWith("{") && trimmed.EndsWith("}")) ||
+                        (trimmed.StartsWith("[") && trimmed.EndsWith("]"));
+
+                    if (looksJson)
+                    {
+                        try
+                        {
+                            dataObj = JsonDocument.Parse(trimmed).RootElement.Clone();
+                        }
+                        catch
+                        {
+                            dataObj = new { raw = originalResponseBody };
+                        }
+                    }
+                    else
+                    {
+                        dataObj = new { raw = originalResponseBody };
+                    }
+                }
+            }
 
             var wrapper = new
             {
@@ -85,9 +119,7 @@ namespace B4.Api.Middleware
                 ts = DateTime.UtcNow.ToString("o"),
                 exectimems = stopwatch.ElapsedMilliseconds,
                 count = count,
-                data = string.IsNullOrEmpty(originalResponseBody) || originalResponseBody == "{}"
-                    ? null
-                    : JsonSerializer.Deserialize<JsonElement>(originalResponseBody)
+                data = dataObj
             };
 
             context.Response.ContentType = "application/json; charset=UTF-8";

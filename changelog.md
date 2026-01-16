@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.20260116.1 Victor
+
+- B4.Api.Controllers
+  - Solucionar problemas de compilacion
+- B4.Api.Dto
+  - Solucionar problemas de compilacion
+- B4.Api.Test
+  - Creacion de un Test para el Controller
+
 ## v0.20260115.1 Victor
 
 - B4.Api.Controllers

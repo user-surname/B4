@@ -130,11 +130,11 @@ try
         throw;
     }
 
-    // Middleware global (errores)
-    builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
-
     // Middleware de metadata
     builder.Services.AddTransient<ResponseWrapperMiddleware>();
+
+    // Middleware global (errores)
+    builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 
     // Compresión GZIP
     builder.Services.Configure<GzipCompressionProviderOptions>(options =>
@@ -164,12 +164,11 @@ try
     app.UseHttpsRedirection();
     app.UseRouting();
 
-    //  1) Wrapper metadata (envuelve todo)
-    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-    // 2) Errores (genera body JSON en fallos)
+    // Errores (genera body JSON en fallos)
     app.UseMiddleware<ResponseWrapperMiddleware>();
-
-
+    // Wrapper metadata (envuelve todo)
+    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+    
     app.UseAuthorization();
     app.UseCors("AllowAll");
     app.MapControllers();
