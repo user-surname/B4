@@ -1,5 +1,6 @@
 # Changelog
 
+## v0.20260116.1 Victor
 ## v0.20260116.1 - Slava
 
 - B4.Api.Program.cs -> agregado servicio de autenticacion JWT
@@ -10,65 +11,92 @@
 
 ## v0.20251219.1 - Slava
 
-- B4.Data.MySQL -> Nueva estructura de Repositories 
-- B4.Data.Models -> Nueva estructura de entidades y Interfaces
-- B4.Api -> condicional para conectarse a la bbdd a taves del Shared, inyeccion de dependencias y control de exepciones
-- B4.Shared -> SharedConfig: classe para las cadenas de conexion
+- B4.Api.Controllers
+  - Solucionar problemas de compilacion
+- B4.Api.Dto
+  - Solucionar problemas de compilacion
+- B4.Api.Test
+  - Creacion de un Test para el Controller
 
-## v0.20251127.1 - Slava
+## v0.20260115.1 Victor
 
-- B4.Data.MySQL -> Readme: agregado
-- B4.Api -> Cadenas de conexion MySQLConnetion y PostgresConnection en appsettings.json: agregado
+- B4.Api.Controllers
+  - Filtrar als busquedas de DataActualsController
+- B4.Api.Dto
+  - Modificacion de Dto para POST y GET de DataActuals
+- B4.Api.Middleware
+  - Creacion de un Middleware para envolver lso metadatos
 
-## v0.20251126.2 - Slava
+## v0.20260114.1 Victor
 
-- B4.Data.MySQL -> DapperContext -> MySQLDapperContext
-- B4.Api -> appsettings.json: DeafultConnection -> MySQLConnection
+- B4.Api.Controllers
+  - Creacion de DataActualsController
+  - Herencia de ControllerBase
+- B4.Api.Dto
+  - Creacion de Dto para POST de DataActuals
+  - Creacion de Dto para GET de DataActuals
 
-## v0.20251126.1 - Slava
+## v0.20251217.2 Victor
 
-- B4.Data.MySQL -> Data(...)Repository + Test + Intefice + Entity: creado
-- B4.Data.MySQL -> StgData(...)Repository + Test + Intefice + Entity: creado
+- B4.Models
+  - Refactorització de les classes Data financeres
+  - Afegits mètodes comuns per al càlcul de:
+    - Checksum
+    - IsZero
+    - Version
+  
+- B4.Data.PostgreSQL
+  - Actualització dels repositoris financers per aplicar automàticament:
+    - Recalcul de Checksum, IsZero i Version en CREATE i UPDATE
+    - Gestió automàtica de CreatedAt i UpdatedAt
+  - Refactorització dels repositoris LK:
+    - Centralització de CreatedAt, UpdatedAt i IsActive a BaseLkRepository
+    - Simplificació dels repositoris concrets 
 
-## v0.20251124.1 - Slava
+## v0.20251217.1 Victor
+- B4.Models
+	- Optimizar las clases Data financieras
+- B4.Data.PostgreSQL
+	- Creacion de la clase PostgreSQLDapperContext.cs
+	- Cambiar l'estructura de les carpetas
 
-- Migraacion a net8.0
-	- Quite "<OutputType>Exe</OutputType>" de B4.Logger para que no de error
-- Actualizacin de Nlog: NLog.Web no es compatible con .NET 8 -> Solucion: NLog.Extensions.Logging
 
-## v0.20251120.1
+## v0.20251209.1 Victor
+- B4.Models
+	- Creacion de la clase abstracta DataBaseFinanciera
+	- Optimizar las clases Data financieras
+- B4.Data.PostgreSQL
+	- Creacion de la clase abstracta BaseFinancialRepository
+	- Optimizar los repositorios 
 
-- global.json
-	- fichero config a nivel de solucion apra unificar el sdk a utilizar
-	- agregado en carpeta: elementos de la solucion_
 
-## v0.20251119.1 - Slava
+## v0.20251202.1 Victor
+- B4.Models
+	- Creacion de la clase abstracta DataBase
+	- Agregar los nuevos campos a las tablas Data 
 
-- B4.Tests -> CiclosRepositoryTest: arreglado el problema de AUTO_INCREMENT
-- B4.Data.MySQL -> Migracion de DbUpMigrator, Migrations y Scripts 
+## v0.20251127.1 Victor
+- B4.DataPostgreSQL
+	- Adaptar los repositorios Data
+- B4.Shared
+	- Creacion de la carpeta Shared
+	- Migración parcial de Logger dentro de Shared
+	TODO: Falta ajustar un par de cosas
+## v0.20251126.1 Victor
+- B4.DataPostgreSQL
+	- Adaptar repositorios LK_xxx y control, implementados por Slava
+	- Integrar dbmigrations en B4.Data.PostgreSQL
+- B4.Test
+	- Implementación de los Test
 
-## v0.20251118.1 - Slava
+## v0.20251124.1 Victor
 
-- B4.Data.MySQL -> PlantTreeRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantSubdivisionRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantillasBotonesPasosTiposRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantDivisionRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantDivisionCompanyRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantCurrencyRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantCountryRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantControllersRepository + Interface + Test: creado
-- B4.Data.MySQL -> PlantCompanyRepository + Interface + Test: creado
-- B4.Data.MySQL -> FasesRepository + Interface + Test: creado
-- B4.Data.MySQL -> ControlPlantaRepository + Interface + Test: creado
-- B4.Data.MySQL -> CiclosRepository + Interface + Test: creado
-	- TODO: B4.Tests -> La tabla DE Ciclos tiene autoincrement, mirar solucion para test
-
-## v0.20251117.1 - Slava
-
-- B4.Tests -> EpigrafesRepositoryTest: creado
-- B4.Data.MySQL -> ControlRepository + Test: creado			
-	- TODO: B4.Model.Entities -> Revisar nombre de campo Epigrafe para que no sea igual que el de la tabla Epigrafes
-
+- B4.DataPostgreSQL
+	- Implementación de los repositorios en Data
+- B4.Test
+	- Implementación de los Test
+- B4.Models
+	- Implementación de todas las Interfaces
 
 ## v0.20251111.2
 
@@ -107,5 +135,3 @@
 - git-cheat-sheet, pdf y enlace
 - ajustes de dependencias: NLog,Newtonsoft.Json, postgreSQL, mySQL
 - API demo (Weatherforecast) probada
-
-
