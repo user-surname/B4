@@ -1,0 +1,2 @@
+2026-01-16 01:59:45.5744 Warn Flush timeout for target NLog.Targets.ConsoleTarget(Name=console)
+2026-01-16 01:59:45.5744 Warn Target flush timeout. One or more targets did not complete flush operation, skipping target close.

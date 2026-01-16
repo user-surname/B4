@@ -3,6 +3,9 @@
   <ItemGroup>
     <PackageReference Include="dbup" Version="5.0.41" />
     <PackageReference Include="dbup-mysql" Version="6.1.0" />
+    <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.23" />
 
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.1" />
@@ -16,11 +19,7 @@
 
     <PackageReference Include="Npgsql" Version="10.0.0" />
 
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
-
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
-
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.0-preview.322" />
   </ItemGroup>
 
   <ItemGroup>

@@ -18,6 +18,9 @@
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="dbup" Version="5.0.41" />
     <PackageReference Include="dbup-mysql" Version="6.1.0" />
+    <PackageReference Include="FluentAssertions" Version="8.8.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.23" />
 
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="10.0.1" />
@@ -32,11 +35,7 @@
 
     <PackageReference Include="Npgsql" Version="10.0.0" />
 
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
-
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.1" />
-
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.0-preview.322" />
 
     <PackageReference Include="xunit" Version="2.9.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
@@ -51,7 +50,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\B4.Helpers\B4.Helpers.csproj" />
-    <ProjectReference Include="..\B4.Api\B4.Api.csproj" />
+    <ProjectReference Include="..\B4.Api\B4.Api.csproj" CopyLocalLockFileAssemblies="true" />
     <ProjectReference Include="..\B4.Domain\B4.Domain.csproj" />
     <ProjectReference Include="..\B4.Data.MySQL\B4.Data.MySQL.csproj" />
     <ProjectReference Include="..\B4.Data.PostgreSQL\B4.Data.PostgreSQL.csproj" />

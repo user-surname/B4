@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.20260116.1 - Slava
+
+- B4.Api.Program.cs -> agregado servicio de autenticacion JWT
+- B4.Api.Controllers -> Controller de autenticacion JWT AuthController: creado
+- B4.Shared -> JwtService: creado
+- B4.Models.Entities -> LoginRequest: creado
+- B4.Tests -> EpigrafeIntegrationTests: creado
+
 ## v0.20251219.1 - Slava
 
 - B4.Data.MySQL -> Nueva estructura de Repositories 

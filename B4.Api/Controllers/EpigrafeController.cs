@@ -1,9 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
+using B4.Api.Middleware;
 using B4.Models.Interfaces.LkInterfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
 {
-    [ApiController]
+    [CustomAuthorize]
     [Route("api/[controller]")]
     public class EpigrafeController : ControllerBase
     {
@@ -14,6 +16,7 @@ namespace B4.Api.Controllers
             _repo = repo;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
