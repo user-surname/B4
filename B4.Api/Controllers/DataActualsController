@@ -1,126 +1,126 @@
-using Microsoft.AspNetCore.Mvc;
 using B4.Api.Dto.GetDto;
-using B4.Api.Dto.PostDto;
-using B4.Models.Interfaces.DataInterfaces;
-using B4.Models.Entities.DataEntities;
+using B4.Data.PostgreSQL.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using System;
 
-namespace B4.Api.Controllers;
-
-[ApiController]
-[Route("api/v1/[controller]")]
-public class DataActualsController : ControllerBase
+namespace B4.Api.Controllers
 {
-    private readonly IDataActualsRepository _repo;
-
-    public ActualsController(IDataActualsRepository repo)
+    [ApiController]
+    [Route("api/v1/[controller]")]  
+    public class DataActualsController : ControllerBase
     {
-        _repo = repo;
-    }
-
-    // --------------------------------------------------
-    // GET /api/v1/Actuals/{planta}/{ejercicio}
-    // --------------------------------------------------
-    [HttpGet("{planta:int}/{ejercicio:int}")]
-    public async Task<IActionResult> Get(int planta, int ejercicio)
-    {
-        var rows = await _repo.GetAllAsync();
-
-        var grouped = rows
-            .Where(x => x.IdCompany == planta && x.Ejercicio == ejercicio)
-            .GroupBy(x => x.IdEpigrafe);
-
-        var response = new DataActualsGetDto
+        private readonly DataActualsRepository _actualsRepo;
+        public DataActualsController(DataActualsRepository actualsRepo)
         {
-            head = new DataActualsGetDto.HeadDto
-            {
-                ts = DateTime.Now,
-                p = planta.ToString(),
-                e = ejercicio,
-                c = 0,
-                f = "0",
-                m = "PLN"
-            }
-        };
+            _actualsRepo = actualsRepo;
+        }
 
-        foreach (var g in grouped)
+        // GET /api/v1/actuals/{planta}/{ejercicio}/{epigrafe}
+        [HttpGet("{planta:int}/{ejercicio:int}/{epigrafe:int}")]
+        public IActionResult GetActualsByPlantaEjercicioEpigrafe(int planta, int ejercicio, int epigrafe)
         {
-            var r = g.First();
-
-            response.detail.Add(new DataActualsGetDto.DetailDto
+            try
             {
-                e = g.Key,
-                v = new[]
+                // Obtener registros filtrados desde el repositorio (consulta optimizada por campos ID)
+                var records = _actualsRepo.GetByPlantaEjercicioEpigrafe(planta, ejercicio, epigrafe);
+                // Construir la cabecera (head) con datos comunes
+                var head = new DataActualsHeadDto
                 {
-                    r.Mes00, r.Mes01, r.Mes02, r.Mes03,
-                    r.Mes04, r.Mes05, r.Mes06, r.Mes07,
-                    r.Mes08, r.Mes09, r.Mes10, r.Mes11,
-                    r.Mes12, r.Mes13
-                }
-            });
+                    ts = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff"),  // timestamp actual
+                    p = planta.ToString(),
+                    e = ejercicio,
+                    c = records.FirstOrDefault()?.IdCiclo ?? 0,   // ciclo (idciclo, asumir 0 si actuals)
+                    f = records.FirstOrDefault()?.IdFase.ToString() ?? "0",  // fase (idfase, como string)
+                    m = /* mapear a código moneda */ GetCurrencyCode(records.FirstOrDefault()?.IdCurrency ?? 0)
+                };
+                // Construir la lista de detalles
+                var detailList = records.Select(r => new DataActualsDetailDto 
+                {
+                    e = r.IdEpigrafe,
+                    v = new decimal[] { 
+                        r.Mes00, r.Mes01, r.Mes02, r.Mes03, r.Mes04, r.Mes05, r.Mes06, 
+                        r.Mes07, r.Mes08, r.Mes09, r.Mes10, r.Mes11, r.Mes12, r.Mes13 
+                    }
+                }).ToList();
+                // Armar el DTO de respuesta
+                var dataDto = new DataActualsGetDto { head = head, detail = detailList };
+                return Ok(dataDto); // Se envía solo el objeto de datos; el middleware lo envolverá con metadata
+            }
+            catch (Exception ex)
+            {
+                // Manejo de error: devolverá control al middleware que formateará el mensaje
+                return BadRequest(ex.Message);
+            }
         }
 
-        return Ok(response);
-    }
-
-    // --------------------------------------------------
-    // POST /api/v1/Actuals/{planta}/{ejercicio}/{mes}/{tipo}
-    // --------------------------------------------------
-    [HttpPost("{planta:int}/{ejercicio:int}/{mes:int}/{tipo}")]
-    public async Task<IActionResult> Post(
-        int planta,
-        int ejercicio,
-        int mes,
-        string tipo,
-        [FromBody] List<DataActualsPostDto> rows)
-    {
-        if (rows == null || rows.Count == 0)
-            return Ok(new { inserted = 0 });
-
-        var guid = Guid.NewGuid();
-        var now = DateTime.UtcNow;
-        int inserted = 0;
-
-        foreach (var r in rows)
+        // Método auxiliar para obtener código de moneda a partir del id (ejemplo simple)
+        private string GetCurrencyCode(int idCurrency)
         {
-            var entity = new DataActuals(
-                id: 0,
-                idAPICarga: 0,
-                guidCarga: guid,
-                fechaUltModif: now,
-                idCompany: planta,
-                ejercicio: ejercicio,
-                idCiclo: 0,
-                idFase: 0,
-                idCurrency: 0,
-                idEpigrafe: r.e,
-                mes00: 0,
-                mes01: r.m1,
-                mes02: r.m2,
-                mes03: r.m3,
-                mes04: r.m4,
-                mes05: r.m5,
-                mes06: r.m6,
-                mes07: r.m7,
-                mes08: r.m8,
-                mes09: r.m9,
-                mes10: r.m10,
-                mes11: r.m11,
-                mes12: r.m12,
-                mes13: r.m13,
-                idCarga: null,
-                idCargaSTGBW: null,
-                idHoja: null,
-                createdAt: now,
-                updatedAt: now,
-                version: 1,
-                checksum: 0,
-                isZero: 0
-            );
+            // Supongamos un mapeo fijo conocido de idCurrency a código (esto podría provenir de un servicio/tabla)
+            return idCurrency == 0 ? "PLN" : "EUR"; // Ejemplo: 0->PLN, otro->EUR (ajustar según realidad)
+        }
+                // POST /api/v1/actuals/{planta}/{ejercicio}/{mes}/{tipo}
+        [HttpPost("{planta:int}/{ejercicio:int}/{mes:int}/{tipo}")]
+        public IActionResult PostActualsByPlantaEjercicio(int planta, int ejercicio, int mes, string tipo, [FromBody] DataActualsPostDto[] nuevosActuals)
+        {
+            if (nuevosActuals == null || nuevosActuals.Length == 0)
+                return BadRequest("El cuerpo de la petición está vacío o no tiene elementos.");
+            try
+            {
+                // Preparar valores comunes para todos los registros
+                int idCiclo = 0; 
+                int idFase = 0;
+                int idCurrency = DeterminarMoneda(planta, tipo); // e.g., determina id moneda según planta o tipo
+                Guid guidCarga = Guid.NewGuid();
+                DateTime fechaActual = DateTime.Now;
+                
+                int filasInsertadas = 0;
+                foreach (var item in nuevosActuals)
+                {
+                    // Crear entidad DataActuals con datos combinando ruta y cuerpo
+                    var entity = new DataActuals 
+                    {
+                        IdCompany = planta,
+                        Ejercicio = ejercicio,
+                        IdCiclo = idCiclo,
+                        IdFase = idFase,
+                        IdCurrency = idCurrency,
+                        IdEpigrafe = item.e,
+                        // Asignar los 13 valores de meses, mes00 se puede calcular o dejar 0
+                        Mes00 = 0, // Suponemos mes00 como 0 o podría representar un acumulado inicial
+                        Mes01 = item.m1, Mes02 = item.m2, Mes03 = item.m3, Mes04 = item.m4,
+                        Mes05 = item.m5, Mes06 = item.m6, Mes07 = item.m7, Mes08 = item.m8,
+                        Mes09 = item.m9, Mes10 = item.m10, Mes11 = item.m11, Mes12 = item.m12,
+                        Mes13 = item.m13,
+                        // Metadatos de carga
+                        IdAPICarga = 1,              // Id de la API que carga (por ejemplo, 1)
+                        GuidCarga = guidCarga,       // mismo Guid para todas las filas de esta carga
+                        FechaUltModif = fechaActual
+                    };
+                    _actualsRepo.AddAsync(entity);  // Inserta usando Dapper (retorna el nuevo Id en entity.Id)
+                    filasInsertadas++;
+                }
 
-            await _repo.AddAsync(entity);
-            inserted++;
+                // Opcionalmente, devolver información de inserción en data
+                var resultData = new { inserted = filasInsertadas };
+                return Ok(resultData);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        return Ok(new { inserted });
+        // Método auxiliar para determinar IdCurrency según tipo o planta
+        private int DeterminarMoneda(int planta, string tipo)
+        {
+            // Lógica simple: si tipo coincide con un código de moneda, usarlo; si no, moneda local por defecto.
+            // (En un caso real, consultaría una tabla de monedas. Aquí, si tipo == "EUR", devolvemos id EUR, sino id por defecto de planta)
+            if (tipo.Equals("EUR", StringComparison.OrdinalIgnoreCase))
+                return /* id moneda EUR */ 2;
+            else
+                return /* id moneda local de la planta */ 1;
+        }
     }
 }
+

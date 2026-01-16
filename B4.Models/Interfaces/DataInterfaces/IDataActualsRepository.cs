@@ -5,7 +5,13 @@ namespace B4.Models.Interfaces.DataInterfaces
     public interface IDataActualsRepository : IRepository<DataActuals>
     {
 
-        // Add any additional methods specific to DataActualsBw if needed
+        // Funciones implementadas para el controller (DataActuals)
+        // NOTA: Estas funciones probablemente se reutilizarán en otros
+        // controllers (Budget/Forecast/Bridges...)
 
+        Task<IEnumerable<DataActuals>> GetByPlantaEjercicioAsync(int planta, int ejercicio);
+
+        Task<DataActuals?> GetByPlantaEjercicioEpigrafeAsync(int planta, int ejercicio, int epigrafe);
     }
+
 }

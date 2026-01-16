@@ -1,19 +1,18 @@
-using B4.Api.Middleware;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
-using B4.Data.PostgreSQL.Repositories;
-using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.Services;
 using B4.Models.Interfaces.DataInterfaces;
 using B4.Models.Interfaces.LkInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.DependencyInjection;
 using NLog;
 using NLog.Web;
-using System;
-using System.IO;
 using System.IO.Compression;
+
+using B4.Api.Middleware;
+
+
+
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -32,10 +31,8 @@ try
 {
     logger.Info("Iniciando API B4...");
 
-    // Migraciones MySQL
     var sharedConfig = SharedConfig.Load();
 
-    // Obtener qué base de datos usar: MySQL o PostgreSQL
     var bbdd = sharedConfig["bbdd"]?.Trim();
 
     if (string.IsNullOrWhiteSpace(bbdd))
@@ -53,34 +50,36 @@ try
             B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
             logger.Info("Base de datos MySQL actualizada correctamente.");
 
-            var MyDapperContext = new MySQLDapperContext(sharedConfig);
-            builder.Services.AddSingleton(MyDapperContext);
+            var ctx = new MySQLDapperContext(sharedConfig);
+            builder.Services.AddSingleton(ctx);
 
+            builder.Services.AddScoped<IDataComentariosRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
 
-            builder.Services.AddScoped<IDataComentariosRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataComentariosRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBudgetRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
 
-            builder.Services.AddScoped<IDataBudgetRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataForecastRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataForecastRepository(ctx));
 
-            builder.Services.AddScoped<IDataForecastRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataForecastRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesFyRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyBwRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(provider =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(MyDapperContext));
+            builder.Services.AddScoped<IEpigrafeRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
 
-            builder.Services.AddScoped<IEpigrafeRepository>(provider =>
-                new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(MyDapperContext));
-
+            // ✅ ACTUALS (MySQL) - ajusta el namespace si tu repo MySQL existe con ese nombre
+            builder.Services.AddScoped<IDataActualsRepository>(_ =>
+                new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
         }
         else if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
         {
@@ -88,33 +87,36 @@ try
             B4.Data.PostgreSQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
             logger.Info("Base de datos PostgreSQL actualizada correctamente.");
 
-            var MyDapperContext = new PostgreSQLDapperContext(sharedConfig);
-            builder.Services.AddSingleton(MyDapperContext);
+            var ctx = new PostgreSQLDapperContext(sharedConfig);
+            builder.Services.AddSingleton(ctx);
 
-            builder.Services.AddScoped<IDataComentariosRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataComentariosRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataComentariosRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
 
-            builder.Services.AddScoped<IDataBudgetRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBudgetRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
 
-            builder.Services.AddScoped<IDataForecastRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataForecastRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesFyRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyBwRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(MyDapperContext));
+            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
 
-            builder.Services.AddScoped<IEpigrafeRepository>(provider =>
-                new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(MyDapperContext));
+            builder.Services.AddScoped<IEpigrafeRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(ctx));
 
+            // ✅ ACTUALS (PostgreSQL)
+            builder.Services.AddScoped<IDataActualsRepository>(_ =>
+                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsRepository(ctx));
         }
         else
         {
@@ -128,8 +130,11 @@ try
         throw;
     }
 
-    // Middleware global
+    // Middleware global (errores)
     builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
+
+    // Middleware de metadata
+    builder.Services.AddTransient<ResponseWrapperMiddleware>();
 
     // Compresión GZIP
     builder.Services.Configure<GzipCompressionProviderOptions>(options =>
@@ -146,22 +151,9 @@ try
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
 
-    // --------------------------------------------------
-    // CONEXIÓN BASE DE DATOS PostgreSQL
-    // --------------------------------------------------
-
-    //var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
-    //builder.Services.AddSingleton<MySQLDapperContext>();
-
     builder.Services.AddAuthorization();
 
-    // --------------------------------------------------
-    // BUILD APP
-    // --------------------------------------------------
     var app = builder.Build();
-
-    // Middleware global
-    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
     if (app.Environment.IsDevelopment())
     {
@@ -171,21 +163,20 @@ try
 
     app.UseHttpsRedirection();
     app.UseRouting();
+
+    //  1) Wrapper metadata (envuelve todo)
+    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+    // 2) Errores (genera body JSON en fallos)
+    app.UseMiddleware<ResponseWrapperMiddleware>();
+
+
     app.UseAuthorization();
     app.UseCors("AllowAll");
     app.MapControllers();
 
     logger.Info("API B4 iniciada correctamente (NLog Activo)");
 
-    try
-    {
-        app.Run();
-    }
-    catch (Exception ex)
-    {
-        logger.Fatal(ex, "Error crítico al iniciar la aplicación.");
-        throw;
-    }
+    app.Run();
 }
 catch (Exception ex)
 {
@@ -195,3 +186,6 @@ finally
 {
     LogManager.Shutdown();
 }
+
+// ✅ Necesario para tests con WebApplicationFactory (PUNTO 7)
+public partial class Program { }
