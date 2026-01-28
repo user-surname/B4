@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20260128.1 - Victor
+
+- B4.Api.Dto
+  - 
+
 ## v0.20260116.1 Victor
 ## v0.20260116.1 - Slava
 

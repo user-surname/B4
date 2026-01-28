@@ -23,42 +23,43 @@ namespace B4.Api.Controllers
         {
             try
             {
-                // ✅ método que añadiste en la interfaz
                 var record = await _actualsRepo.GetByPlantaEjercicioEpigrafeAsync(planta, ejercicio, epigrafe);
 
                 if (record is null)
                     return NotFound($"No existe actuals para planta={planta}, ejercicio={ejercicio}, epigrafe={epigrafe}");
 
-                var head = new DataActualsGetDto.HeadDto
+                var dto = new DataActualsGetDto
                 {
-                    ts = DateTime.UtcNow,                 // tu DTO lo tiene como DateTime
-                    p = planta.ToString(),
-                    e = ejercicio,
-                    c = record.IdCiclo,
-                    f = record.IdFase.ToString(),
-                    m = GetCurrencyCode(record.IdCurrency)
-                };
-
-                var detailList = new List<DataActualsGetDto.DetailDto>
-                {
-                    new DataActualsGetDto.DetailDto
+                    Head = new DataActualsGetDto.HeadDto
                     {
-                        e = record.IdEpigrafe,
-                        v = new decimal[]
+                        Timestamp = DateTime.UtcNow,
+                        Planta = planta.ToString(),
+                        Ejercicio = ejercicio,
+                        IdCiclo = record.IdCiclo,
+                        IdFase = record.IdFase.ToString(),
+                        Moneda = GetCurrencyCode(record.IdCurrency)
+                    },
+                    Detail = new List<DataActualsGetDto.DetailDto>
+                    {
+                        new()
                         {
-                            record.Mes00, record.Mes01, record.Mes02, record.Mes03,
-                            record.Mes04, record.Mes05, record.Mes06, record.Mes07,
-                            record.Mes08, record.Mes09, record.Mes10, record.Mes11,
-                            record.Mes12, record.Mes13
+                            IdEpigrafe = record.IdEpigrafe,
+                            Valores = new decimal[]
+                            {
+                                record.Mes00, record.Mes01, record.Mes02, record.Mes03,
+                                record.Mes04, record.Mes05, record.Mes06, record.Mes07,
+                                record.Mes08, record.Mes09, record.Mes10, record.Mes11,
+                                record.Mes12, record.Mes13
+                            }
                         }
                     }
                 };
 
-                var dataDto = new DataActualsGetDto { head = head, detail = detailList };
-                return Ok(dataDto);
+                return Ok(dto);
             }
             catch (Exception ex)
             {
+                // Si tienes el middleware wrapper, esto igualmente quedará encapsulado
                 return BadRequest(ex.Message);
             }
         }
@@ -77,6 +78,7 @@ namespace B4.Api.Controllers
                 int idCiclo = 0;
                 int idFase = 0;
                 int idCurrency = DeterminarMoneda(planta, tipo);
+
                 Guid guidCarga = Guid.NewGuid();
                 DateTime fechaActual = DateTime.UtcNow;
 
@@ -91,13 +93,23 @@ namespace B4.Api.Controllers
                         IdCiclo = idCiclo,
                         IdFase = idFase,
                         IdCurrency = idCurrency,
-                        IdEpigrafe = item.e,
+
+                        IdEpigrafe = item.IdEpigrafe,
 
                         Mes00 = 0,
-                        Mes01 = item.m1, Mes02 = item.m2, Mes03 = item.m3, Mes04 = item.m4,
-                        Mes05 = item.m5, Mes06 = item.m6, Mes07 = item.m7, Mes08 = item.m8,
-                        Mes09 = item.m9, Mes10 = item.m10, Mes11 = item.m11, Mes12 = item.m12,
-                        Mes13 = item.m13,
+                        Mes01 = item.Mes01,
+                        Mes02 = item.Mes02,
+                        Mes03 = item.Mes03,
+                        Mes04 = item.Mes04,
+                        Mes05 = item.Mes05,
+                        Mes06 = item.Mes06,
+                        Mes07 = item.Mes07,
+                        Mes08 = item.Mes08,
+                        Mes09 = item.Mes09,
+                        Mes10 = item.Mes10,
+                        Mes11 = item.Mes11,
+                        Mes12 = item.Mes12,
+                        Mes13 = item.Mes13,
 
                         IdAPICarga = 1,
                         GuidCarga = guidCarga,

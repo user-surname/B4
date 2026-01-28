@@ -10,7 +10,7 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
         public DataActualsRepository(PostgreSQLDapperContext context)
             : base(context, "b4.data_actuals") { }
 
-        // Funciones implementadas para el controller (DataActuals)
+        // TODO: Funciones implementadas para el controller (DataActuals)
         // NOTA: Estas funciones probablemente se reutilizarán en otros
         // controllers (Budget/Forecast/Bridges...)
 

@@ -15,7 +15,7 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         }
 
         // ------------------------------------------------------------
-        // Funciones implementadas para el controller (DataActuals)
+        // TODO: -Funciones implementadas para el controller (DataActuals)
         // NOTA: luego se moverán a la clase padre / base repository
         // ------------------------------------------------------------
         public async Task<IEnumerable<DataActuals>> GetByPlantaEjercicioAsync(int planta, int ejercicio)
