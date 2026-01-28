@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace B4.Api.Middleware
 {
+    
     public sealed class ResponseWrapperMiddleware : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
@@ -80,7 +81,7 @@ namespace B4.Api.Middleware
                 // si no es JSON, count se queda a 0
             }
 
-            // ✅ data seguro: si NO es JSON, lo guardamos como texto en { raw = "..." }
+            // Data seguro: si NO es JSON, lo guardamos como texto en { raw = "..." }
             object? dataObj = null;
 
             if (!string.IsNullOrWhiteSpace(originalResponseBody))
