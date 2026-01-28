@@ -1,25 +1,24 @@
-﻿using Npgsql;
+﻿using B4.Data.MySQL;
+using B4.Models.Entities;
+using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces;
+using Dapper;
 using System;
 using System.Collections.Generic;
-//using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Threading.Tasks;
-using B4.Models.Interfaces;
 
-namespace B4.Data.PostgreSQL.Repositories
+namespace B4.Data.MySQL.Repositories
 {
     public class UsuarioRepository : IUsuarioRepository
     {
-        private readonly string _connectionString;
+        private const string _tableName = "USUARIOS";
 
-        // La cadena de conexión se inyecta al crear el repositorio
-        public UsuarioRepository(string connectionString)
+        private readonly MySQLDapperContext _context;
+
+        public UsuarioRepository(MySQLDapperContext context)
         {
-            _connectionString = connectionString;
-        }
+            _context = context;
+        } 
 
         // Implementacion de IRepository
         // C - Create
@@ -54,9 +53,26 @@ namespace B4.Data.PostgreSQL.Repositories
         // Implementacion de IUsuarioRepository
 
         // Métodos específicos que no son genéricos
-        public async Task<Usuario?> GetByEmailAsync(string email)
+        public async Task<Usuario?> GetByEmailAsync(String email)
         {
-            throw new NotImplementedException();
+            // 1️ Crear la conexión
+            using var connection = _context.CreateConnection();
+
+            // 2️ Definir el query SQL
+            string sql = $@"
+            SELECT id, email, hashed_password AS HashedPassword, role
+            FROM {_tableName}
+            WHERE email = @Email;
+        ";
+
+            // 3️ Ejecutar el query con Dapper
+            var usuario = await connection.QuerySingleOrDefaultAsync<Usuario>(
+                sql,
+                new { Email = email } // parámetro seguro contra SQL injection
+            );
+
+            // 4️ Retornar el usuario o null si no existe
+            return usuario;
         }
 
         public async Task<IEnumerable<Usuario>> GetUsersByRoleAsync(string role)

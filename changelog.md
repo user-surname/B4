@@ -1,6 +1,7 @@
 # Changelog
 
 ## v0.20260116.1 Victor
+
 ## v0.20260116.1 - Slava
 
 - B4.Api.Program.cs -> agregado servicio de autenticacion JWT

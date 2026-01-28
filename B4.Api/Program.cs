@@ -1,29 +1,30 @@
+using B4.Api.Middleware;
 using B4.Data.MySQL;
+using B4.Data.MySQL.Repositories;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.Services;
+using B4.Models.Interfaces;
 using B4.Models.Interfaces.DataInterfaces;
 using B4.Models.Interfaces.LkInterfaces;
 using B4.Shared;
+using B4.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
-using Microsoft.OpenApi.Models;
-
-
-using B4.Api.Middleware;
-
-
-
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -42,7 +43,7 @@ try
 {
     logger.Info("Iniciando API B4...");
 
-    var sharedConfig = SharedConfig.Load();
+    var sharedConfig = B4.Shared.SharedConfig.Load();
 
     var bbdd = sharedConfig["bbdd"]?.Trim();
 
@@ -91,6 +92,9 @@ try
             // ✅ ACTUALS (MySQL) - ajusta el namespace si tu repo MySQL existe con ese nombre
             builder.Services.AddScoped<IDataActualsRepository>(_ =>
                 new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
+
+            builder.Services.AddScoped<IUsuarioRepository>(_ =>
+                new B4.Data.MySQL.Repositories.UsuarioRepository(ctx));
         }
         else if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
         {
@@ -160,15 +164,24 @@ try
     // Controllers y Swagger
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
+
+    builder.Services.AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+    });
+
+    // Inicializacion de sistema de versiones de la API
+
+    builder.Services.AddVersionedApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
+
     builder.Services.AddSwaggerGen(c =>
     {
-        // Crear un documento Swagger/OpenAPI llamado "v1" con título y versión
-        c.SwaggerDoc("v1", new OpenApiInfo
-        {
-            Title = "Mi API",  // Nombre de la API que aparecerá en Swagger UI
-            Version = "v1"     // Versión del API
-        });
-
         // -------------------------------
         // Definir esquema de seguridad JWT
         // -------------------------------
@@ -203,15 +216,17 @@ try
     });
     });
 
+    builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
     // --------------------------------------------------
     // CONEXIÓN BASE DE DATOS PostgreSQL
     // --------------------------------------------------
 
     //var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
     //builder.Services.AddSingleton<MySQLDapperContext>();
+    builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
 
-    var jwtConfig = builder.Configuration.GetSection("Jwt");
-
+    var jwtConfig = sharedConfig.GetSection("Jwt");
     var key = jwtConfig["Key"];
     if (string.IsNullOrEmpty(key))
     {
@@ -280,7 +295,13 @@ try
     }
 
 
-    builder.Services.AddAuthorization();
+    builder.Services.AddAuthorization(options =>
+    {
+        // Policy que exige que el usuario sea Admin
+        options.AddPolicy("AdminOnly", policy =>
+            policy.RequireRole("Admin"));
+    });
+
     builder.Services.AddScoped<JwtService>();
 
 
@@ -288,6 +309,18 @@ try
     // BUILD APP
     // --------------------------------------------------
     var app = builder.Build();
+    app.UseSwaggerUI(c =>
+    {
+        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            c.SwaggerEndpoint(
+                $"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName.ToUpperInvariant()
+            );
+        }
+    });
 
     // Middleware global
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();

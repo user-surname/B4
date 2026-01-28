@@ -23,12 +23,4 @@ namespace B4.Models.Interfaces
         // D - Delete
         Task DeleteAsync(int id);
     }
-
-    // Clase de Dominio de ejemplo (POCO)
-    public class Usuario
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-    }
 }

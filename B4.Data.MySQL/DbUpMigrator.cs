@@ -23,7 +23,7 @@ namespace B4.Data.MySQL
         public static void EnsureDatabaseUpdated(IConfiguration configuration)
         {
             // Obtiene la cadena de conexión desde appsettings.json
-            var connectionString = configuration.GetConnectionString("MySQLConnection");
+            var connectionString = configuration.GetConnectionString("MySQLConnectionB4Data");
 
             // Configura el "upgrader" que aplicará las migraciones
             var upgrader =

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using B4.Models.Entities.DataEntities;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace B4.Models.Interfaces

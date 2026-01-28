@@ -26,7 +26,7 @@ namespace B4.Data.MySQL
         _configuration = configuration;
 
         // Obtiene la cadena de conexión llamada "DefaultConnection" del appsettings.json
-        _connectionString = _configuration.GetConnectionString("MySQLConnection");
+        _connectionString = _configuration.GetConnectionString("MySQLConnectionB4Data");
     }
 
     // Método para crear y devolver una conexión a la base de datos PostgreSQL

@@ -1,5 +1,6 @@
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
+using B4.Api.Middleware;
 using B4.Models.Entities.DataEntities;
 using B4.Models.Interfaces.DataInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 namespace B4.Api.Controllers
 {
     [ApiController]
-    [Route("api/v1/[controller]")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [CustomAuthorize(Policy = "AdminOnly")]
     public class DataActualsController : ControllerBase
     {
         private readonly IDataActualsRepository _actualsRepo;

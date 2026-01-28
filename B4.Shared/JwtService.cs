@@ -82,7 +82,7 @@ namespace B4.Shared
             }
             catch (Exception ex)
             {
-                // Aquí podrías loguear el error con NLog o cualquier logger que uses
+                // Aquí se loguea el error con NLog 
                 throw new InvalidOperationException("Error generando el token JWT", ex);
             }
         }

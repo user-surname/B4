@@ -1,5 +1,13 @@
--- USE slava_db;
+-- USE B4_Data;
 
+CREATE TABLE IF NOT EXISTS USUARIOS (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    hashed_password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL DEFAULT 'user',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS CONTROL (
 
@@ -498,13 +506,13 @@ CREATE TABLE IF NOT EXISTS LK_PLANT_TREE (
 
 CREATE OR REPLACE VIEW V_LK_PLANT_TREE
 AS
-SELECT        slava_db.LK_PLANT_TREE.idTree, slava_db.LK_PLANT_TREE.idDivision, slava_db.LK_PLANT_DIVISION.Division, slava_db.LK_PLANT_TREE.idDivisionCompany, slava_db.LK_PLANT_DIVISION_COMPANY.DivisionCompany, 
-                         slava_db.LK_PLANT_TREE.idSubdivision, slava_db.LK_PLANT_SUBDIVISION.Subdivision, slava_db.LK_PLANT_TREE.idCountry, slava_db.LK_PLANT_COUNTRY.Country
-FROM            slava_db.LK_PLANT_DIVISION INNER JOIN
-                         slava_db.LK_PLANT_TREE ON slava_db.LK_PLANT_DIVISION.idDivision = slava_db.LK_PLANT_TREE.idDivision INNER JOIN
-                         slava_db.LK_PLANT_COUNTRY ON slava_db.LK_PLANT_TREE.idCountry = slava_db.LK_PLANT_COUNTRY.idCountry INNER JOIN
-                         slava_db.LK_PLANT_SUBDIVISION ON slava_db.LK_PLANT_TREE.idSubdivision = slava_db.LK_PLANT_SUBDIVISION.idSubdivision INNER JOIN
-                         slava_db.LK_PLANT_DIVISION_COMPANY ON slava_db.LK_PLANT_TREE.idDivisionCompany = slava_db.LK_PLANT_DIVISION_COMPANY.idDivisionCompany;
+SELECT        B4_Data.LK_PLANT_TREE.idTree, B4_Data.LK_PLANT_TREE.idDivision, B4_Data.LK_PLANT_DIVISION.Division, B4_Data.LK_PLANT_TREE.idDivisionCompany, B4_Data.LK_PLANT_DIVISION_COMPANY.DivisionCompany, 
+                         B4_Data.LK_PLANT_TREE.idSubdivision, B4_Data.LK_PLANT_SUBDIVISION.Subdivision, B4_Data.LK_PLANT_TREE.idCountry, B4_Data.LK_PLANT_COUNTRY.Country
+FROM            B4_Data.LK_PLANT_DIVISION INNER JOIN
+                         B4_Data.LK_PLANT_TREE ON B4_Data.LK_PLANT_DIVISION.idDivision = B4_Data.LK_PLANT_TREE.idDivision INNER JOIN
+                         B4_Data.LK_PLANT_COUNTRY ON B4_Data.LK_PLANT_TREE.idCountry = B4_Data.LK_PLANT_COUNTRY.idCountry INNER JOIN
+                         B4_Data.LK_PLANT_SUBDIVISION ON B4_Data.LK_PLANT_TREE.idSubdivision = B4_Data.LK_PLANT_SUBDIVISION.idSubdivision INNER JOIN
+                         B4_Data.LK_PLANT_DIVISION_COMPANY ON B4_Data.LK_PLANT_TREE.idDivisionCompany = B4_Data.LK_PLANT_DIVISION_COMPANY.idDivisionCompany;
 
 
 CREATE TABLE IF NOT EXISTS API_CARGAS_EXCEL (
@@ -1024,6 +1032,12 @@ CREATE TABLE IF NOT EXISTS UserLevels (
  PRIMARY KEY (UserLevelID ) 
 
 ); 
+
+INSERT INTO USUARIOS (email, hashed_password, role)
+VALUES
+('admin@ejemplo.com', 'AQAAAAIAAYagAAAAEB5o94QapJ4P45VrEJEWDoFDbXBK+IQDo2aEf35oafH8aAVqLIFeQaxoFcpwppokKQ==', 'Admin'),
+('user@ejemplo.com', 'AQAAAAIAAYagAAAAEB5o94QapJ4P45VrEJEWDoFDbXBK+IQDo2aEf35oafH8aAVqLIFeQaxoFcpwppokKQ==', 'User');
+
 ALTER TABLE API_CARGAS_EXCEL ALTER COLUMN idCiclo SET DEFAULT 0;
 
 ALTER TABLE API_CARGAS_EXCEL ALTER COLUMN idFase SET DEFAULT 0;

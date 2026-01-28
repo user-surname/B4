@@ -1,4 +1,6 @@
-﻿using Npgsql;
+﻿using B4.Models.Entities.DataEntities;
+using B4.Models.Interfaces;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 //using Microsoft.EntityFrameworkCore;
@@ -7,7 +9,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks;
-using B4.Models.Interfaces;
 
 namespace B4.Data.PostgreSQL.Repositories
 {
