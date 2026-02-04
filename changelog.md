@@ -1,9 +1,18 @@
 # Changelog
 
-## v0.20260128.1 - Victor
+## v0.20260204.1 - Slava
 
-- B4.Api.Dto
-  - 
+- B4.Api.Controllers -> Controllers LK creados
+- B4.Dto -> Dtos para LK creados
+- B4.Tests -> Tests para controllers LK creados
+
+## v0.20260128.1 - Slava
+
+- B4.Models.Entities -> LoginRequest y Usuario creado
+- B4.Shared -> JwtService creado
+- B4.Data.MySQL -> UsuarioRepository y IUsuarioRepository creado
+- B4.Api.Controllers -> AuthController creado
+
 
 ## v0.20260116.1 Victor
 

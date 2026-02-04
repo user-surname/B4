@@ -49,33 +49,40 @@ namespace B4.Api.Middleware
 
                 // 3️ Validar PERMISO / CLAIM (si se especificó)
                 // Este claim puede venir del JWT o ser añadido dinámicamente en memoria
+                // Comprobamos si el atributo CustomAuthorize especifica un permiso a validar
                 if (!string.IsNullOrEmpty(Permission))
                 {
+                    // Convertimos la identidad del usuario a ClaimsIdentity
+                    // Esto permite leer y añadir claims dinámicos
                     var identity = user.Identity as ClaimsIdentity;
 
+                    // Validación defensiva: si no se puede obtener la identidad, lanzamos excepción
                     if (identity == null)
                     {
-                        // Si algo sale mal al leer la identidad → lanzar excepción
                         throw new InvalidOperationException("No se pudo obtener la identidad del usuario.");
                     }
 
+                    // Decidimos el valor del permiso dinámico
+                    // Aquí se puede usar lógica propia, DB, rol, query, etc.
                     bool canEdit = true;
 
-                    // Añadir claim dinámico en memoria si no existe
+                    // Añadimos el claim dinámico en memoria si no existe ya
+                    // Esto no modifica el token JWT, solo para esta request
                     if (!identity.HasClaim(c => c.Type == Permission))
                     {
                         identity.AddClaim(new Claim(Permission, canEdit.ToString().ToLower()));
                     }
 
-                    // Comprueba que exista un claim con:
-                    // Type  = Permission
+                    // Validamos que el usuario tiene el claim con valor "true"
+                    // Type = Permission (ej: "can_edit")
                     // Value = "true"
                     bool hasClaim = user.HasClaim(c =>
                         c.Type == Permission && c.Value == "true");
 
+                    // Si no tiene el permiso requerido, devolvemos 403 Forbidden
+                    // Esto corta la ejecución del endpoint
                     if (!hasClaim)
                     {
-                        // No tiene el permiso requerido → 403 Forbidden
                         context.Result = new ForbidResult();
                         return;
                     }

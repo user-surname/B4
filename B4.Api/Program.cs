@@ -1,3 +1,4 @@
+using B4.Api.Controllers;
 using B4.Api.Middleware;
 using B4.Data.MySQL;
 using B4.Data.MySQL.Repositories;
@@ -64,6 +65,42 @@ try
 
             var ctx = new MySQLDapperContext(sharedConfig);
             builder.Services.AddSingleton(ctx);
+
+            builder.Services.AddScoped<ICiclosRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.CiclosRepository(ctx));
+
+            builder.Services.AddScoped<IEpigrafeRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
+
+            builder.Services.AddScoped<IFasesRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.FasesRepository(ctx));
+
+            builder.Services.AddScoped<IPlantCompanyRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantCompanyRepository(ctx));
+
+            builder.Services.AddScoped<IPlantControllersRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantControllersRepository(ctx));
+
+            builder.Services.AddScoped<IPlantCountryRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantCountryRepository(ctx));
+
+            builder.Services.AddScoped<IPlantCurrencyRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
+
+            builder.Services.AddScoped<IPlantDivisionCompanyRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionCompanyRepository(ctx));
+
+            builder.Services.AddScoped<IPlantDivisionRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionRepository(ctx));
+
+            builder.Services.AddScoped<IPlantillasBotonesPasosTiposRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantillasBotonesPasosTiposRepository(ctx));
+
+            builder.Services.AddScoped<IPlantSubdivisionRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantSubdivisionRepository(ctx));
+
+            builder.Services.AddScoped<IPlantTreeRepository>(_ =>
+                new B4.Data.MySQL.Repositories.LkRepositories.PlantTreeRepository(ctx));
 
             builder.Services.AddScoped<IDataComentariosRepository>(_ =>
                 new B4.Data.MySQL.Repositories.DataRepositories.DataComentariosRepository(ctx));

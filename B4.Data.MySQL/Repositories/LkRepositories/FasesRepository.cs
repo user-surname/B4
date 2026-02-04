@@ -1,10 +1,11 @@
 ﻿using B4.Models.Entities.LkEntities;
+using B4.Models.Interfaces.LkInterfaces;
 using Dapper;
 using System.Data;
 
 namespace B4.Data.MySQL.Repositories.LkRepositories
 {
-    public class FasesRepository
+    public class FasesRepository : IFasesRepository
     {
         private readonly MySQLDapperContext _context;
 
