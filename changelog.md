@@ -6,6 +6,13 @@
 - B4.ServiceInterfaces -> Interfaces para Services creadas
 - B4.Api.Controllers -> Controllers utilizan Services
 
+## v0.20260206.1 Victor
+
+- B4.Api.LkPruebas
+  - Posible herencia para los controllers Lk
+- B4.Data.Postgresql.Services
+  - Implementacion del MemoryCache y CacheKeys
+
 ## v0.20260204.1 - Slava
 
 - B4.Api.Controllers -> Controllers LK creados
@@ -21,6 +28,11 @@
 
 
 ## v0.20260116.1 Victor
+
+- B4.Api.MiddleWare
+  - Metadata para envolver los DTO
+- B4.Api.Dto
+  - Modificacion de Dto para POST y GET de DataActuals
 
 ## v0.20260116.1 - Slava
 

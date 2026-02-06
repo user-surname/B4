@@ -1,179 +1,228 @@
-﻿/*
-    Service: MemoryCache
-
-    20251111 - pendiente implementacion especifica para B4
- */
-
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Dapper;
-//using GESTAMP_API.Repository;
-//using Microsoft.Data.SqlClient;
-//using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
+using B4.Models.Entities.LkEntities;
+using B4.Models.Interfaces.LkInterfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using NLog;
 using System.Reflection.Metadata.Ecma335;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
 
+namespace B4.Data.PostgreSQL.Services;
 
-namespace B4.Data.Services
+public class MemoryCacheService : IMemoryCacheService
 {
-    /// <summary>
-    /// Servicio de cache para tablas maestras
-    /// incluye los Interfaz, modelos y la gestion de cache
-    /// </summary>
+    private readonly IMemoryCache _cache;
+    private readonly ILogger<MemoryCacheService> _logger;
 
-    // TODO: revisar lo que viene de la vista V_COMPANY
+    private readonly ICiclosRepository _ciclosRepo;
+    private readonly IFasesRepository _fasesRepo;
+    private readonly IEpigrafeRepository _epigrafeRepo;
 
-    public static class CacheKeys
+    private readonly IPlantCountryRepository _plantCountryRepo;
+    private readonly IPlantCurrencyRepository _plantCurrencyRepo;
+    private readonly IPlantDivisionRepository _plantDivisionRepo;
+    private readonly IPlantDivisionCompanyRepository _plantDivisionCompanyRepo;
+    private readonly IPlantSubdivisionRepository _plantSubdivisionRepo;
+    private readonly IPlantTreeRepository _plantTreeRepo;
+
+    private readonly IPlantCompanyRepository _plantCompanyRepo;
+    private readonly IPlantControllersRepository _plantControllersRepo;
+
+    private readonly IPlantillasBotonesPasosTiposRepository _plantillasBotonesPasosTiposRepo;
+
+    // Expiraciones recomendadas para LK
+
+    //TODO: Parametrizar los tiempos en app.conf
+    private static readonly TimeSpan Sliding = TimeSpan.FromHours(1);
+    private static readonly TimeSpan Absolute = TimeSpan.FromHours(24);
+
+    public MemoryCacheService(
+        IMemoryCache cache,
+        ILogger<MemoryCacheService> logger,
+        ICiclosRepository ciclosRepo,
+        IFasesRepository fasesRepo,
+        IEpigrafeRepository epigrafeRepo,
+        IPlantCountryRepository plantCountryRepo,
+        IPlantCurrencyRepository plantCurrencyRepo,
+        IPlantDivisionRepository plantDivisionRepo,
+        IPlantDivisionCompanyRepository plantDivisionCompanyRepo,
+        IPlantSubdivisionRepository plantSubdivisionRepo,
+        IPlantTreeRepository plantTreeRepo,
+        IPlantCompanyRepository plantCompanyRepo,
+        IPlantControllersRepository plantControllersRepo,
+        IPlantillasBotonesPasosTiposRepository plantillasBotonesPasosTiposRepo)
     {
-        public const string LkEjemplo = "Ejemplo";
+        _cache = cache;
+        _logger = logger;
+
+        _ciclosRepo = ciclosRepo;
+        _fasesRepo = fasesRepo;
+        _epigrafeRepo = epigrafeRepo;
+
+        _plantCountryRepo = plantCountryRepo;
+        _plantCurrencyRepo = plantCurrencyRepo;
+        _plantDivisionRepo = plantDivisionRepo;
+        _plantDivisionCompanyRepo = plantDivisionCompanyRepo;
+        _plantSubdivisionRepo = plantSubdivisionRepo;
+        _plantTreeRepo = plantTreeRepo;
+
+        _plantCompanyRepo = plantCompanyRepo;
+        _plantControllersRepo = plantControllersRepo;
+
+        _plantillasBotonesPasosTiposRepo = plantillasBotonesPasosTiposRepo;
     }
 
-    public class LkEjemplo
+    // -----------------------
+    // Helper genérico
+    // -----------------------
+    private Task<IReadOnlyList<T>> GetOrCreateAsync<T>(
+    string key,
+    Func<Task<IEnumerable<T>>> loader)
+{
+    return _cache.GetOrCreateAsync<IReadOnlyList<T>>(key, async entry =>
     {
-        [Key]
-        [Column("IdEjemplo")]
-        public int IdEjemplo { get; set; } = 0;
-        [Column("Descripcion")]
-        public string Descripcion { get; set; } = string.Empty;
-    }
+        _logger.LogDebug("CACHE MISS -> {Key}", key);
 
-    /// <summary>
-    /// Cache service proporciona acceso eficiente a las tablas maestras
-    /// Los datos se cargan desde bbdd solo si no los tenemos en cache o si han expirado de la cache
-    /// Los datos expiran 1 hora despues de haberse cargado o cada 24 horas (ver GetCachedDataAsync)
-    /// </summary>
-    public class MemoryCacheService : IMemoryCacheService
-    {
-        private readonly ILogger<MemoryCacheService> _logger;
+        entry.SlidingExpiration = Sliding;
+        entry.AbsoluteExpirationRelativeToNow = Absolute;
 
-        private readonly IMemoryCache _cache;
-        private readonly string _connectionString;
+        var data = await loader();
 
-        #region Funciones base
-        ///
-        /// constructor con IConfiguration
-        /// TODO: revisar !!!
-        /// 
-        //public MemoryCacheService(IMemoryCache cache, IConfiguration configuration, ILogger<MemoryCacheService> logger)
-        //{
-        //    _logger = logger;
-        //    _cache = cache;
-        //    _connectionString = configuration.GetConnectionString("SQL");
-        //}
+        // OJO: devolvemos List<T> como IReadOnlyList<T>
+        return data.ToList();
+    })!;
+}
 
-        /// <summary>
-        /// TODO: revisar cadena de conexexion a BBDD
-        /// </summary>
-        /// <param name="cache"></param>
-        /// <param name="logger"></param>
-        public MemoryCacheService(IMemoryCache cache, ILogger<MemoryCacheService> logger)
-        {
-            _logger = logger;
+    private static IEnumerable<T> OnlyActive<T>(IEnumerable<T> list) where T : LkBase
+        => list.Where(x => x.IsActive == 1);
 
-            _cache = cache;
+    // -----------------------
+    // Getters LK_*
+    // -----------------------
 
-            //_connectionString = configuration.GetConnectionString("SQL");
-        }
-
-
-        /// <summary>
-        /// Funcion principal para hace cache de cahceKey
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="cacheKey"></param>
-        /// <param name="getData"></param>
-        /// <returns></returns>
-        private async Task<IEnumerable<T>> GetCachedDataAsync<T>(string cacheKey, Func<Task<IEnumerable<T>>> getData)
-        {
-            _logger.LogDebug($"GetCachedDataAsync: {cacheKey}");
-
-            if (!_cache.TryGetValue(cacheKey, out IEnumerable<T> cachedData))
+    //TODO: Revisar el enfoque de la cache de activos
+    public Task<IReadOnlyList<LkCiclos>> GetCiclosAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkCiclosActive : CacheKeys.LkCiclosAll,
+            async () =>
             {
-                _logger.LogDebug($"GetCachedDataAsync.getData: {cacheKey}");
+                var data = await _ciclosRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-                cachedData = await getData();
-                var cacheEntryOptions = new MemoryCacheEntryOptions()
-                    .SetSlidingExpiration(TimeSpan.FromMinutes(5))
-                    .SetSlidingExpiration(TimeSpan.FromHours(1))
-                    .SetAbsoluteExpiration(TimeSpan.FromHours(24));
-                _cache.Set(cacheKey, cachedData, cacheEntryOptions);
-            }
-            return cachedData;
-        }
+    public Task<IReadOnlyList<LkFases>> GetFasesAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkFasesActive : CacheKeys.LkFasesAll,
+            async () =>
+            {
+                var data = await _fasesRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-        /// <summary>
-        /// Invalidacion de cache, elemina los datos para todas las cacheKeys
-        /// Enumeracion directa
-        /// </summary>
-        public void InvalidateCache()
-        {
-            _cache.Remove(CacheKeys.LkEjemplo);
-        }
+    public Task<IReadOnlyList<LkEpigrafe>> GetEpigrafesAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkEpigrafesActive : CacheKeys.LkEpigrafesAll,
+            async () =>
+            {
+                var data = await _epigrafeRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-        /// <summary>
-        /// Ivalidacion de una uncia cacheKey
-        /// TODO: confirmar que esa cacheKey existe
-        /// TODO: gestionar posibles errores
-        /// </summary>
-        /// <param name="cacheKey"></param>
-        public void InvalidateCache(string cacheKey)
-        {
-            _cache.Remove(cacheKey);
-        }
+    public Task<IReadOnlyList<LkPlantCountry>> GetPlantCountriesAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantCountryActive : CacheKeys.LkPlantCountryAll,
+            async () =>
+            {
+                var data = await _plantCountryRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-        #endregion
+    public Task<IReadOnlyList<LkPlantCurrency>> GetPlantCurrenciesAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantCurrencyActive : CacheKeys.LkPlantCurrencyAll,
+            async () =>
+            {
+                var data = await _plantCurrencyRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
+    public Task<IReadOnlyList<LkPlantDivision>> GetPlantDivisionsAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantDivisionActive : CacheKeys.LkPlantDivisionAll,
+            async () =>
+            {
+                var data = await _plantDivisionRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-        #region Getters_datos_maestros 
-        /// <summary>
-        /// accede a los datos de la tabla LkEjemplo si no estan en caceh los va a buscar a bbdd
-        /// TODO:  revisar la implementacion
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<IEnumerable<LkEjemplo>> GetLkEjemploAsync()
-        {
-            throw new NotImplementedException();
+    public Task<IReadOnlyList<LkPlantDivisionCompany>> GetPlantDivisionCompaniesAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantDivisionCompanyActive : CacheKeys.LkPlantDivisionCompanyAll,
+            async () =>
+            {
+                var data = await _plantDivisionCompanyRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-            //return await GetCachedDataAsync(CacheKeys.LkEjemplo, async () =>
-            //{
-            //using (var connection = new SqlConnection(_connectionString))
-            //{
-            //    return await connection.QueryAsync<LkEjemplo>("SELECT IdCiclo, Ciclo, VersionPlantilla FROM Lk_CICLOS");
-            //}
-            //});
-        }
+    public Task<IReadOnlyList<LkPlantSubdivision>> GetPlantSubdivisionsAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantSubdivisionActive : CacheKeys.LkPlantSubdivisionAll,
+            async () =>
+            {
+                var data = await _plantSubdivisionRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-        #endregion
+    public Task<IReadOnlyList<LkPlantTree>> GetPlantTreeAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantTreeActive : CacheKeys.LkPlantTreeAll,
+            async () =>
+            {
+                var data = await _plantTreeRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-        #region Busquedas
-        /// <summary>
-        /// Busqueda de datos en la tabla LkEjemplo a partir de datos en cache
-        /// TODO:  revisar la implementacion
-        /// </summary>
-        /// <param name="codPlantilla"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<int> GetLkEjemploByIdAsync(int idEjemplo = 0)
-        {
-            var datos = await GetLkEjemploAsync();
+    public Task<IReadOnlyList<LkPlantCompany>> GetPlantCompaniesAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantCompanyActive : CacheKeys.LkPlantCompanyAll,
+            async () =>
+            {
+                var data = await _plantCompanyRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-            if (idEjemplo == 0) return 0;
+    public Task<IReadOnlyList<LkPlantControllers>> GetPlantControllersAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantControllersActive : CacheKeys.LkPlantControllersAll,
+            async () =>
+            {
+                var data = await _plantControllersRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-            var idPlantilla = datos.FirstOrDefault(p => p.IdEjemplo == idEjemplo)?.IdEjemplo ?? throw new Exception($"Invalid Id: {idEjemplo}");
+    public Task<IReadOnlyList<LkPlantillasBotonesPasosTipos>> GetPlantillasBotonesPasosTiposAsync(bool onlyActive = true) =>
+        GetOrCreateAsync(
+            onlyActive ? CacheKeys.LkPlantillasBotonesPasosTiposActive : CacheKeys.LkPlantillasBotonesPasosTiposAll,
+            async () =>
+            {
+                var data = await _plantillasBotonesPasosTiposRepo.GetAllAsync();
+                return onlyActive ? OnlyActive(data) : data;
+            });
 
-            return (idPlantilla);
-        }
-        #endregion
+    // -----------------------
+    // Invalidación
+    // -----------------------
+    public void InvalidateCache()
+    {
+        foreach (var key in CacheKeys.AllKeys)
+            _cache.Remove(key);
+
+        _logger.LogDebug("InvalidateCache -> ALL LK keys removed");
+    }
+
+    public void InvalidateCache(string cacheKey)
+    {
+        _cache.Remove(cacheKey);
+        _logger.LogDebug("InvalidateCache -> {Key}", cacheKey);
     }
 }
