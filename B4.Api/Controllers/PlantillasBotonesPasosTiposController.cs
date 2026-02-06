@@ -1,7 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -11,62 +11,48 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PlantillasBotonesPasosTiposController : ControllerBase
     {
-        private readonly IPlantillasBotonesPasosTiposRepository _repo;
+        private readonly IPlantillasBotonesPasosTiposService _service;
 
-        public PlantillasBotonesPasosTiposController(IPlantillasBotonesPasosTiposRepository repo)
+        public PlantillasBotonesPasosTiposController(IPlantillasBotonesPasosTiposService service)
         {
-            _repo = repo;
+            _service = service;
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var record = await _repo.GetByIdAsync(id);
-                if (record is null)
-                    return NotFound($"No existe paso tipo con id={id}");
+            var record = await _service.GetByIdAsync(id);
+            if (record is null)
+                return NotFound($"No existe paso tipo con id={id}");
 
-                var dto = new PlantillasBotonesPasosTiposGetDto
-                {
-                    IdPasoTipo = record.IdPasoTipo,
-                    Pasotipo = record.Pasotipo,
-                    Descripcion = record.Descripcion,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
+            var dto = new PlantillasBotonesPasosTiposGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdPasoTipo = record.IdPasoTipo,
+                Pasotipo = record.Pasotipo,
+                Descripcion = record.Descripcion,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
+
+            return Ok(dto);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
+            var records = await _service.GetAllAsync();
+            var dtos = records.Select(r => new PlantillasBotonesPasosTiposGetDto
             {
-                var records = await _repo.GetAllAsync();
-                var dtos = records.Select(r => new PlantillasBotonesPasosTiposGetDto
-                {
-                    IdPasoTipo = r.IdPasoTipo,
-                    Pasotipo = r.Pasotipo,
-                    Descripcion = r.Descripcion,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    IsActive = r.IsActive
-                }).ToList();
+                IdPasoTipo = r.IdPasoTipo,
+                Pasotipo = r.Pasotipo,
+                Descripcion = r.Descripcion,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
+                IsActive = r.IsActive
+            }).ToList();
 
-                return Ok(dtos);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(dtos);
         }
 
         [HttpPost]
@@ -85,7 +71,7 @@ namespace B4.Api.Controllers
                 IsActive = 1
             };
 
-            await _repo.AddAsync(entity);
+            await _service.AddAsync(entity);
 
             return CreatedAtAction(nameof(GetById), new { id = entity.IdPasoTipo }, entity);
         }
@@ -93,13 +79,15 @@ namespace B4.Api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _repo.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"No existe paso tipo con id={id}" });
-
-            await _repo.DeleteAsync(id);
-
-            return Ok(new { message = "Paso tipo eliminado correctamente" });
+            try
+            {
+                await _service.DeleteAsync(id);
+                return Ok(new { message = "Paso tipo eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

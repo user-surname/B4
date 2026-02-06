@@ -1,7 +1,7 @@
 ﻿using B4.Data.MySQL;
 using B4.Models.Entities;
 using B4.Models.Entities.DataEntities;
-using B4.Models.Interfaces;
+using B4.Models.RepositoryInterfaces;
 using Dapper;
 using System;
 using System.Collections.Generic;

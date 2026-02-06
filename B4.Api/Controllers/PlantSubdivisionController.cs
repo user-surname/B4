@@ -1,7 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -11,65 +11,48 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PlantSubdivisionController : ControllerBase
     {
-        private readonly IPlantSubdivisionRepository _repository;
+        private readonly IPlantSubdivisionService _service;
 
-        public PlantSubdivisionController(IPlantSubdivisionRepository repository)
+        public PlantSubdivisionController(IPlantSubdivisionService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
-        // GET: /api/v1/PlantSubdivision/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var record = await _repository.GetByIdAsync(id);
-                if (record is null)
-                    return NotFound($"No existe subdivisión con id={id}");
+            var record = await _service.GetByIdAsync(id);
+            if (record is null)
+                return NotFound($"No existe subdivisión con id={id}");
 
-                var dto = new PlantSubdivisionGetDto
-                {
-                    IdSubdivision = record.IdSubdivision,
-                    Subdivision = record.Subdivision,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
+            var dto = new PlantSubdivisionGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdSubdivision = record.IdSubdivision,
+                Subdivision = record.Subdivision,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
+
+            return Ok(dto);
         }
 
-        // GET: /api/v1/PlantSubdivision
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
+            var records = await _service.GetAllAsync();
+            var dtos = records.Select(r => new PlantSubdivisionGetDto
             {
-                var records = await _repository.GetAllAsync();
-                var dtos = records.Select(r => new PlantSubdivisionGetDto
-                {
-                    IdSubdivision = r.IdSubdivision,
-                    Subdivision = r.Subdivision,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    IsActive = r.IsActive
-                }).ToList();
+                IdSubdivision = r.IdSubdivision,
+                Subdivision = r.Subdivision,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
+                IsActive = r.IsActive
+            }).ToList();
 
-                return Ok(dtos);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(dtos);
         }
 
-        // POST: /api/v1/PlantSubdivision
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantSubdivisionPostDto dto)
         {
@@ -85,26 +68,23 @@ namespace B4.Api.Controllers
                 IsActive = 1
             };
 
-            await _repository.AddAsync(entity);
+            await _service.AddAsync(entity);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdSubdivision },
-                entity
-            );
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdSubdivision }, entity);
         }
 
-        // DELETE: /api/v1/PlantSubdivision/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _repository.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"No existe subdivisión con id={id}" });
-
-            await _repository.DeleteAsync(id);
-
-            return Ok(new { message = "Subdivisión eliminada correctamente" });
+            try
+            {
+                await _service.DeleteAsync(id);
+                return Ok(new { message = "Subdivisión eliminada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class CilcosControllerTest
+    public class CiclosControllerTest
     {
-        private readonly Mock<ICiclosRepository> _mockRepo;
-        private readonly CilcosController _controller;
+        private readonly Mock<ICiclosService> _mockService;
+        private readonly CiclosController _controller;
 
-        public CilcosControllerTest()
+        public CiclosControllerTest()
         {
-            _mockRepo = new Mock<ICiclosRepository>();
-            _controller = new CilcosController(_mockRepo.Object);
+            _mockService = new Mock<ICiclosService>();
+            _controller = new CiclosController(_mockService.Object);
         }
 
         // -----------------------------------------
@@ -42,7 +41,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(ciclo);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(ciclo);
 
             var result = await _controller.GetById(1);
 
@@ -55,7 +54,7 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkCiclos)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkCiclos)null);
 
             var result = await _controller.GetById(99);
 
@@ -70,11 +69,11 @@ namespace B4.Tests.Controllers
         {
             var list = new List<LkCiclos>
             {
-                new LkCiclos { Id = 1, IdCiclo = 2024, Ciclo = "Ciclo 2024", Descripcion = "Desc 1" },
-                new LkCiclos { Id = 2, IdCiclo = 2025, Ciclo = "Ciclo 2025", Descripcion = "Desc 2" }
+                new LkCiclos { Id = 1, IdCiclo = 2024, Ciclo = "Ciclo 2024", Descripcion = "Desc 1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
+                new LkCiclos { Id = 2, IdCiclo = 2025, Ciclo = "Ciclo 2025", Descripcion = "Desc 2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
@@ -97,7 +96,7 @@ namespace B4.Tests.Controllers
                 Descripcion = "Desc 2026"
             };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkCiclos>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkCiclos>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -113,16 +112,13 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            var ciclo = new LkCiclos { Id = 1, Ciclo = "Ciclo 1", IdCiclo = 2024 };
-
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(ciclo);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario
+            // Convertimos a diccionario para validar el mensaje
             var dict = okResult.Value
                 .GetType()
                 .GetProperties()
@@ -134,12 +130,19 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkCiclos)null);
+            _mockService
+                .Setup(s => s.DeleteAsync(99))
+                .ThrowsAsync(new Exception("No existe ciclo con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var dict = notFoundResult.Value
+                .GetType()
+                .GetProperties()
+                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe ciclo con id=99", dict["message"]);
         }
     }
 }
-

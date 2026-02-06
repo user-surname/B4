@@ -1,4 +1,4 @@
-using B4.Models.Interfaces;
+using B4.Models.RepositoryInterfaces;
 using Dapper;
 using System.Data;
 

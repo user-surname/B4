@@ -6,7 +6,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,18 +15,15 @@ namespace B4.Tests.Controllers
 {
     public class PlantCurrencyControllerTest
     {
-        private readonly Mock<IPlantCurrencyRepository> _mockRepo;
+        private readonly Mock<IPlantCurrencyService> _mockService;
         private readonly PlantCurrencyController _controller;
 
         public PlantCurrencyControllerTest()
         {
-            _mockRepo = new Mock<IPlantCurrencyRepository>();
-            _controller = new PlantCurrencyController(_mockRepo.Object);
+            _mockService = new Mock<IPlantCurrencyService>();
+            _controller = new PlantCurrencyController(_mockService.Object);
         }
 
-        // -----------------------------------------
-        // TEST GET BY ID
-        // -----------------------------------------
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenRecordExists()
         {
@@ -40,7 +37,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(currency);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(currency);
 
             var result = await _controller.GetById(1);
 
@@ -54,16 +51,13 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantCurrency)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantCurrency)null);
 
             var result = await _controller.GetById(99);
 
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        // -----------------------------------------
-        // TEST GET ALL
-        // -----------------------------------------
         [Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
@@ -73,21 +67,18 @@ namespace B4.Tests.Controllers
                 new LkPlantCurrency { IdCurrency = 2, Currency = "EUR", CurrencyAlias = "Euro" }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<PlantCurrencyGetDto>>(okResult.Value);
+            var dtos = Assert.IsAssignableFrom<IEnumerable<PlantCurrencyGetDto>>(okResult.Value).ToList();
 
             Assert.Equal(2, dtos.Count);
             Assert.Contains(dtos, d => d.Currency == "USD");
             Assert.Contains(dtos, d => d.Currency == "EUR");
         }
 
-        // -----------------------------------------
-        // TEST POST CREATE
-        // -----------------------------------------
         [Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
@@ -97,7 +88,7 @@ namespace B4.Tests.Controllers
                 CurrencyAlias = "Pound"
             };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkPlantCurrency>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkPlantCurrency>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -108,25 +99,18 @@ namespace B4.Tests.Controllers
             Assert.Equal("Pound", createdCurrency.CurrencyAlias);
         }
 
-        // -----------------------------------------
-        // TEST DELETE
-        // -----------------------------------------
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            var currency = new LkPlantCurrency { IdCurrency = 1, Currency = "USD", CurrencyAlias = "Dollar" };
+            var entity = new LkPlantCurrency { IdCurrency = 1, Currency = "USD", CurrencyAlias = "Dollar" };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(currency);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(entity);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
+            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
 
             Assert.Equal("Currency eliminado correctamente", dict["message"]);
         }
@@ -134,11 +118,14 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantCurrency)null);
+            _mockService.Setup(s => s.DeleteAsync(It.IsAny<int>())).ThrowsAsync(new Exception("No existe currency con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe currency con id=99", dict["message"]);
         }
     }
 }

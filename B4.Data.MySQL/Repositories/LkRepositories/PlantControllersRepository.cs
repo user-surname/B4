@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using System;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.RepositoryInterfaces.LkInterfaces;
 
 namespace B4.Data.MySQL.Repositories.LkRepositories
 {

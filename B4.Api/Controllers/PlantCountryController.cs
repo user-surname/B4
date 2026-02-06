@@ -1,7 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -11,65 +11,49 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PlantCountryController : ControllerBase
     {
-        private readonly IPlantCountryRepository _repo;
+        private readonly IPlantCountryService _service;
 
-        public PlantCountryController(IPlantCountryRepository repo)
+        public PlantCountryController(IPlantCountryService service)
         {
-            _repo = repo;
+            _service = service;
         }
 
-        // GET /api/v1/PlantCountry/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var record = await _repo.GetByIdAsync(id);
-                if (record is null)
-                    return NotFound($"No existe país con id={id}");
+            var record = await _service.GetByIdAsync(id);
+            if (record == null)
+                return NotFound($"No existe país con id={id}");
 
-                var dto = new PlantCountryGetDto
-                {
-                    IdCountry = record.IdCountry,
-                    Country = record.Country,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
+            var dto = new PlantCountryGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdCountry = record.IdCountry,
+                Country = record.Country,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
+
+            return Ok(dto);
         }
 
-        // GET /api/v1/PlantCountry
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var records = await _repo.GetAllAsync();
-                var dtos = records.Select(r => new PlantCountryGetDto
-                {
-                    IdCountry = r.IdCountry,
-                    Country = r.Country,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    IsActive = r.IsActive
-                }).ToList();
+            var records = await _service.GetAllAsync();
 
-                return Ok(dtos);
-            }
-            catch (Exception ex)
+            var dtos = records.Select(r => new PlantCountryGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdCountry = r.IdCountry,
+                Country = r.Country,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
+                IsActive = r.IsActive
+            }).ToList();
+
+            return Ok(dtos);
         }
 
-        // POST /api/v1/PlantCountry
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCountryPostDto dto)
         {
@@ -84,26 +68,23 @@ namespace B4.Api.Controllers
                 IsActive = 1
             };
 
-            await _repo.AddAsync(entity);
+            await _service.AddAsync(entity);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdCountry },
-                entity
-            );
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdCountry }, entity);
         }
 
-        // DELETE /api/v1/PlantCountry/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _repo.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"No existe país con id={id}" });
-
-            await _repo.DeleteAsync(id);
-
-            return Ok(new { message = "País eliminado correctamente" });
+            try
+            {
+                await _service.DeleteAsync(id);
+                return Ok(new { message = "País eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

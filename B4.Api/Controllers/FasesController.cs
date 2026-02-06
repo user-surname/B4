@@ -1,7 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -11,40 +11,33 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class FasesController : ControllerBase
     {
-        private readonly IFasesRepository _fasesRepo;
+        private readonly IFasesService _fasesService;
 
-        public FasesController(IFasesRepository fasesRepo)
+        public FasesController(IFasesService fasesService)
         {
-            _fasesRepo = fasesRepo;
+            _fasesService = fasesService;
         }
 
         // GET /api/v1/Fases/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
+            var record = await _fasesService.GetByIdAsync(id);
+
+            if (record is null)
+                return NotFound($"No existe fase para id={id}");
+
+            var dto = new FasesGetDto
             {
-                var record = await _fasesRepo.GetByIdAsync(id);
+                IdFase = record.IdFase,
+                Fase = record.Fase,
+                FaseAlias = record.FaseAlias,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
 
-                if (record == null)
-                    return NotFound($"No existe fase para id={id}");
-
-                var dto = new FasesGetDto
-                {
-                    IdFase = record.IdFase,
-                    Fase = record.Fase,
-                    FaseAlias = record.FaseAlias,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(dto);
         }
 
         // POST /api/v1/Fases
@@ -57,13 +50,10 @@ namespace B4.Api.Controllers
             var fase = new LkFases
             {
                 Fase = dto.Fase,
-                FaseAlias = dto.FaseAlias,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
+                FaseAlias = dto.FaseAlias
             };
 
-            await _fasesRepo.AddAsync(fase);
+            await _fasesService.AddAsync(fase);
 
             return CreatedAtAction(
                 nameof(GetById),
@@ -76,39 +66,34 @@ namespace B4.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var records = await _fasesRepo.GetAllAsync();
+            var records = await _fasesService.GetAllAsync();
 
-                var dtos = records.Select(record => new FasesGetDto
-                {
-                    IdFase = record.IdFase,
-                    Fase = record.Fase,
-                    FaseAlias = record.FaseAlias,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                }).ToList();
-
-                return Ok(dtos);
-            }
-            catch (Exception ex)
+            var dtos = records.Select(record => new FasesGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdFase = record.IdFase,
+                Fase = record.Fase,
+                FaseAlias = record.FaseAlias,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            }).ToList();
+
+            return Ok(dtos);
         }
 
         // DELETE /api/v1/Fases/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _fasesRepo.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"No existe fase con id={id}" });
-
-            await _fasesRepo.DeleteAsync(id);
-
-            return Ok(new { message = "Fase eliminada correctamente" });
+            try
+            {
+                await _fasesService.DeleteAsync(id);
+                return Ok(new { message = "Fase eliminada correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

@@ -6,9 +6,11 @@ using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.Services;
-using B4.Models.Interfaces;
-using B4.Models.Interfaces.DataInterfaces;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Domain.Services;
+using B4.Models.RepositoryInterfaces;
+using B4.Models.RepositoryInterfaces.DataInterfaces;
+using B4.Models.RepositoryInterfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using B4.Shared;
 using B4.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -53,6 +55,26 @@ try
         logger.Error("No se encontró la clave 'bbdd' en el archivo de configuración.");
         throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
     }
+
+    builder.Services.AddAutoMapper(cfg =>
+    {
+        cfg.AddProfile<MappingProfile>();
+    });
+
+
+
+    builder.Services.AddScoped<ICiclosService, CiclosService>();
+    builder.Services.AddScoped<IEpigrafeService, EpigrafeService>();
+    builder.Services.AddScoped<IFasesService, FasesService>();
+    builder.Services.AddScoped<IPlantCompanyService, PlantCompanyService>();
+    builder.Services.AddScoped<IPlantControllersService, PlantControllersService>();
+    builder.Services.AddScoped<IPlantCountryService, PlantCountryService>();
+    builder.Services.AddScoped<IPlantCurrencyService, PlantCurrencyService>();
+    builder.Services.AddScoped<IPlantDivisionCompanyService, PlantDivisionCompanyService>();
+    builder.Services.AddScoped<IPlantDivisionService, PlantDivisionService>();
+    builder.Services.AddScoped<IPlantillasBotonesPasosTiposService, PlantillasBotonesPasosTiposService>();
+    builder.Services.AddScoped<IPlantSubdivisionService, PlantSubdivisionService>();
+    builder.Services.AddScoped<IPlantTreeService, PlantTreeService>();
 
     try
     {

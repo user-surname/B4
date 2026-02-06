@@ -1,5 +1,5 @@
 ﻿using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.RepositoryInterfaces.LkInterfaces;
 using Dapper;
 using System.Data;
 

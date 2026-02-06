@@ -6,7 +6,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,13 +15,13 @@ namespace B4.Tests.Controllers
 {
     public class PlantCompanyControllerTest
     {
-        private readonly Mock<IPlantCompanyRepository> _mockRepo;
+        private readonly Mock<IPlantCompanyService> _mockService;
         private readonly PlantCompanyController _controller;
 
         public PlantCompanyControllerTest()
         {
-            _mockRepo = new Mock<IPlantCompanyRepository>();
-            _controller = new PlantCompanyController(_mockRepo.Object);
+            _mockService = new Mock<IPlantCompanyService>();
+            _controller = new PlantCompanyController(_mockService.Object);
         }
 
         // -----------------------------------------
@@ -43,7 +43,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(company);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(company);
 
             var result = await _controller.GetById(1);
 
@@ -57,7 +57,7 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantCompany)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantCompany)null);
 
             var result = await _controller.GetById(99);
 
@@ -76,14 +76,16 @@ namespace B4.Tests.Controllers
                 new LkPlantCompany { IdCompany = 2, CompanyCode = "COMP02", Company = "Company B" }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<PlantCompanyGetDto>>(okResult.Value);
+            var dtos = Assert.IsAssignableFrom<IEnumerable<PlantCompanyGetDto>>(okResult.Value).ToList();
 
             Assert.Equal(2, dtos.Count);
+            Assert.Equal("COMP01", dtos[0].CompanyCode);
+            Assert.Equal("COMP02", dtos[1].CompanyCode);
         }
 
         // -----------------------------------------
@@ -107,7 +109,7 @@ namespace B4.Tests.Controllers
                 Obs = "Observación"
             };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkPlantCompany>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkPlantCompany>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -126,8 +128,8 @@ namespace B4.Tests.Controllers
         {
             var company = new LkPlantCompany { IdCompany = 1, CompanyCode = "COMP01", Company = "Company A" };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(company);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(company);
 
             var result = await _controller.Delete(1);
 
@@ -144,11 +146,17 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantCompany)null);
+            _mockService.Setup(s => s.DeleteAsync(It.IsAny<int>())).ThrowsAsync(new Exception("No existe PlantCompany con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var dict = notFoundResult.Value
+                .GetType()
+                .GetProperties()
+                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe PlantCompany con id=99", dict["message"]);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using B4.Data.MySQL.Repositories;
 using B4.Models.Entities;
-using B4.Models.Interfaces;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.RepositoryInterfaces;
+using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.Mvc;
 

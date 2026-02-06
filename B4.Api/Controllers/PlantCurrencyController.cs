@@ -1,7 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -11,73 +11,51 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PlantCurrencyController : ControllerBase
     {
-        private readonly IPlantCurrencyRepository _repo;
+        private readonly IPlantCurrencyService _service;
 
-        public PlantCurrencyController(IPlantCurrencyRepository repo)
+        public PlantCurrencyController(IPlantCurrencyService service)
         {
-            _repo = repo;
+            _service = service;
         }
 
-        // -----------------------------------------
-        // GET BY ID
-        // -----------------------------------------
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var record = await _repo.GetByIdAsync(id);
-                if (record == null)
-                    return NotFound($"No existe currency para id={id}");
+            var record = await _service.GetByIdAsync(id);
+            if (record == null)
+                return NotFound($"No existe currency con id={id}");
 
-                var dto = new PlantCurrencyGetDto
-                {
-                    IdCurrency = record.IdCurrency,
-                    Currency = record.Currency,
-                    CurrencyAlias = record.CurrencyAlias,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
+            var dto = new PlantCurrencyGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdCurrency = record.IdCurrency,
+                Currency = record.Currency,
+                CurrencyAlias = record.CurrencyAlias,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
+
+            return Ok(dto);
         }
 
-        // -----------------------------------------
-        // GET ALL
-        // -----------------------------------------
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var records = await _repo.GetAllAsync();
-                var dtos = records.Select(r => new PlantCurrencyGetDto
-                {
-                    IdCurrency = r.IdCurrency,
-                    Currency = r.Currency,
-                    CurrencyAlias = r.CurrencyAlias,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
-                    IsActive = r.IsActive
-                }).ToList();
+            var records = await _service.GetAllAsync();
 
-                return Ok(dtos);
-            }
-            catch (Exception ex)
+            var dtos = records.Select(r => new PlantCurrencyGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdCurrency = r.IdCurrency,
+                Currency = r.Currency,
+                CurrencyAlias = r.CurrencyAlias,
+                CreatedAt = r.CreatedAt,
+                UpdatedAt = r.UpdatedAt,
+                IsActive = r.IsActive
+            }).ToList();
+
+            return Ok(dtos);
         }
 
-        // -----------------------------------------
-        // CREATE
-        // -----------------------------------------
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCurrencyPostDto dto)
         {
@@ -93,24 +71,23 @@ namespace B4.Api.Controllers
                 IsActive = 1
             };
 
-            await _repo.AddAsync(entity);
+            await _service.AddAsync(entity);
 
             return CreatedAtAction(nameof(GetById), new { id = entity.IdCurrency }, entity);
         }
 
-        // -----------------------------------------
-        // DELETE
-        // -----------------------------------------
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _repo.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"No existe currency con id={id}" });
-
-            await _repo.DeleteAsync(id);
-
-            return Ok(new { message = "Currency eliminado correctamente" });
+            try
+            {
+                await _service.DeleteAsync(id);
+                return Ok(new { message = "Currency eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

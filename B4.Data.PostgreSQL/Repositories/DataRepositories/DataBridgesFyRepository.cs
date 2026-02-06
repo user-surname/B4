@@ -1,6 +1,6 @@
 using Dapper;
 using B4.Models.Entities.DataEntities;
-using B4.Models.Interfaces.DataInterfaces;
+using B4.Models.RepositoryInterfaces.DataInterfaces;
 
 namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {

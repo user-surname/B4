@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20260206.1 - Slava
+
+- B4.Domain -> Services para Controllers creados
+- B4.ServiceInterfaces -> Interfaces para Services creadas
+- B4.Api.Controllers -> Controllers utilizan Services
+
 ## v0.20260204.1 - Slava
 
 - B4.Api.Controllers -> Controllers LK creados

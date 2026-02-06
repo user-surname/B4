@@ -6,7 +6,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,18 +15,15 @@ namespace B4.Tests.Controllers
 {
     public class PlantCountryControllerTest
     {
-        private readonly Mock<IPlantCountryRepository> _mockRepo;
+        private readonly Mock<IPlantCountryService> _mockService;
         private readonly PlantCountryController _controller;
 
         public PlantCountryControllerTest()
         {
-            _mockRepo = new Mock<IPlantCountryRepository>();
-            _controller = new PlantCountryController(_mockRepo.Object);
+            _mockService = new Mock<IPlantCountryService>();
+            _controller = new PlantCountryController(_mockService.Object);
         }
 
-        // -----------------------------------------
-        // TEST GET BY ID
-        // -----------------------------------------
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenRecordExists()
         {
@@ -39,7 +36,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(country);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(country);
 
             var result = await _controller.GetById(1);
 
@@ -52,16 +49,13 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantCountry)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantCountry)null);
 
             var result = await _controller.GetById(99);
 
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        // -----------------------------------------
-        // TEST GET ALL
-        // -----------------------------------------
         [Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
@@ -71,28 +65,22 @@ namespace B4.Tests.Controllers
                 new LkPlantCountry { IdCountry = 2, Country = "Francia" }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<PlantCountryGetDto>>(okResult.Value);
+            var dtos = Assert.IsAssignableFrom<IEnumerable<PlantCountryGetDto>>(okResult.Value).ToList();
 
             Assert.Equal(2, dtos.Count);
         }
 
-        // -----------------------------------------
-        // TEST POST CREATE
-        // -----------------------------------------
         [Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
-            var dto = new PlantCountryPostDto
-            {
-                Country = "Italia"
-            };
+            var dto = new PlantCountryPostDto { Country = "Italia" };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkPlantCountry>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkPlantCountry>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -102,25 +90,18 @@ namespace B4.Tests.Controllers
             Assert.Equal("Italia", createdCountry.Country);
         }
 
-        // -----------------------------------------
-        // TEST DELETE
-        // -----------------------------------------
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            var country = new LkPlantCountry { IdCountry = 1, Country = "España" };
+            var entity = new LkPlantCountry { IdCountry = 1, Country = "España" };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(country);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(entity);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
+            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
 
             Assert.Equal("País eliminado correctamente", dict["message"]);
         }
@@ -128,11 +109,14 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantCountry)null);
+            _mockService.Setup(s => s.DeleteAsync(It.IsAny<int>())).ThrowsAsync(new Exception("No existe país con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe país con id=99", dict["message"]);
         }
     }
 }

@@ -2,7 +2,7 @@ using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
 using B4.Models.Entities.DataEntities;
-using B4.Models.Interfaces.DataInterfaces;
+using B4.Models.RepositoryInterfaces.DataInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers

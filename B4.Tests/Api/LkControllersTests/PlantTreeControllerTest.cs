@@ -6,7 +6,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,18 +15,15 @@ namespace B4.Tests.Controllers
 {
     public class PlantTreeControllerTest
     {
-        private readonly Mock<IPlantTreeRepository> _mockRepo;
+        private readonly Mock<IPlantTreeService> _mockService;
         private readonly PlantTreeController _controller;
 
         public PlantTreeControllerTest()
         {
-            _mockRepo = new Mock<IPlantTreeRepository>();
-            _controller = new PlantTreeController(_mockRepo.Object);
+            _mockService = new Mock<IPlantTreeService>();
+            _controller = new PlantTreeController(_mockService.Object);
         }
 
-        // -----------------------------------------
-        // TEST GET BY ID
-        // -----------------------------------------
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenRecordExists()
         {
@@ -42,7 +39,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(tree);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(tree);
 
             var result = await _controller.GetById(1);
 
@@ -56,16 +53,13 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantTree)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantTree)null);
 
             var result = await _controller.GetById(99);
 
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        // -----------------------------------------
-        // TEST GET ALL
-        // -----------------------------------------
         [Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
@@ -75,7 +69,7 @@ namespace B4.Tests.Controllers
                 new LkPlantTree { IdTree = 2, IdDivision = 11, IdDivisionCompany = 21, IdSubdivision = 31, IdCountry = 41 }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
@@ -85,9 +79,6 @@ namespace B4.Tests.Controllers
             Assert.Equal(2, dtos.Count);
         }
 
-        // -----------------------------------------
-        // TEST POST CREATE
-        // -----------------------------------------
         [Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
@@ -100,7 +91,7 @@ namespace B4.Tests.Controllers
                 IdCountry = 42
             };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkPlantTree>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkPlantTree>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -111,26 +102,15 @@ namespace B4.Tests.Controllers
             Assert.Equal(42, createdTree.IdCountry);
         }
 
-        // -----------------------------------------
-        // TEST DELETE
-        // -----------------------------------------
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            var tree = new LkPlantTree { IdTree = 1, IdDivision = 10, IdCountry = 40 };
-
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(tree);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-
-            // Convertimos a diccionario para verificar mensaje
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
+            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
 
             Assert.Equal("Árbol eliminado correctamente", dict["message"]);
         }
@@ -138,11 +118,15 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkPlantTree)null);
+            _mockService.Setup(s => s.DeleteAsync(99))
+                        .ThrowsAsync(new Exception("No existe árbol con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe árbol con id=99", dict["message"]);
         }
     }
 }

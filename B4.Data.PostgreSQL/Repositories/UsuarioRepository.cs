@@ -1,5 +1,5 @@
 ﻿using B4.Models.Entities.DataEntities;
-using B4.Models.Interfaces;
+using B4.Models.RepositoryInterfaces;
 using Npgsql;
 using System;
 using System.Collections.Generic;

@@ -6,7 +6,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,13 +15,13 @@ namespace B4.Tests.Controllers
 {
     public class EpigrafeControllerTest
     {
-        private readonly Mock<IEpigrafeRepository> _mockRepo;
+        private readonly Mock<IEpigrafeService> _mockService;
         private readonly EpigrafeController _controller;
 
         public EpigrafeControllerTest()
         {
-            _mockRepo = new Mock<IEpigrafeRepository>();
-            _controller = new EpigrafeController(_mockRepo.Object);
+            _mockService = new Mock<IEpigrafeService>();
+            _controller = new EpigrafeController(_mockService.Object);
         }
 
         // -----------------------------------------
@@ -43,7 +43,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(epigrafe);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(epigrafe);
 
             var result = await _controller.GetById(1);
 
@@ -56,7 +56,7 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkEpigrafe)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkEpigrafe)null);
 
             var result = await _controller.GetById(99);
 
@@ -71,11 +71,11 @@ namespace B4.Tests.Controllers
         {
             var list = new List<LkEpigrafe>
             {
-                new LkEpigrafe { IdEpigrafe = 1, IdPlantilla = 10, IdHoja = 5, Epigrafe = "Epigrafe 1", EpigrafeFull = "Pre 1" },
-                new LkEpigrafe { IdEpigrafe = 2, IdPlantilla = 11, IdHoja = 6, Epigrafe = "Epigrafe 2", EpigrafeFull = "Pre 2" }
+                new LkEpigrafe { IdEpigrafe = 1, IdPlantilla = 10, IdHoja = 5, Epigrafe = "Epigrafe 1", EpigrafeFull = "Pre 1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
+                new LkEpigrafe { IdEpigrafe = 2, IdPlantilla = 11, IdHoja = 6, Epigrafe = "Epigrafe 2", EpigrafeFull = "Pre 2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
@@ -100,7 +100,7 @@ namespace B4.Tests.Controllers
                 EpigrafeFull = "Pre Epigrafe 3"
             };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkEpigrafe>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkEpigrafe>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -116,32 +116,36 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            var epigrafe = new LkEpigrafe { IdEpigrafe = 1, Epigrafe = "Epigrafe 1", IdPlantilla = 10 };
-
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(epigrafe);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario para leer propiedad anónima
             var dict = okResult.Value
                 .GetType()
                 .GetProperties()
                 .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
 
-            Assert.Equal("Epígrafe eliminado correctamente", dict["message"]);
+            Assert.Equal("Epigrafe eliminado correctamente", dict["message"]);
         }
 
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkEpigrafe)null);
+            _mockService
+                .Setup(s => s.DeleteAsync(99))
+                .ThrowsAsync(new Exception("No existe ciclo con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+            var dict = notFoundResult.Value
+                .GetType()
+                .GetProperties()
+                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe ciclo con id=99", dict["message"]);
         }
     }
 }

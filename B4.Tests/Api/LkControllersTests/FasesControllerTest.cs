@@ -6,7 +6,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -15,13 +15,13 @@ namespace B4.Tests.Controllers
 {
     public class FasesControllerTest
     {
-        private readonly Mock<IFasesRepository> _mockRepo;
+        private readonly Mock<IFasesService> _mockService;
         private readonly FasesController _controller;
 
         public FasesControllerTest()
         {
-            _mockRepo = new Mock<IFasesRepository>();
-            _controller = new FasesController(_mockRepo.Object);
+            _mockService = new Mock<IFasesService>();
+            _controller = new FasesController(_mockService.Object);
         }
 
         // -----------------------------------------
@@ -40,7 +40,7 @@ namespace B4.Tests.Controllers
                 IsActive = 1
             };
 
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(fase);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(fase);
 
             var result = await _controller.GetById(1);
 
@@ -53,7 +53,7 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkFases)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkFases)null);
 
             var result = await _controller.GetById(99);
 
@@ -68,11 +68,11 @@ namespace B4.Tests.Controllers
         {
             var list = new List<LkFases>
             {
-                new LkFases { IdFase = 1, Fase = "Fase 1", FaseAlias = "F1" },
-                new LkFases { IdFase = 2, Fase = "Fase 2", FaseAlias = "F2" }
+                new LkFases { IdFase = 1, Fase = "Fase 1", FaseAlias = "F1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
+                new LkFases { IdFase = 2, Fase = "Fase 2", FaseAlias = "F2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
             };
 
-            _mockRepo.Setup(r => r.GetAllAsync()).ReturnsAsync(list);
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
 
             var result = await _controller.GetAll();
 
@@ -94,7 +94,7 @@ namespace B4.Tests.Controllers
                 FaseAlias = "F3"
             };
 
-            _mockRepo.Setup(r => r.AddAsync(It.IsAny<LkFases>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkFases>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
@@ -110,16 +110,13 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            var fase = new LkFases { IdFase = 1, Fase = "Fase 1" };
-
-            _mockRepo.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(fase);
-            _mockRepo.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario para leer propiedad anónima
+            // Convertimos a diccionario para validar el mensaje
             var dict = okResult.Value
                 .GetType()
                 .GetProperties()
@@ -131,11 +128,20 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockRepo.Setup(r => r.GetByIdAsync(99)).ReturnsAsync((LkFases)null);
+            _mockService
+                .Setup(s => s.DeleteAsync(99))
+                .ThrowsAsync(new Exception("No existe fase con id=99"));
 
             var result = await _controller.Delete(99);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+
+            var dict = notFoundResult.Value
+                .GetType()
+                .GetProperties()
+                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+
+            Assert.Equal("No existe fase con id=99", dict["message"]);
         }
     }
 }

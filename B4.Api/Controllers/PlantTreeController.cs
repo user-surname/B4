@@ -1,7 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -11,73 +11,54 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PlantTreeController : ControllerBase
     {
-        private readonly IPlantTreeRepository _treeRepo;
+        private readonly IPlantTreeService _service;
 
-        public PlantTreeController(IPlantTreeRepository treeRepo)
+        public PlantTreeController(IPlantTreeService service)
         {
-            _treeRepo = treeRepo;
+            _service = service;
         }
 
-        // GET /api/v1/PlantTree/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
+            var record = await _service.GetByIdAsync(id);
+            if (record is null)
+                return NotFound($"No existe árbol para id={id}");
+
+            var dto = new PlantTreeGetDto
             {
-                var record = await _treeRepo.GetByIdAsync(id);
+                IdTree = record.IdTree,
+                IdDivision = record.IdDivision,
+                IdDivisionCompany = record.IdDivisionCompany,
+                IdSubdivision = record.IdSubdivision,
+                IdCountry = record.IdCountry,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
 
-                if (record is null)
-                    return NotFound($"No existe árbol para id={id}");
-
-                var dto = new PlantTreeGetDto
-                {
-                    IdTree = record.IdTree,
-                    IdDivision = record.IdDivision,
-                    IdDivisionCompany = record.IdDivisionCompany,
-                    IdSubdivision = record.IdSubdivision,
-                    IdCountry = record.IdCountry,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(dto);
         }
 
-        // GET /api/v1/PlantTree
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
+            var records = await _service.GetAllAsync();
+            var dtos = records.Select(record => new PlantTreeGetDto
             {
-                var records = await _treeRepo.GetAllAsync();
+                IdTree = record.IdTree,
+                IdDivision = record.IdDivision,
+                IdDivisionCompany = record.IdDivisionCompany,
+                IdSubdivision = record.IdSubdivision,
+                IdCountry = record.IdCountry,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            }).ToList();
 
-                var dtos = records.Select(record => new PlantTreeGetDto
-                {
-                    IdTree = record.IdTree,
-                    IdDivision = record.IdDivision,
-                    IdDivisionCompany = record.IdDivisionCompany,
-                    IdSubdivision = record.IdSubdivision,
-                    IdCountry = record.IdCountry,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                }).ToList();
-
-                return Ok(dtos);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return Ok(dtos);
         }
 
-        // POST /api/v1/PlantTree
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantTreePostDto dto)
         {
@@ -96,27 +77,23 @@ namespace B4.Api.Controllers
                 IsActive = 1
             };
 
-            await _treeRepo.AddAsync(tree);
+            await _service.AddAsync(tree);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = tree.IdTree },
-                tree
-            );
+            return CreatedAtAction(nameof(GetById), new { id = tree.IdTree }, tree);
         }
 
-        // DELETE /api/v1/PlantTree/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _treeRepo.GetByIdAsync(id);
-
-            if (existing == null)
-                return NotFound(new { message = $"No existe árbol con id={id}" });
-
-            await _treeRepo.DeleteAsync(id);
-
-            return Ok(new { message = "Árbol eliminado correctamente" });
+            try
+            {
+                await _service.DeleteAsync(id);
+                return Ok(new { message = "Árbol eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }

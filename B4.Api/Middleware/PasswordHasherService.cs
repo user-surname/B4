@@ -1,4 +1,4 @@
-﻿using B4.Models.Interfaces.LkInterfaces;
+﻿using B4.Models.RepositoryInterfaces.LkInterfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace B4.Api.Middleware

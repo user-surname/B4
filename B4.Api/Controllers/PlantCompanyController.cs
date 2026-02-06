@@ -1,8 +1,7 @@
 ﻿using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
-using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
@@ -12,91 +11,72 @@ namespace B4.Api.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class PlantCompanyController : ControllerBase
     {
-        private readonly IPlantCompanyRepository _plantRepo;
+        private readonly IPlantCompanyService _plantService;
 
-        public PlantCompanyController(IPlantCompanyRepository plantRepo)
+        public PlantCompanyController(IPlantCompanyService plantService)
         {
-            _plantRepo = plantRepo;
+            _plantService = plantService;
         }
 
-        // -----------------------------------------
-        // GET BY ID
-        // -----------------------------------------
+        // GET /api/v1/PlantCompany/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            try
-            {
-                var record = await _plantRepo.GetByIdAsync(id);
-                if (record is null)
-                    return NotFound($"No existe PlantCompany con id={id}");
+            var record = await _plantService.GetByIdAsync(id);
+            if (record == null)
+                return NotFound($"No existe PlantCompany con id={id}");
 
-                var dto = new PlantCompanyGetDto
-                {
-                    IdCompany = record.IdCompany,
-                    CompanyCode = record.CompanyCode,
-                    ManagementCompany = record.ManagementCompany,
-                    IdCurrency = record.IdCurrency,
-                    Company = record.Company,
-                    Active = record.Active,
-                    IdDivision = record.IdDivision,
-                    IdDivisionCompany = record.IdDivisionCompany,
-                    IdSubdivision = record.IdSubdivision,
-                    IdCountry = record.IdCountry,
-                    Location = record.Location,
-                    Obs = record.Obs,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                };
-
-                return Ok(dto);
-            }
-            catch (Exception ex)
+            var dto = new PlantCompanyGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdCompany = record.IdCompany,
+                CompanyCode = record.CompanyCode,
+                ManagementCompany = record.ManagementCompany,
+                IdCurrency = record.IdCurrency,
+                Company = record.Company,
+                Active = record.Active,
+                IdDivision = record.IdDivision,
+                IdDivisionCompany = record.IdDivisionCompany,
+                IdSubdivision = record.IdSubdivision,
+                IdCountry = record.IdCountry,
+                Location = record.Location,
+                Obs = record.Obs,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            };
+
+            return Ok(dto);
         }
 
-        // -----------------------------------------
-        // GET ALL
-        // -----------------------------------------
+        // GET /api/v1/PlantCompany
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            try
-            {
-                var records = await _plantRepo.GetAllAsync();
-                var dtos = records.Select(record => new PlantCompanyGetDto
-                {
-                    IdCompany = record.IdCompany,
-                    CompanyCode = record.CompanyCode,
-                    ManagementCompany = record.ManagementCompany,
-                    IdCurrency = record.IdCurrency,
-                    Company = record.Company,
-                    Active = record.Active,
-                    IdDivision = record.IdDivision,
-                    IdDivisionCompany = record.IdDivisionCompany,
-                    IdSubdivision = record.IdSubdivision,
-                    IdCountry = record.IdCountry,
-                    Location = record.Location,
-                    Obs = record.Obs,
-                    CreatedAt = record.CreatedAt,
-                    UpdatedAt = record.UpdatedAt,
-                    IsActive = record.IsActive
-                }).ToList();
+            var records = await _plantService.GetAllAsync();
 
-                return Ok(dtos);
-            }
-            catch (Exception ex)
+            var dtos = records.Select(record => new PlantCompanyGetDto
             {
-                return BadRequest(ex.Message);
-            }
+                IdCompany = record.IdCompany,
+                CompanyCode = record.CompanyCode,
+                ManagementCompany = record.ManagementCompany,
+                IdCurrency = record.IdCurrency,
+                Company = record.Company,
+                Active = record.Active,
+                IdDivision = record.IdDivision,
+                IdDivisionCompany = record.IdDivisionCompany,
+                IdSubdivision = record.IdSubdivision,
+                IdCountry = record.IdCountry,
+                Location = record.Location,
+                Obs = record.Obs,
+                CreatedAt = record.CreatedAt,
+                UpdatedAt = record.UpdatedAt,
+                IsActive = record.IsActive
+            }).ToList();
+
+            return Ok(dtos);
         }
 
-        // -----------------------------------------
-        // CREATE / POST
-        // -----------------------------------------
+        // POST /api/v1/PlantCompany
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCompanyPostDto dto)
         {
@@ -115,34 +95,27 @@ namespace B4.Api.Controllers
                 IdSubdivision = dto.IdSubdivision,
                 IdCountry = dto.IdCountry,
                 Location = dto.Location,
-                Obs = dto.Obs,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
+                Obs = dto.Obs
             };
 
-            await _plantRepo.AddAsync(company);
+            await _plantService.AddAsync(company);
 
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = company.IdCompany },
-                company
-            );
+            return CreatedAtAction(nameof(GetById), new { id = company.IdCompany }, company);
         }
 
-        // -----------------------------------------
-        // DELETE
-        // -----------------------------------------
+        // DELETE /api/v1/PlantCompany/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _plantRepo.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"No existe PlantCompany con id={id}" });
-
-            await _plantRepo.DeleteAsync(id);
-
-            return Ok(new { message = "PlantCompany eliminado correctamente" });
+            try
+            {
+                await _plantService.DeleteAsync(id);
+                return Ok(new { message = "PlantCompany eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
         }
     }
 }
