@@ -1,0 +1,17 @@
+using B4.Models.Entities.LkEntities;
+using B4.Models.Interfaces.LkInterfaces;
+using Microsoft.AspNetCore.Mvc;
+
+namespace B4.Api.Controllers.Lk
+{
+    public class CiclosController : LkControllerBase
+    {
+        public CiclosController(IMemoryCacheService cache) : base(cache) { }
+
+        // GET /api/v1/lk/ciclos?onlyActive=true
+        [HttpGet]
+        [ProducesResponseType(typeof(IReadOnlyList<LkCiclos>), StatusCodes.Status200OK)]
+        public Task<IActionResult> GetAll([FromQuery] bool onlyActive = true)
+            => OkList(_cache.GetCiclosAsync, onlyActive);
+    }
+}
