@@ -5,6 +5,7 @@ using B4.Data.MySQL.Repositories;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.PostgreSQL.Repositories.DataRepositories;
+using B4.Data.PostgreSQL.Services;
 using B4.Data.Services;
 using B4.Models.Interfaces;
 using B4.Models.Interfaces.DataInterfaces;
@@ -196,7 +197,7 @@ try
 
     // MemoryCache tablas maestras
     builder.Services.AddMemoryCache();
-    builder.Services.AddSingleton<IMemoryCacheService, MemoryCacheService>();
+    builder.Services.AddScoped<IMemoryCacheService, MemoryCacheService>();
 
     // Controllers y Swagger
     builder.Services.AddControllers();
