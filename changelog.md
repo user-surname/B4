@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.20260210.1 Victor
+
+- B4.Models.ServiceInterfaces
+  - Interface de DataActuals
+- B4.Data.Domain.Service
+  - Implementacion del DataActualsService
+
 ## v0.20260206.1 - Slava
 
 - B4.Domain -> Services para Controllers creados

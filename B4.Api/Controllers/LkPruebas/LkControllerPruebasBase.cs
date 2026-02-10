@@ -1,5 +1,5 @@
 using B4.Api.Middleware;
-using B4.Models.Interfaces.LkInterfaces;
+using B4.Models.RepositoryInterfaces.LkInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +19,10 @@ namespace B4.Api.Controllers.Lk
         }
 
         /// <summary>
-        /// 
+        /// Método común para devolver listas de tablas maestras (LK).
+        /// Recibe una función que obtiene los datos (normalmente desde caché)
+        /// y devuelve una respuesta HTTP 200 (OK) con la lista resultante.
+        /// Se usa para evitar repetir la misma lógica en todos los controllers LK.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="getter"></param>
