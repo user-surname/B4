@@ -45,5 +45,31 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
             using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);
         }
+
+        public async Task<IEnumerable<DataTipoCambio>> GetByEjercicioAsync(int ejercicio)
+        {
+            var sql = @"
+                SELECT *
+                FROM b4.data_tipo_cambio
+                WHERE ejercicio = @ejercicio
+                ORDER BY calendarday;";
+
+            using var conn = GetConnection();
+            return await conn.QueryAsync<DataTipoCambio>(sql, new { ejercicio });
+        }
+
+        public async Task<IEnumerable<DataTipoCambio>> GetByEjercicioCurrencyAsync(int ejercicio, int idCurrency)
+        {
+            var sql = @"
+                SELECT *
+                FROM b4.data_tipo_cambio
+                WHERE ejercicio = @ejercicio
+                AND idcurrency = @idCurrency
+                ORDER BY calendarday;";
+
+            using var conn = GetConnection();
+            return await conn.QueryAsync<DataTipoCambio>(sql, new { ejercicio, idCurrency });
+        }
+
     }
 }

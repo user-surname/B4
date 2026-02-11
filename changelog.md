@@ -7,6 +7,24 @@
 - B4.Api.Controllers -> Automaping para controllers creado
 - B4.Tests -> Automaping para Tests creado
 
+## v0.20260210.2 Victor
+
+- B4.Api.Controllers
+  - Implementacion de los Controllers Data
+- B4.Data.Domain.Service
+  - Implementacion de los Services de Data
+- B4.Data.Models.ServiceInterfaces
+  - Implementacion de los Interfaces de Service para Data
+- B4.Data.Tests.Api.DataControllerTest
+  - Implementacion de los Test para DataController
+
+## v0.20260210.1 Victor
+
+- B4.Models.ServiceInterfaces
+  - Interface de DataActuals
+- B4.Data.Domain.Service
+  - Implementacion del DataActualsService
+
 ## v0.20260206.1 - Slava
 
 - B4.Domain -> Services para Controllers creados

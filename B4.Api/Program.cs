@@ -1,13 +1,14 @@
-using B4.Api.Controllers;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
 using B4.Api.Middleware;
 using B4.Data.MySQL;
-using B4.Data.MySQL.Repositories;
 using B4.Data.PostgreSQL;
-using B4.Data.PostgreSQL.Repositories;
-using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.PostgreSQL.Services;
 using B4.Domain.Services;
 using B4.Models.RepositoryInterfaces;
+using B4.Models.Entities.DataEntities;
 using B4.Models.RepositoryInterfaces.DataInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Models.ServiceInterfaces;
@@ -15,18 +16,11 @@ using B4.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -45,8 +39,7 @@ try
 {
     logger.Info("Iniciando API B4...");
 
-    var sharedConfig = B4.Shared.SharedConfig.Load();
-
+    var sharedConfig = SharedConfig.Load();
     var bbdd = sharedConfig["bbdd"]?.Trim();
 
     if (string.IsNullOrWhiteSpace(bbdd))
@@ -55,13 +48,13 @@ try
         throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
     }
 
-    builder.Services.AddAutoMapper(cfg =>
-    {
-        cfg.AddProfile<MappingProfile>();
-    });
+    // AutoMapper
+    builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
 
-
-
+    // --------------------------------------------------
+    // SERVICES (DOMAIN)
+    // --------------------------------------------------
+    // LK Services
     builder.Services.AddScoped<ICiclosService, CiclosService>();
     builder.Services.AddScoped<IEpigrafeService, EpigrafeService>();
     builder.Services.AddScoped<IFasesService, FasesService>();
@@ -77,35 +70,72 @@ try
     builder.Services.AddScoped<IControlService, ControlService>();
 
 
+    // DATA Services (contribuido)
+    builder.Services.AddScoped<IDataBudgetService, DataBudgetService>();
+    builder.Services.AddScoped<IDataForecastService, DataForecastService>();
+    builder.Services.AddScoped<IDataComentariosService, DataComentariosService>();
+    builder.Services.AddScoped<IDataTipoCambioService, DataTipoCambioService>();
+    builder.Services.AddScoped<IDataBridgesFyService, DataBridgesFyService>();
+    builder.Services.AddScoped<IDataBridgesMonthService, DataBridgesMonthService>();
+
+    // Si ya migraste DataActuals al patrón service, registra también:
+    // builder.Services.AddScoped<IDataActualsService, DataActualsService>();
+
+    // DATA BW Services (read-only)
+    builder.Services.AddScoped<IDataActualsBwService, DataActualsBwService>();
+    builder.Services.AddScoped<IDataBudgetBwService, DataBudgetBwService>();
+    builder.Services.AddScoped<IDataForecastBwService, DataForecastBwService>();
+    builder.Services.AddScoped<IDataBridgesFyBwService, DataBridgesFyBwService>();
+    builder.Services.AddScoped<IDataBridgesFyBwEurService, DataBridgesFyBwEurService>();
+    builder.Services.AddScoped<IDataBridgesMonthBwService, DataBridgesMonthBwService>();
+
+    // --------------------------------------------------
+    // DB + REPOSITORIES (según bbdd)
+    // --------------------------------------------------
     try
     {
         if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
         {
             logger.Info("Iniciando migraciones para MySQL...");
-
             B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
             logger.Info("Base de datos MySQL actualizada correctamente.");
 
             var ctx = new MySQLDapperContext(sharedConfig);
             builder.Services.AddSingleton(ctx);
 
-            builder.Services.AddScoped<ICiclosRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.CiclosRepository(ctx));
+            // LK repos (MySQL)
+            builder.Services.AddScoped<ICiclosRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.CiclosRepository(ctx));
+            builder.Services.AddScoped<IEpigrafeRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
+            builder.Services.AddScoped<IFasesRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.FasesRepository(ctx));
+            builder.Services.AddScoped<IPlantCompanyRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantCompanyRepository(ctx));
+            builder.Services.AddScoped<IPlantControllersRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantControllersRepository(ctx));
+            builder.Services.AddScoped<IPlantCountryRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantCountryRepository(ctx));
+            builder.Services.AddScoped<IPlantCurrencyRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
+            builder.Services.AddScoped<IPlantDivisionCompanyRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionCompanyRepository(ctx));
+            builder.Services.AddScoped<IPlantDivisionRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionRepository(ctx));
+            builder.Services.AddScoped<IPlantillasBotonesPasosTiposRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantillasBotonesPasosTiposRepository(ctx));
+            builder.Services.AddScoped<IPlantSubdivisionRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantSubdivisionRepository(ctx));
+            builder.Services.AddScoped<IPlantTreeRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantTreeRepository(ctx));
 
-            builder.Services.AddScoped<IEpigrafeRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
+            // DATA repos (MySQL)
+            builder.Services.AddScoped<IDataComentariosRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
+            builder.Services.AddScoped<IDataBudgetRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
+            builder.Services.AddScoped<IDataBudgetBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetBwRepository(ctx));
+            builder.Services.AddScoped<IDataForecastRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataForecastRepository(ctx));
+            builder.Services.AddScoped<IDataForecastBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataForecastBwRepository(ctx));
 
-            builder.Services.AddScoped<IFasesRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.FasesRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesFyRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
 
-            builder.Services.AddScoped<IPlantCompanyRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantCompanyRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesMonthRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
 
-            builder.Services.AddScoped<IPlantControllersRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantControllersRepository(ctx));
+            builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
 
-            builder.Services.AddScoped<IPlantCountryRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantCountryRepository(ctx));
+            // Actuals / ActualsBw
+            builder.Services.AddScoped<IDataActualsRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
+            builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.MySQL.Repositories.DataRepositories.DataActualsBwRepository>();
 
             builder.Services.AddScoped<IPlantCurrencyRepository>(_ =>
                 new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
@@ -168,33 +198,31 @@ try
             var ctx = new PostgreSQLDapperContext(sharedConfig);
             builder.Services.AddSingleton(ctx);
 
-            builder.Services.AddScoped<IDataComentariosRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
+            // LK repos (PostgreSQL) — añade los que falten según tu proyecto
+            builder.Services.AddScoped<IEpigrafeRepository>(_ => new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(ctx));
+            // Si tienes más LK repos en Postgres, regístralos aquí igual que en MySQL:
+            // builder.Services.AddScoped<ICiclosRepository>(_ => new ...);
+            // builder.Services.AddScoped<IFasesRepository>(_ => new ...);
+            // etc.
 
-            builder.Services.AddScoped<IDataBudgetRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
+            // DATA repos (PostgreSQL)
+            builder.Services.AddScoped<IDataComentariosRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
+            builder.Services.AddScoped<IDataBudgetRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
+            //builder.Services.AddScoped<IDataBudgetBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetBwRepository(ctx));
+            builder.Services.AddScoped<IDataForecastRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastRepository(ctx));
+            builder.Services.AddScoped<IDataForecastBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastBwRepository(ctx));
 
-            builder.Services.AddScoped<IDataForecastRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesFyRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesMonthRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthRepository(ctx));
+            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
+            builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
 
-            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
-
-            builder.Services.AddScoped<IEpigrafeRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(ctx));
-
-            // ✅ ACTUALS (PostgreSQL)
-            builder.Services.AddScoped<IDataActualsRepository>(_ =>
-                new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsRepository(ctx));
+            builder.Services.AddScoped<IDataActualsRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsRepository(ctx));
+            builder.Services.AddScoped<IDataActualsBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsBwRepository(ctx));
         }
         else
         {
@@ -208,10 +236,10 @@ try
         throw;
     }
 
-    // Middleware de metadata
+    // --------------------------------------------------
+    // MIDDLEWARES / INFRA
+    // --------------------------------------------------
     builder.Services.AddTransient<ResponseWrapperMiddleware>();
-
-    // Middleware global (errores)
     builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
 
     // Compresión GZIP
@@ -219,12 +247,19 @@ try
     {
         options.Level = CompressionLevel.SmallestSize;
     });
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.Providers.Add<GzipCompressionProvider>();
+        options.EnableForHttps = true;
+    });
 
+    // MemoryCache (LK)
     // MemoryCache tablas maestras
     builder.Services.AddMemoryCache();
     builder.Services.AddScoped<IMemoryCacheService, MemoryCacheService>();
 
-    // Controllers y Swagger
+
+    // Controllers + Swagger + Versionado
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
 
@@ -235,8 +270,6 @@ try
         options.ReportApiVersions = true;
     });
 
-    // Inicializacion de sistema de versiones de la API
-
     builder.Services.AddVersionedApiExplorer(options =>
     {
         options.GroupNameFormat = "'v'VVV";
@@ -245,171 +278,132 @@ try
 
     builder.Services.AddSwaggerGen(c =>
     {
-        // -------------------------------
-        // Definir esquema de seguridad JWT
-        // -------------------------------
-        // Esto permite que Swagger entienda que algunos endpoints requieren un token JWT
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-            Name = "Authorization",                   // Nombre del header HTTP donde se envía el token
-            Type = SecuritySchemeType.Http,          // Tipo de autenticación HTTP
-            Scheme = "Bearer",                        // Esquema de autenticación: Bearer token
-            BearerFormat = "JWT",                     // Formato esperado del token
-            In = ParameterLocation.Header,            // El token se envía en el header
-            Description = "Ingrese 'Bearer {token}'" // Descripción que aparece en Swagger UI
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Ingrese 'Bearer {token}'"
         });
 
-        // -------------------------------
-        // Aplicar seguridad a todos los endpoints
-        // -------------------------------
-        // Esto indica que todos los endpoints protegidos por JWT usarán la definición anterior
         c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
         {
-            new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
+                new OpenApiSecurityScheme
                 {
-                    Type = ReferenceType.SecurityScheme, // Indica que hace referencia a un esquema de seguridad
-                    Id = "Bearer"                        // ID del esquema definido arriba ("Bearer")
-                }
-            },
-            new string[] {} // Array vacío: no se requieren scopes adicionales
-        }
-    });
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                Array.Empty<string>()
+            }
+        });
     });
 
     builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-    // --------------------------------------------------
-    // CONEXIÓN BASE DE DATOS PostgreSQL
-    // --------------------------------------------------
-
-    //var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
-    //builder.Services.AddSingleton<MySQLDapperContext>();
+    // PasswordHasher
     builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
 
+    // CORS (ya que haces app.UseCors("AllowAll"))
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", policy =>
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod());
+    });
+
+    // --------------------------------------------------
+    // AUTH JWT
+    // --------------------------------------------------
     var jwtConfig = sharedConfig.GetSection("Jwt");
     var key = jwtConfig["Key"];
     if (string.IsNullOrEmpty(key))
-    {
         throw new Exception("JWT Key no está configurada en appsettings.json");
-    }
 
-
-    try
+    builder.Services.AddAuthentication(options =>
     {
-        builder.Services.AddAuthentication(options =>
-        {
-            // -------------------------------
-            // Configuración general de autenticación
-            // -------------------------------
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-        // -------------------------------
-        // Configuración específica para JWT
-        // -------------------------------
-        .AddJwtBearer(options =>
-        {
-            try
-            {
-                var key = jwtConfig["Key"];
-                var issuer = jwtConfig["Issuer"];
-                var audience = jwtConfig["Audience"];
-
-                // Validaciones básicas de configuración
-                if (string.IsNullOrWhiteSpace(key))
-                    throw new InvalidOperationException("La clave JWT (Jwt:Key) no está configurada.");
-                if (string.IsNullOrWhiteSpace(issuer))
-                    throw new InvalidOperationException("El issuer JWT (Jwt:Issuer) no está configurado.");
-                if (string.IsNullOrWhiteSpace(audience))
-                    throw new InvalidOperationException("La audiencia JWT (Jwt:Audience) no está configurada.");
-
-                // -------------------------------
-                // Parámetros de validación del token
-                // -------------------------------
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = issuer,
-                    ValidAudience = audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(key)
-                    )
-                };
-            }
-            catch (Exception ex)
-            {
-                // Captura errores específicos de la configuración de JWT
-                throw new InvalidOperationException("Error en la configuración de JWT", ex);
-            }
-        });
-    }
-    catch (Exception ex)
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
-        // Captura errores generales al agregar autenticación
-        // Por ejemplo si jwtConfig es null
-        Console.WriteLine($"Error configurando autenticación JWT: {ex.Message}");
-        throw;
-    }
+        var jwtKey = jwtConfig["Key"];
+        var issuer = jwtConfig["Issuer"];
+        var audience = jwtConfig["Audience"];
 
+        if (string.IsNullOrWhiteSpace(jwtKey))
+            throw new InvalidOperationException("La clave JWT (Jwt:Key) no está configurada.");
+        if (string.IsNullOrWhiteSpace(issuer))
+            throw new InvalidOperationException("El issuer JWT (Jwt:Issuer) no está configurado.");
+        if (string.IsNullOrWhiteSpace(audience))
+            throw new InvalidOperationException("La audiencia JWT (Jwt:Audience) no está configurada.");
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
 
     builder.Services.AddAuthorization(options =>
     {
-        // Policy que exige que el usuario sea Admin
-        options.AddPolicy("AdminOnly", policy =>
-            policy.RequireRole("Admin"));
+        options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     });
 
     builder.Services.AddScoped<JwtService>();
-
 
     // --------------------------------------------------
     // BUILD APP
     // --------------------------------------------------
     var app = builder.Build();
-    app.UseSwaggerUI(c =>
-    {
-        var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-        foreach (var description in provider.ApiVersionDescriptions)
-        {
-            c.SwaggerEndpoint(
-                $"/swagger/{description.GroupName}/swagger.json",
-                description.GroupName.ToUpperInvariant()
-            );
-        }
-    });
-
-    // Middleware global
-    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
+    // Swagger
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(c =>
+        {
+            var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+            foreach (var description in provider.ApiVersionDescriptions)
+            {
+                c.SwaggerEndpoint(
+                    $"/swagger/{description.GroupName}/swagger.json",
+                    description.GroupName.ToUpperInvariant()
+                );
+            }
+        });
+
         app.UseDeveloperExceptionPage();
     }
 
     app.UseHttpsRedirection();
     app.UseRouting();
 
-    // Errores (genera body JSON en fallos)
-    app.UseMiddleware<ResponseWrapperMiddleware>();
-    // Wrapper metadata (envuelve todo)
+    // Global errors JSON
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-    
+
+    // Response wrapper
+    app.UseMiddleware<ResponseWrapperMiddleware>();
+
     app.UseAuthentication();
     app.UseAuthorization();
+
     app.UseCors("AllowAll");
+
     app.MapControllers();
 
     logger.Info("API B4 iniciada correctamente (NLog Activo)");
-
     app.Run();
 }
 catch (Exception ex)

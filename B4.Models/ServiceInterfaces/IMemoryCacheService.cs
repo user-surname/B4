@@ -1,14 +1,13 @@
-﻿using B4.Models.Entities.LkEntities;
+using B4.Models.Entities.LkEntities;
 
-namespace B4.Models.RepositoryInterfaces.LkInterfaces
-{
+namespace B4.Models.ServiceInterfaces;
 
-    /// <summary>
+/// <summary>
     /// Interface para IMemoryCacheService
     /// </summary>
-    public interface IMemoryCacheService
-    {
-        void InvalidateCache();
+public interface IMemoryCacheService
+{
+    void InvalidateCache();
         void InvalidateCache(string cacheKey);
 
         Task<IReadOnlyList<LkCiclos>> GetCiclosAsync(bool onlyActive = true);
@@ -26,5 +25,4 @@ namespace B4.Models.RepositoryInterfaces.LkInterfaces
         Task<IReadOnlyList<LkPlantControllers>> GetPlantControllersAsync(bool onlyActive = true);
 
         Task<IReadOnlyList<LkPlantillasBotonesPasosTipos>> GetPlantillasBotonesPasosTiposAsync(bool onlyActive = true);
-    }
 }

@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using B4.Models.Entities.LkEntities;
+using B4.Models.RepositoryInterfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using NLog;
 using System.Reflection.Metadata.Ecma335;
-using B4.Models.RepositoryInterfaces.LkInterfaces;
+
 
 namespace B4.Data.PostgreSQL.Services;
 

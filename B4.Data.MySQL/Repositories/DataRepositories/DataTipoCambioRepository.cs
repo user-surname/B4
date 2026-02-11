@@ -131,6 +131,54 @@ namespace B4.Data.MySQL.Repositories.DataRepositories
         //        throw new Exception($"Error al eliminar el registro con Id {id}.", ex);
         //    }
         //}
+        // -------------------------------------------------
+// R - READ (por Ejercicio)
+// -------------------------------------------------
+public async Task<IEnumerable<DataTipoCambio>> GetByEjercicioAsync(int ejercicio)
+{
+    var sql = $@"
+        SELECT *
+        FROM {_tableName}
+        WHERE ejercicio = @ejercicio
+        ORDER BY CalendarDay;";
+
+    try
+    {
+        using var conn = _context.CreateConnection();
+        return await conn.QueryAsync<DataTipoCambio>(sql, new { ejercicio });
+    }
+    catch (Exception ex)
+    {
+        throw new Exception($"Error al obtener registros de {_tableName} para ejercicio={ejercicio}.", ex);
+    }
+}
+
+// -------------------------------------------------
+// R - READ (por Ejercicio + Currency)
+// -------------------------------------------------
+public async Task<IEnumerable<DataTipoCambio>> GetByEjercicioCurrencyAsync(int ejercicio, int idCurrency)
+{
+    var sql = $@"
+        SELECT *
+        FROM {_tableName}
+        WHERE ejercicio = @ejercicio
+          AND idCurrency = @idCurrency
+        ORDER BY CalendarDay;";
+
+    try
+    {
+        using var conn = _context.CreateConnection();
+        return await conn.QueryAsync<DataTipoCambio>(sql, new { ejercicio, idCurrency });
+    }
+    catch (Exception ex)
+    {
+        throw new Exception(
+            $"Error al obtener registros de {_tableName} para ejercicio={ejercicio}, idCurrency={idCurrency}.",
+            ex
+        );
+    }
+}
+
     }
 }
 
