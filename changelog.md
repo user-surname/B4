@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.20260210.2 Victor
+
+- B4.Api.Controllers
+  - Implementacion de los Controllers Data
+- B4.Data.Domain.Service
+  - Implementacion de los Services de Data
+- B4.Data.Models.ServiceInterfaces
+  - Implementacion de los Interfaces de Service para Data
+- B4.Data.Tests.Api.DataControllerTest
+  - Implementacion de los Test para DataController
+
 ## v0.20260210.1 Victor
 
 - B4.Models.ServiceInterfaces

@@ -1,5 +1,5 @@
 using B4.Api.Middleware;
-using B4.Models.RepositoryInterfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using B4.Models.Entities.LkEntities;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using NLog;
 using System.Reflection.Metadata.Ecma335;
