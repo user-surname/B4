@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,12 +13,15 @@ namespace B4.Api.Controllers
     public class PlantSubdivisionController : ControllerBase
     {
         private readonly IPlantSubdivisionService _service;
+        private readonly IMapper _mapper;
 
-        public PlantSubdivisionController(IPlantSubdivisionService service)
+        public PlantSubdivisionController(IPlantSubdivisionService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
+        // GET /api/v1/PlantSubdivision/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -25,54 +29,45 @@ namespace B4.Api.Controllers
             if (record is null)
                 return NotFound($"No existe subdivisión con id={id}");
 
-            var dto = new PlantSubdivisionGetDto
-            {
-                IdSubdivision = record.IdSubdivision,
-                Subdivision = record.Subdivision,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
-
+            var dto = _mapper.Map<PlantSubdivisionGetDto>(record);
             return Ok(dto);
         }
 
+        // GET /api/v1/PlantSubdivision
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var records = await _service.GetAllAsync();
-            var dtos = records.Select(r => new PlantSubdivisionGetDto
-            {
-                IdSubdivision = r.IdSubdivision,
-                Subdivision = r.Subdivision,
-                CreatedAt = r.CreatedAt,
-                UpdatedAt = r.UpdatedAt,
-                IsActive = r.IsActive
-            }).ToList();
-
+            var dtos = _mapper.Map<List<PlantSubdivisionGetDto>>(records);
             return Ok(dtos);
         }
 
+        // POST /api/v1/PlantSubdivision
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantSubdivisionPostDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var entity = new LkPlantSubdivision
-            {
-                IdSubdivision = dto.IdSubdivision,
-                Subdivision = dto.Subdivision,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
-            };
+            var entity = _mapper.Map<LkPlantSubdivision>(dto);
+
+            // Inicializar campos adicionales
+            entity.CreatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.IsActive = 1;
 
             await _service.AddAsync(entity);
 
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdSubdivision }, entity);
+            var createdDto = _mapper.Map<PlantSubdivisionGetDto>(entity);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = entity.IdSubdivision },
+                createdDto
+            );
         }
 
+        // DELETE /api/v1/PlantSubdivision/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

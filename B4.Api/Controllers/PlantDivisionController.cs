@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,12 +13,15 @@ namespace B4.Api.Controllers
     public class PlantDivisionController : ControllerBase
     {
         private readonly IPlantDivisionService _service;
+        private readonly IMapper _mapper;
 
-        public PlantDivisionController(IPlantDivisionService service)
+        public PlantDivisionController(IPlantDivisionService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
+        // GET /api/v1/PlantDivision/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -25,53 +29,52 @@ namespace B4.Api.Controllers
             if (record is null)
                 return NotFound($"No existe división con id={id}");
 
-            var dto = new PlantDivisionGetDto
-            {
-                IdDivision = record.IdDivision,
-                Division = record.Division,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapear entidad -> DTO
+            var dto = _mapper.Map<PlantDivisionGetDto>(record);
 
             return Ok(dto);
         }
 
+        // GET /api/v1/PlantDivision
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var records = await _service.GetAllAsync();
-            var dtos = records.Select(record => new PlantDivisionGetDto
-            {
-                IdDivision = record.IdDivision,
-                Division = record.Division,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            }).ToList();
+
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<PlantDivisionGetDto>>(records);
 
             return Ok(dtos);
         }
 
+        // POST /api/v1/PlantDivision
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantDivisionPostDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var division = new LkPlantDivision
-            {
-                Division = dto.Division,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
-            };
+            // Mapear DTO -> entidad
+            var entity = _mapper.Map<LkPlantDivision>(dto);
 
-            await _service.AddAsync(division);
+            // Inicializar campos que no vienen del DTO
+            entity.CreatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.IsActive = 1;
 
-            return CreatedAtAction(nameof(GetById), new { id = division.IdDivision }, division);
+            await _service.AddAsync(entity);
+
+            // Mapear entidad -> DTO para la respuesta
+            var createdDto = _mapper.Map<PlantDivisionGetDto>(entity);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = entity.IdDivision },
+                createdDto
+            );
         }
 
+        // DELETE /api/v1/PlantDivision/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

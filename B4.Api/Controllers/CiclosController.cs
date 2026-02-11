@@ -1,26 +1,24 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
-using B4.Api.Middleware;
-using B4.Models.Entities.DataEntities;
 using B4.Models.Entities.LkEntities;
-using B4.Models.RepositoryInterfaces.DataInterfaces;
-using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
 {
-
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class CiclosController : ControllerBase
     {
         private readonly ICiclosService _ciclosService;
+        private readonly IMapper _mapper;
 
-        public CiclosController(ICiclosService ciclosService)
+        public CiclosController(ICiclosService ciclosService, IMapper mapper)
         {
             _ciclosService = ciclosService;
+            _mapper = mapper;
         }
 
         [HttpGet("{id:int}")]
@@ -31,15 +29,8 @@ namespace B4.Api.Controllers
             if (record is null)
                 return NotFound($"No existe ciclo para id={id}");
 
-            var dto = new CiclosGetDto
-            {
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive,
-                IdCiclo = record.IdCiclo,
-                Ciclo = record.Ciclo,
-                Descripcion = record.Descripcion
-            };
+            // Mapeo automático a DTO
+            var dto = _mapper.Map<CiclosGetDto>(record);
 
             return Ok(dto);
         }
@@ -50,16 +41,17 @@ namespace B4.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var ciclo = new LkCiclos
-            {
-                IdCiclo = dto.IdCiclo,
-                Ciclo = dto.Ciclo,
-                Descripcion = dto.Descripcion
-            };
+            // Mapeo DTO -> Modelo
+            var ciclo = _mapper.Map<LkCiclos>(dto);
 
             await _ciclosService.AddAsync(ciclo);
 
-            return CreatedAtAction(nameof(GetById), new { id = ciclo.Id }, ciclo);
+            // Retornar DTO mapeado
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = ciclo.IdCiclo },
+                _mapper.Map<CiclosGetDto>(ciclo)
+            );
         }
 
         [HttpGet]
@@ -67,15 +59,8 @@ namespace B4.Api.Controllers
         {
             var records = await _ciclosService.GetAllAsync();
 
-            var dtos = records.Select(record => new CiclosGetDto
-            {
-                IdCiclo = record.IdCiclo,
-                Ciclo = record.Ciclo,
-                Descripcion = record.Descripcion,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            }).ToList();
+            // Mapeo lista de modelos -> lista de DTOs
+            var dtos = _mapper.Map<List<CiclosGetDto>>(records);
 
             return Ok(dtos);
         }
@@ -94,5 +79,4 @@ namespace B4.Api.Controllers
             }
         }
     }
-
 }

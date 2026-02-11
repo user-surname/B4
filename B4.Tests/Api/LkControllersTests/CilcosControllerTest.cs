@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
+using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Controllers
@@ -16,13 +19,26 @@ namespace B4.Tests.Controllers
     public class CiclosControllerTest
     {
         private readonly Mock<ICiclosService> _mockService;
+        private readonly IMapper _mapper;
         private readonly CiclosController _controller;
 
         public CiclosControllerTest()
         {
             _mockService = new Mock<ICiclosService>();
-            _controller = new CiclosController(_mockService.Object);
+
+            var expression = new MapperConfigurationExpression();
+            expression.AddProfile<MappingProfile>();
+
+            var config = new MapperConfiguration(
+                expression,
+                NullLoggerFactory.Instance
+            );
+
+            var mapper = config.CreateMapper();
+
+            _controller = new CiclosController(_mockService.Object, mapper);
         }
+
 
         // -----------------------------------------
         // TEST GET BY ID
@@ -69,8 +85,8 @@ namespace B4.Tests.Controllers
         {
             var list = new List<LkCiclos>
             {
-                new LkCiclos { Id = 1, IdCiclo = 2024, Ciclo = "Ciclo 2024", Descripcion = "Desc 1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
-                new LkCiclos { Id = 2, IdCiclo = 2025, Ciclo = "Ciclo 2025", Descripcion = "Desc 2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
+                new LkCiclos { Id = 1, IdCiclo = 2024, Ciclo = "Ciclo 2024", Descripcion = "Desc 1", IsActive = 1 },
+                new LkCiclos { Id = 2, IdCiclo = 2025, Ciclo = "Ciclo 2025", Descripcion = "Desc 2", IsActive = 1 }
             };
 
             _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
@@ -89,6 +105,7 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
+            // Arrange
             var dto = new CiclosPostDto
             {
                 IdCiclo = 2026,
@@ -96,12 +113,13 @@ namespace B4.Tests.Controllers
                 Descripcion = "Desc 2026"
             };
 
-            _mockService.Setup(s => s.AddAsync(It.IsAny<LkCiclos>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkCiclos>()))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdCiclo = Assert.IsType<LkCiclos>(createdResult.Value);
+            var createdCiclo = Assert.IsType<CiclosGetDto>(createdResult.Value);
 
             Assert.Equal("Ciclo 2026", createdCiclo.Ciclo);
         }
@@ -112,13 +130,13 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario para validar el mensaje
             var dict = okResult.Value
                 .GetType()
                 .GetProperties()
@@ -137,6 +155,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+
             var dict = notFoundResult.Value
                 .GetType()
                 .GetProperties()

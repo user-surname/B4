@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,10 +13,12 @@ namespace B4.Api.Controllers
     public class PlantCompanyController : ControllerBase
     {
         private readonly IPlantCompanyService _plantService;
+        private readonly IMapper _mapper;
 
-        public PlantCompanyController(IPlantCompanyService plantService)
+        public PlantCompanyController(IPlantCompanyService plantService, IMapper mapper)
         {
             _plantService = plantService;
+            _mapper = mapper;
         }
 
         // GET /api/v1/PlantCompany/{id}
@@ -26,24 +29,8 @@ namespace B4.Api.Controllers
             if (record == null)
                 return NotFound($"No existe PlantCompany con id={id}");
 
-            var dto = new PlantCompanyGetDto
-            {
-                IdCompany = record.IdCompany,
-                CompanyCode = record.CompanyCode,
-                ManagementCompany = record.ManagementCompany,
-                IdCurrency = record.IdCurrency,
-                Company = record.Company,
-                Active = record.Active,
-                IdDivision = record.IdDivision,
-                IdDivisionCompany = record.IdDivisionCompany,
-                IdSubdivision = record.IdSubdivision,
-                IdCountry = record.IdCountry,
-                Location = record.Location,
-                Obs = record.Obs,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapear entidad -> DTO
+            var dto = _mapper.Map<PlantCompanyGetDto>(record);
 
             return Ok(dto);
         }
@@ -54,24 +41,8 @@ namespace B4.Api.Controllers
         {
             var records = await _plantService.GetAllAsync();
 
-            var dtos = records.Select(record => new PlantCompanyGetDto
-            {
-                IdCompany = record.IdCompany,
-                CompanyCode = record.CompanyCode,
-                ManagementCompany = record.ManagementCompany,
-                IdCurrency = record.IdCurrency,
-                Company = record.Company,
-                Active = record.Active,
-                IdDivision = record.IdDivision,
-                IdDivisionCompany = record.IdDivisionCompany,
-                IdSubdivision = record.IdSubdivision,
-                IdCountry = record.IdCountry,
-                Location = record.Location,
-                Obs = record.Obs,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            }).ToList();
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<PlantCompanyGetDto>>(records);
 
             return Ok(dtos);
         }
@@ -83,24 +54,19 @@ namespace B4.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var company = new LkPlantCompany
-            {
-                CompanyCode = dto.CompanyCode,
-                ManagementCompany = dto.ManagementCompany,
-                IdCurrency = dto.IdCurrency,
-                Company = dto.Company,
-                Active = dto.Active,
-                IdDivision = dto.IdDivision,
-                IdDivisionCompany = dto.IdDivisionCompany,
-                IdSubdivision = dto.IdSubdivision,
-                IdCountry = dto.IdCountry,
-                Location = dto.Location,
-                Obs = dto.Obs
-            };
+            // Mapear DTO -> entidad
+            var company = _mapper.Map<LkPlantCompany>(dto);
 
             await _plantService.AddAsync(company);
 
-            return CreatedAtAction(nameof(GetById), new { id = company.IdCompany }, company);
+            // Mapear entidad -> DTO para la respuesta
+            var createdDto = _mapper.Map<PlantCompanyGetDto>(company);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = company.IdCompany },
+                createdDto
+            );
         }
 
         // DELETE /api/v1/PlantCompany/{id}

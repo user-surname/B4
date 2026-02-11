@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,12 +13,15 @@ namespace B4.Api.Controllers
     public class PlantControllersController : ControllerBase
     {
         private readonly IPlantControllersService _service;
+        private readonly IMapper _mapper;
 
-        public PlantControllersController(IPlantControllersService service)
+        public PlantControllersController(IPlantControllersService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
+        // GET /api/v1/PlantControllers/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -25,60 +29,52 @@ namespace B4.Api.Controllers
             if (record == null)
                 return NotFound($"No existe controlador para id={id}");
 
-            var dto = new PlantControllersGetDto
-            {
-                IdCompanyController = record.IdCompanyController,
-                IdCompany = record.IdCompany,
-                Controller = record.Controller,
-                Email = record.Email,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapear entidad -> DTO
+            var dto = _mapper.Map<PlantControllersGetDto>(record);
 
             return Ok(dto);
         }
 
+        // GET /api/v1/PlantControllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var records = await _service.GetAllAsync();
 
-            var dtos = records.Select(r => new PlantControllersGetDto
-            {
-                IdCompanyController = r.IdCompanyController,
-                IdCompany = r.IdCompany,
-                Controller = r.Controller,
-                Email = r.Email,
-                CreatedAt = r.CreatedAt,
-                UpdatedAt = r.UpdatedAt,
-                IsActive = r.IsActive
-            }).ToList();
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<PlantControllersGetDto>>(records);
 
             return Ok(dtos);
         }
 
+        // POST /api/v1/PlantControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantControllersPostDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var entity = new LkPlantControllers
-            {
-                IdCompany = dto.IdCompany,
-                Controller = dto.Controller,
-                Email = dto.Email,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
-            };
+            // Mapear DTO -> entidad
+            var entity = _mapper.Map<LkPlantControllers>(dto);
+
+            // Inicializar campos que no vienen del DTO
+            entity.CreatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.IsActive = 1;
 
             await _service.AddAsync(entity);
 
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdCompanyController }, entity);
+            // Mapear entidad -> DTO para la respuesta
+            var createdDto = _mapper.Map<PlantControllersGetDto>(entity);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = entity.IdCompanyController },
+                createdDto
+            );
         }
 
+        // DELETE /api/v1/PlantControllers/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

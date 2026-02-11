@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.20260211.1 - Slava
+
+- B4 -> Implementacion de la tabla Control y Tests
+- B4.Api.Middleware -> MappingProfile creado
+- B4.Api.Controllers -> Automaping para controllers creado
+- B4.Tests -> Automaping para Tests creado
+
 ## v0.20260206.1 - Slava
 
 - B4.Domain -> Services para Controllers creados

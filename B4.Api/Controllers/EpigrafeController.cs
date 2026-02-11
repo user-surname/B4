@@ -1,3 +1,4 @@
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
@@ -14,12 +15,13 @@ namespace B4.Api.Controllers
     public class EpigrafeController : ControllerBase
     {
         private readonly IEpigrafeService _epigrafeService;
+        private readonly IMapper _mapper;
 
-        public EpigrafeController(IEpigrafeService epigrafeService)
+        public EpigrafeController(IEpigrafeService epigrafeService, IMapper mapper)
         {
             _epigrafeService = epigrafeService;
+            _mapper = mapper;
         }
-
 
         [HttpGet("{id:int}")]
         [DisabledEndpoint]
@@ -30,18 +32,8 @@ namespace B4.Api.Controllers
             if (record == null)
                 return NotFound($"No existe epígrafe para id={id}");
 
-            var dto = new EpigrafeGetDto
-            {
-                IdEpigrafe = record.IdEpigrafe,
-                IdPlantilla = record.IdPlantilla,
-                IdHoja = record.IdHoja,
-                PreEpigrafe = record.PreEpigrafe,
-                Epigrafe = record.Epigrafe,
-                EpigrafeFull = record.EpigrafeFull,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapeo automático a DTO
+            var dto = _mapper.Map<EpigrafeGetDto>(record);
 
             return Ok(dto);
         }
@@ -52,21 +44,18 @@ namespace B4.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var epigrafe = new LkEpigrafe
-            {
-                IdPlantilla = dto.IdPlantilla,
-                IdHoja = dto.IdHoja,
-                PreEpigrafe = dto.PreEpigrafe,
-                Epigrafe = dto.Epigrafe,
-                EpigrafeFull = dto.EpigrafeFull
-            };
+            // Mapear DTO -> entidad
+            var epigrafe = _mapper.Map<LkEpigrafe>(dto);
 
             await _epigrafeService.AddAsync(epigrafe);
+
+            // Retornar DTO mapeado
+            var createdDto = _mapper.Map<EpigrafeGetDto>(epigrafe);
 
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = epigrafe.IdEpigrafe },
-                epigrafe
+                createdDto
             );
         }
 
@@ -75,18 +64,8 @@ namespace B4.Api.Controllers
         {
             var records = await _epigrafeService.GetAllAsync();
 
-            var dtos = records.Select(record => new EpigrafeGetDto
-            {
-                IdEpigrafe = record.IdEpigrafe,
-                IdPlantilla = record.IdPlantilla,
-                IdHoja = record.IdHoja,
-                PreEpigrafe = record.PreEpigrafe,
-                Epigrafe = record.Epigrafe,
-                EpigrafeFull = record.EpigrafeFull,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            }).ToList();
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<EpigrafeGetDto>>(records);
 
             return Ok(dtos);
         }

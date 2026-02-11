@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,12 +13,15 @@ namespace B4.Api.Controllers
     public class PlantCountryController : ControllerBase
     {
         private readonly IPlantCountryService _service;
+        private readonly IMapper _mapper;
 
-        public PlantCountryController(IPlantCountryService service)
+        public PlantCountryController(IPlantCountryService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
+        // GET /api/v1/PlantCountry/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -25,54 +29,52 @@ namespace B4.Api.Controllers
             if (record == null)
                 return NotFound($"No existe país con id={id}");
 
-            var dto = new PlantCountryGetDto
-            {
-                IdCountry = record.IdCountry,
-                Country = record.Country,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapear entidad -> DTO
+            var dto = _mapper.Map<PlantCountryGetDto>(record);
 
             return Ok(dto);
         }
 
+        // GET /api/v1/PlantCountry
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var records = await _service.GetAllAsync();
 
-            var dtos = records.Select(r => new PlantCountryGetDto
-            {
-                IdCountry = r.IdCountry,
-                Country = r.Country,
-                CreatedAt = r.CreatedAt,
-                UpdatedAt = r.UpdatedAt,
-                IsActive = r.IsActive
-            }).ToList();
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<PlantCountryGetDto>>(records);
 
             return Ok(dtos);
         }
 
+        // POST /api/v1/PlantCountry
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCountryPostDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var entity = new LkPlantCountry
-            {
-                Country = dto.Country,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
-            };
+            // Mapear DTO -> entidad
+            var entity = _mapper.Map<LkPlantCountry>(dto);
+
+            // Inicializar campos que no vienen del DTO
+            entity.CreatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.IsActive = 1;
 
             await _service.AddAsync(entity);
 
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdCountry }, entity);
+            // Mapear entidad -> DTO para la respuesta
+            var createdDto = _mapper.Map<PlantCountryGetDto>(entity);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = entity.IdCountry },
+                createdDto
+            );
         }
 
+        // DELETE /api/v1/PlantCountry/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {

@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
+using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Controllers
@@ -21,7 +24,18 @@ namespace B4.Tests.Controllers
         public PlantControllersControllerTest()
         {
             _mockService = new Mock<IPlantControllersService>();
-            _controller = new PlantControllersController(_mockService.Object);
+
+            var expression = new MapperConfigurationExpression();
+            expression.AddProfile<MappingProfile>();
+
+            var config = new MapperConfiguration(
+                expression,
+                NullLoggerFactory.Instance
+            );
+
+            var mapper = config.CreateMapper();
+
+            _controller = new PlantControllersController(_mockService.Object, mapper);
         }
 
         [Fact]
@@ -92,7 +106,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdEntity = Assert.IsType<LkPlantControllers>(createdResult.Value);
+            var createdEntity = Assert.IsType<PlantControllersGetDto>(createdResult.Value);
 
             Assert.Equal("Luis Martínez", createdEntity.Controller);
         }

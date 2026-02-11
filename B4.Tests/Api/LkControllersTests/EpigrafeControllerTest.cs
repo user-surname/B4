@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
+using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Controllers
@@ -17,11 +20,21 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<IEpigrafeService> _mockService;
         private readonly EpigrafeController _controller;
-
         public EpigrafeControllerTest()
         {
             _mockService = new Mock<IEpigrafeService>();
-            _controller = new EpigrafeController(_mockService.Object);
+
+            var expression = new MapperConfigurationExpression();
+            expression.AddProfile<MappingProfile>();
+
+            var config = new MapperConfiguration(
+                expression,
+                NullLoggerFactory.Instance
+            );
+
+            var mapper = config.CreateMapper();
+
+            _controller = new EpigrafeController(_mockService.Object, mapper);
         }
 
         // -----------------------------------------
@@ -105,7 +118,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdEpigrafe = Assert.IsType<LkEpigrafe>(createdResult.Value);
+            var createdEpigrafe = Assert.IsType<EpigrafeGetDto>(createdResult.Value);
 
             Assert.Equal("Epigrafe 3", createdEpigrafe.Epigrafe);
         }

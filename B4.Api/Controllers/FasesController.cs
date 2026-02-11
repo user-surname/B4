@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,10 +13,12 @@ namespace B4.Api.Controllers
     public class FasesController : ControllerBase
     {
         private readonly IFasesService _fasesService;
+        private readonly IMapper _mapper;
 
-        public FasesController(IFasesService fasesService)
+        public FasesController(IFasesService fasesService, IMapper mapper)
         {
             _fasesService = fasesService;
+            _mapper = mapper;
         }
 
         // GET /api/v1/Fases/{id}
@@ -27,15 +30,8 @@ namespace B4.Api.Controllers
             if (record is null)
                 return NotFound($"No existe fase para id={id}");
 
-            var dto = new FasesGetDto
-            {
-                IdFase = record.IdFase,
-                Fase = record.Fase,
-                FaseAlias = record.FaseAlias,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapear entidad -> DTO
+            var dto = _mapper.Map<FasesGetDto>(record);
 
             return Ok(dto);
         }
@@ -47,18 +43,18 @@ namespace B4.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var fase = new LkFases
-            {
-                Fase = dto.Fase,
-                FaseAlias = dto.FaseAlias
-            };
+            // Mapear DTO -> entidad
+            var fase = _mapper.Map<LkFases>(dto);
 
             await _fasesService.AddAsync(fase);
+
+            // Mapear entidad -> DTO para la respuesta
+            var createdDto = _mapper.Map<FasesGetDto>(fase);
 
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = fase.IdFase },
-                fase
+                createdDto
             );
         }
 
@@ -68,15 +64,8 @@ namespace B4.Api.Controllers
         {
             var records = await _fasesService.GetAllAsync();
 
-            var dtos = records.Select(record => new FasesGetDto
-            {
-                IdFase = record.IdFase,
-                Fase = record.Fase,
-                FaseAlias = record.FaseAlias,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            }).ToList();
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<FasesGetDto>>(records);
 
             return Ok(dtos);
         }

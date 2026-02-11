@@ -6,10 +6,6 @@ using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Repositories;
 using B4.Data.PostgreSQL.Repositories.DataRepositories;
 using B4.Data.PostgreSQL.Services;
-using B4.Models.Interfaces;
-using B4.Models.Interfaces.DataInterfaces;
-using B4.Models.Interfaces.LkInterfaces;
-using B4.Data.Services;
 using B4.Domain.Services;
 using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.DataInterfaces;
@@ -78,6 +74,8 @@ try
     builder.Services.AddScoped<IPlantillasBotonesPasosTiposService, PlantillasBotonesPasosTiposService>();
     builder.Services.AddScoped<IPlantSubdivisionService, PlantSubdivisionService>();
     builder.Services.AddScoped<IPlantTreeService, PlantTreeService>();
+    builder.Services.AddScoped<IControlService, ControlService>();
+
 
     try
     {
@@ -157,6 +155,9 @@ try
 
             builder.Services.AddScoped<IUsuarioRepository>(_ =>
                 new B4.Data.MySQL.Repositories.UsuarioRepository(ctx));
+
+            builder.Services.AddScoped<IControlRepository>(_ =>
+                new B4.Data.MySQL.Repositories.ControlRepository(ctx));
         }
         else if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
         {

@@ -1,4 +1,5 @@
-﻿using B4.Api.Dto.GetDto;
+﻿using AutoMapper;
+using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
@@ -12,12 +13,15 @@ namespace B4.Api.Controllers
     public class PlantCurrencyController : ControllerBase
     {
         private readonly IPlantCurrencyService _service;
+        private readonly IMapper _mapper;
 
-        public PlantCurrencyController(IPlantCurrencyService service)
+        public PlantCurrencyController(IPlantCurrencyService service, IMapper mapper)
         {
             _service = service;
+            _mapper = mapper;
         }
 
+        // GET /api/v1/PlantCurrency/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -25,57 +29,52 @@ namespace B4.Api.Controllers
             if (record == null)
                 return NotFound($"No existe currency con id={id}");
 
-            var dto = new PlantCurrencyGetDto
-            {
-                IdCurrency = record.IdCurrency,
-                Currency = record.Currency,
-                CurrencyAlias = record.CurrencyAlias,
-                CreatedAt = record.CreatedAt,
-                UpdatedAt = record.UpdatedAt,
-                IsActive = record.IsActive
-            };
+            // Mapear entidad -> DTO
+            var dto = _mapper.Map<PlantCurrencyGetDto>(record);
 
             return Ok(dto);
         }
 
+        // GET /api/v1/PlantCurrency
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var records = await _service.GetAllAsync();
 
-            var dtos = records.Select(r => new PlantCurrencyGetDto
-            {
-                IdCurrency = r.IdCurrency,
-                Currency = r.Currency,
-                CurrencyAlias = r.CurrencyAlias,
-                CreatedAt = r.CreatedAt,
-                UpdatedAt = r.UpdatedAt,
-                IsActive = r.IsActive
-            }).ToList();
+            // Mapear lista de entidades -> lista de DTOs
+            var dtos = _mapper.Map<List<PlantCurrencyGetDto>>(records);
 
             return Ok(dtos);
         }
 
+        // POST /api/v1/PlantCurrency
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCurrencyPostDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var entity = new LkPlantCurrency
-            {
-                Currency = dto.Currency,
-                CurrencyAlias = dto.CurrencyAlias,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                IsActive = 1
-            };
+            // Mapear DTO -> entidad
+            var entity = _mapper.Map<LkPlantCurrency>(dto);
+
+            // Inicializar campos que no vienen del DTO
+            entity.CreatedAt = DateTime.UtcNow;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.IsActive = 1;
 
             await _service.AddAsync(entity);
 
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdCurrency }, entity);
+            // Mapear entidad -> DTO para la respuesta
+            var createdDto = _mapper.Map<PlantCurrencyGetDto>(entity);
+
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = entity.IdCurrency },
+                createdDto
+            );
         }
 
+        // DELETE /api/v1/PlantCurrency/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
