@@ -1,13 +1,18 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
+using AutoMapper.Internal;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
+using B4.Api.Middleware;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Api
@@ -20,7 +25,18 @@ namespace B4.Tests.Api
         public DataActualsControllerTest()
         {
             _mockService = new Mock<IDataActualsService>();
-            _controller = new DataActualsController(_mockService.Object);
+
+            var expression = new MapperConfigurationExpression();
+            expression.AddProfile<MappingProfile>();
+
+            var config = new MapperConfiguration(
+                expression,
+                NullLoggerFactory.Instance
+            );
+
+            var mapper = config.CreateMapper();
+
+            _controller = new DataActualsController(_mockService.Object, mapper);
         }
 
         [Fact]
@@ -47,9 +63,8 @@ namespace B4.Tests.Api
             var result = await _controller.GetActualsByPlantaEjercicioEpigrafe(10, 2024, 300);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-
-            // Si tu controller devuelve DTO (lo normal en tu versión inicial)
             var dto = Assert.IsType<DataActualsGetDto>(ok.Value);
+
             Assert.Equal("10", dto.Head.Planta);
             Assert.Equal(2024, dto.Head.Ejercicio);
             Assert.Single(dto.Detail);

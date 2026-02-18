@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
@@ -14,12 +15,15 @@ namespace B4.Tests.Api
     public class DataForecastControllerTest
     {
         private readonly Mock<IDataForecastService> _mockService;
+        private readonly Mock<IMapper> _mockMapper;
         private readonly DataForecastController _controller;
 
         public DataForecastControllerTest()
         {
             _mockService = new Mock<IDataForecastService>();
-            _controller = new DataForecastController(_mockService.Object);
+            _mockMapper = new Mock<IMapper>();
+
+            _controller = new DataForecastController(_mockService.Object, _mockMapper.Object);
         }
 
         [Fact]
@@ -58,7 +62,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Create_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.AddAsync(It.IsAny<DataForecast>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<DataForecast>()))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Create(new DataForecast());
 
@@ -69,7 +74,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Update_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.UpdateAsync(It.IsAny<DataForecast>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.UpdateAsync(It.IsAny<DataForecast>()))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Update(1, new DataForecast { Id = 1 });
 
@@ -80,7 +86,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Delete_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
@@ -90,7 +97,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenThrows()
         {
-            _mockService.Setup(s => s.DeleteAsync(99)).ThrowsAsync(new Exception("No existe"));
+            _mockService.Setup(s => s.DeleteAsync(99))
+                        .ThrowsAsync(new Exception("No existe"));
 
             var result = await _controller.Delete(99);
 

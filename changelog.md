@@ -1,5 +1,30 @@
 # Changelog
 
+## v0.20260218.1 Victor
+
+- B4.Api.Controllers
+  - Implementación completa de los Controllers de Data (Actuals, Budget, Forecast, Bridges, Comentarios, TipoCambio)
+  - Integración de AutoMapper en todos los DataControllers
+  - Implementación del ControlController con mapeo DTO ↔ Entity
+
+- B4.Domain.Services
+  - Implementación de ControlService
+  - Implementación y ajuste de servicios para entidades Data
+
+- B4.Data.PostgreSQL
+  - Implementación del ControlRepository para PostgreSQL (Dapper + Npgsql)
+
+- B4.Models.ServiceInterfaces
+  - Definición de interfaces de servicio para entidades Data
+
+- B4.Api.Middleware
+  - Actualización de MappingProfile
+    - Configuración de mapeo para DataActuals (Entity ↔ DTO)
+   
+- B4.Tests.Api
+  - Implementación de tests unitarios para todos los DataControllers
+  - Implementación de ControlControllerTest con AutoMapper real
+  
 ## v0.20260211.1 - Slava
 
 - B4 -> Implementacion de la tabla Control y Tests

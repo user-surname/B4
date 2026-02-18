@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
@@ -14,12 +15,15 @@ namespace B4.Tests.Api
     public class DataTipoCambioControllerTest
     {
         private readonly Mock<IDataTipoCambioService> _mockService;
+        private readonly Mock<IMapper> _mockMapper;
         private readonly DataTipoCambioController _controller;
 
         public DataTipoCambioControllerTest()
         {
             _mockService = new Mock<IDataTipoCambioService>();
-            _controller = new DataTipoCambioController(_mockService.Object);
+            _mockMapper = new Mock<IMapper>();
+
+            _controller = new DataTipoCambioController(_mockService.Object, _mockMapper.Object);
         }
 
         [Fact]
@@ -46,7 +50,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task GetAll_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<DataTipoCambio> { new(), new() });
+            _mockService.Setup(s => s.GetAllAsync())
+                        .ReturnsAsync(new List<DataTipoCambio> { new(), new() });
 
             var result = await _controller.GetAll();
 
@@ -58,7 +63,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task GetByEjercicio_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.GetByEjercicioAsync(2024)).ReturnsAsync(new List<DataTipoCambio> { new(), new(), new() });
+            _mockService.Setup(s => s.GetByEjercicioAsync(2024))
+                        .ReturnsAsync(new List<DataTipoCambio> { new(), new(), new() });
 
             var result = await _controller.GetByEjercicio(2024);
 
@@ -70,7 +76,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task GetByEjercicioCurrency_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.GetByEjercicioCurrencyAsync(2024, 2)).ReturnsAsync(new List<DataTipoCambio> { new() });
+            _mockService.Setup(s => s.GetByEjercicioCurrencyAsync(2024, 2))
+                        .ReturnsAsync(new List<DataTipoCambio> { new() });
 
             var result = await _controller.GetByEjercicioCurrency(2024, 2);
 
@@ -82,7 +89,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Create_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.AddAsync(It.IsAny<DataTipoCambio>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<DataTipoCambio>()))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Create(new DataTipoCambio());
 
@@ -93,7 +101,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Update_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.UpdateAsync(It.IsAny<DataTipoCambio>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.UpdateAsync(It.IsAny<DataTipoCambio>()))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Update(1, new DataTipoCambio { Id = 1 });
 
@@ -104,7 +113,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Delete_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
@@ -114,7 +124,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenThrows()
         {
-            _mockService.Setup(s => s.DeleteAsync(99)).ThrowsAsync(new Exception("No existe"));
+            _mockService.Setup(s => s.DeleteAsync(99))
+                        .ThrowsAsync(new Exception("No existe"));
 
             var result = await _controller.Delete(99);
 
