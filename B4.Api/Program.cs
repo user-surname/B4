@@ -1,19 +1,16 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 using B4.Api.Middleware;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Services;
 using B4.Domain.Services;
-using B4.Models.RepositoryInterfaces;
 using B4.Models.Entities.DataEntities;
+using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.DataInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Models.ServiceInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -21,6 +18,11 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
 using NLog.Web;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -354,6 +356,32 @@ try
             ValidAudience = audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // Evita el mensaje genérico de WWW-Authenticate
+                context.HandleResponse();
+
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize (new
+                {
+                    coderror = 401,
+                    action = context?.Request?.Path.Value,
+                    msg = "No estás autorizado",
+                    ts = DateTime.UtcNow,
+                    exectimems = 0,
+                    count = 0,
+                    data = (object)null
+                });
+
+                return context.Response.WriteAsync(result);
+            }
+        };
+
     });
 
     builder.Services.AddAuthorization(options =>
@@ -362,6 +390,14 @@ try
     });
 
     builder.Services.AddScoped<JwtService>();
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    });
+
 
     // --------------------------------------------------
     // BUILD APP

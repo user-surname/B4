@@ -57,7 +57,7 @@ namespace B4.Api.Middleware
                 coderror = coderror == 0 ? context.Response.StatusCode : coderror;
 
                 if (string.IsNullOrEmpty(mensajeError))
-                    mensajeError = !string.IsNullOrEmpty(originalResponseBody) ? originalResponseBody : "Error";
+                    mensajeError = !string.IsNullOrEmpty(originalResponseBody) ? originalResponseBody : "La ruta o parámetro enviado no es válido";
             }
 
             int count = 0;
