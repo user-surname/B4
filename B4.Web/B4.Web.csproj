@@ -35,6 +35,11 @@
     <ProjectReference Include="..\B4.Shared\B4.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ClientApp\src\app\Models\" />
+    <Folder Include="ClientApp\src\app\Components\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>

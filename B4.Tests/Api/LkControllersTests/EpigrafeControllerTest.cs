@@ -16,7 +16,7 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class EpigrafeControllerTest
+    public class EpigrafeControllerTest : TestBase
     {
         private readonly Mock<IEpigrafeService> _mockService;
         private readonly EpigrafeController _controller;
@@ -24,17 +24,7 @@ namespace B4.Tests.Controllers
         {
             _mockService = new Mock<IEpigrafeService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new EpigrafeController(_mockService.Object, mapper);
+            _controller = new EpigrafeController(_mockService.Object, Mapper);
         }
 
         // -----------------------------------------

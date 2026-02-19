@@ -398,6 +398,14 @@ try
             .Build();
     });
 
+    // Añadir servicios de controladores y configurar JSON
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            // Convierte PascalCase del backend a camelCase para Angular
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
+
 
     // --------------------------------------------------
     // BUILD APP

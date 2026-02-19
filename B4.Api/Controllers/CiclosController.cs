@@ -3,10 +3,12 @@ using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]

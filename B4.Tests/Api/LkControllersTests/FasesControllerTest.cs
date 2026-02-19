@@ -16,7 +16,7 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class FasesControllerTest
+    public class FasesControllerTest : TestBase
     {
         private readonly Mock<IFasesService> _mockService;
         private readonly FasesController _controller;
@@ -25,17 +25,7 @@ namespace B4.Tests.Controllers
         {
             _mockService = new Mock<IFasesService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new FasesController(_mockService.Object, mapper);
+            _controller = new FasesController(_mockService.Object, Mapper);
         }
 
         // -----------------------------------------
