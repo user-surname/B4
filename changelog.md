@@ -2,6 +2,12 @@
 
 ## v0.20260211.1 - Slava
 
+- B4.Tests -> TestBase creado
+- B4.Api.Prpgram -> Exepciones mas informativas y autenticacion para todos los controllers
+- B4.Api.middleware -> Separacion de funciones entre ResponseWrapperMiddleware y GlobalExceptionHandlerMiddleware
+
+## v0.20260211.1 - Slava
+
 - B4 -> Implementacion de la tabla Control y Tests
 - B4.Api.Middleware -> MappingProfile creado
 - B4.Api.Controllers -> Automaping para controllers creado

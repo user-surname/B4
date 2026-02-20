@@ -16,7 +16,7 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class PlantCountryControllerTest
+    public class PlantCountryControllerTest : TestBase
     {
         private readonly Mock<IPlantCountryService> _mockService;
         private readonly PlantCountryController _controller;
@@ -25,17 +25,7 @@ namespace B4.Tests.Controllers
         {
             _mockService = new Mock<IPlantCountryService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new PlantCountryController(_mockService.Object, mapper);
+            _controller = new PlantCountryController(_mockService.Object, Mapper);
         }
 
         [Fact]

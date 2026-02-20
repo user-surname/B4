@@ -16,27 +16,16 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class CiclosControllerTest
+    public class CiclosControllerTest : TestBase
     {
         private readonly Mock<ICiclosService> _mockService;
-        private readonly IMapper _mapper;
         private readonly CiclosController _controller;
 
         public CiclosControllerTest()
         {
             _mockService = new Mock<ICiclosService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new CiclosController(_mockService.Object, mapper);
+            _controller = new CiclosController(_mockService.Object, Mapper);
         }
 
 

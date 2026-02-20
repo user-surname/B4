@@ -16,7 +16,7 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class PlantillasBotonesPasosTiposControllerTest
+    public class PlantillasBotonesPasosTiposControllerTest : TestBase
     {
         private readonly Mock<IPlantillasBotonesPasosTiposService> _mockService;
         private readonly PlantillasBotonesPasosTiposController _controller;
@@ -25,17 +25,7 @@ namespace B4.Tests.Controllers
         {
             _mockService = new Mock<IPlantillasBotonesPasosTiposService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new PlantillasBotonesPasosTiposController(_mockService.Object, mapper);
+            _controller = new PlantillasBotonesPasosTiposController(_mockService.Object, Mapper);
         }
 
         [Fact]

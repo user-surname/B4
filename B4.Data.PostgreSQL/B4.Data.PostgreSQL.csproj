@@ -30,6 +30,9 @@
 
 
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.0-preview.322" />
+
+
+    <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

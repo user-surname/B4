@@ -3,10 +3,12 @@ using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
@@ -21,14 +23,19 @@ namespace B4.Api.Controllers
             _mapper = mapper;
         }
 
+
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var record = await _ciclosService.GetByIdAsync(id);
 
+            // Respuesta en formato Json y no Raw
             if (record is null)
-                return NotFound($"No existe ciclo para id={id}");
-
+                return NotFound(new
+                {
+                    coderror = 404,
+                    msg = $"No existe ciclo para id={id}"
+                });
             // Mapeo automático a DTO
             var dto = _mapper.Map<CiclosGetDto>(record);
 
