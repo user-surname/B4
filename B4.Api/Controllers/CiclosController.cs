@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
 {
-    [AllowAnonymous]
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]

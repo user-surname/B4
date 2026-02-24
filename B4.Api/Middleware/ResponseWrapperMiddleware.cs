@@ -5,11 +5,17 @@ using Microsoft.AspNetCore.Http;
 
 namespace B4.Api.Middleware
 {
-    
     public sealed class ResponseWrapperMiddleware : IMiddleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            // Ignorar preflight OPTIONS
+            if (context.Request.Method == HttpMethods.Options)
+            {
+                await next(context);
+                return;
+            }
+
             var stopwatch = Stopwatch.StartNew();
 
             var originalBodyStream = context.Response.Body;
@@ -123,8 +129,12 @@ namespace B4.Api.Middleware
                 data = dataObj
             };
 
-            context.Response.ContentType = "application/json; charset=UTF-8";
-            await context.Response.WriteAsync(JsonSerializer.Serialize(wrapper), Encoding.UTF8);
+            // Solo escribir si la respuesta NO empezó y no es 204
+            if (!context.Response.HasStarted && context.Response.StatusCode != StatusCodes.Status204NoContent)
+            {
+                context.Response.ContentType = "application/json; charset=UTF-8";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(wrapper), Encoding.UTF8);
+            }
         }
     }
 }
