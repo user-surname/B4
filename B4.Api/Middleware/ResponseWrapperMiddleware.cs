@@ -30,15 +30,6 @@ namespace B4.Api.Middleware
             var originalResponseBody = await new StreamReader(memoryStream).ReadToEndAsync();
             context.Response.Body = originalBodyStream;
 
-            // 👉 Si es error, NO envolver. Dejar respuesta tal cual.
-            if (context.Response.StatusCode >= 400)
-            {
-                coderror = coderror == 0 ? context.Response.StatusCode : coderror;
-
-                if (string.IsNullOrEmpty(mensajeError))
-                    mensajeError = !string.IsNullOrEmpty(originalResponseBody) ? originalResponseBody : "La ruta o parámetro enviado no es válido";
-            }
-
             // ===== SOLO RESPUESTAS OK =====
 
             int count = 0;
