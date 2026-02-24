@@ -1,0 +1,23 @@
+
+
+#container{
+    display: flex;
+    justify-content: space-around;
+    background-color: rgb(0, 0, 0, 0.1);
+    border-radius: 10px 10px 0 0;
+    overflow: hidden;
+    align-items: center;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    background-color: transparent;
+    transition: background-color 200ms ease-in-out; /* transición sobre background */
+    cursor: pointer;
+}
+
+.tab.seleccionado {
+    background-color: rgba(0, 0, 0, 0.1);
+}

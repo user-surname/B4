@@ -23,7 +23,7 @@ namespace B4.Tests.Controllers
 
         public CiclosControllerTest()
         {
-            _mockService = new Mock<ICiclosService>();
+            _mockService = CreateMock<ICiclosService>();
 
             _controller = new CiclosController(_mockService.Object, Mapper);
         }
@@ -139,7 +139,7 @@ namespace B4.Tests.Controllers
         {
             _mockService
                 .Setup(s => s.DeleteAsync(99))
-                .ThrowsAsync(new Exception("No existe ciclo con id=99"));
+                .ThrowsAsync(new KeyNotFoundException("No existe ciclo con id=99"));
 
             var result = await _controller.Delete(99);
 

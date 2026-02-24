@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20260224.1 Slava
+
+- B4.Web.Slava
+	- Implementación parcial de Frontend en Angular
+
 ## v0.20260224.1 Victor
 
 - B4.Test

@@ -358,7 +358,6 @@ try
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
 
-        // Personalización del mensaje de error para tokens inválidos o expirados
         options.Events = new JwtBearerEvents
         {
             OnChallenge = context =>
@@ -369,7 +368,7 @@ try
                 context.Response.StatusCode = 401;
                 context.Response.ContentType = "application/json";
 
-                var result = JsonSerializer.Serialize(new
+                var result = JsonSerializer.Serialize (new
                 {
                     coderror = 401,
                     action = context?.Request?.Path.Value,
@@ -379,6 +378,12 @@ try
                     count = 0,
                     data = (object)null
                 });
+
+                return context.Response.WriteAsync(result);
+            }
+        };
+
+    });
 
                 return context.Response.WriteAsync(result);
             }
@@ -396,6 +401,22 @@ try
     });
 
     builder.Services.AddScoped<JwtService>();
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    });
+
+    // Añadir servicios de controladores y configurar JSON
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            // Convierte PascalCase del backend a camelCase para Angular
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
+
 
     // --------------------------------------------------
     // BUILD APP

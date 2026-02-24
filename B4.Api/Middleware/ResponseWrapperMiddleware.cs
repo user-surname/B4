@@ -9,6 +9,13 @@ namespace B4.Api.Middleware
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
+            // Ignorar preflight OPTIONS
+            if (context.Request.Method == HttpMethods.Options)
+            {
+                await next(context);
+                return;
+            }
+
             var stopwatch = Stopwatch.StartNew();
 
             var originalBodyStream = context.Response.Body;
@@ -26,9 +33,10 @@ namespace B4.Api.Middleware
             // 👉 Si es error, NO envolver. Dejar respuesta tal cual.
             if (context.Response.StatusCode >= 400)
             {
-                context.Response.ContentType = "application/json; charset=UTF-8";
-                await context.Response.WriteAsync(originalResponseBody, Encoding.UTF8);
-                return;
+                coderror = coderror == 0 ? context.Response.StatusCode : coderror;
+
+                if (string.IsNullOrEmpty(mensajeError))
+                    mensajeError = !string.IsNullOrEmpty(originalResponseBody) ? originalResponseBody : "La ruta o parámetro enviado no es válido";
             }
 
             // ===== SOLO RESPUESTAS OK =====
@@ -77,11 +85,12 @@ namespace B4.Api.Middleware
                 data = dataObj
             };
 
-            context.Response.ContentType = "application/json; charset=UTF-8";
-            await context.Response.WriteAsync(
-                JsonSerializer.Serialize(wrapper),
-                Encoding.UTF8
-            );
+            // Solo escribir si la respuesta NO empezó y no es 204
+            if (!context.Response.HasStarted && context.Response.StatusCode != StatusCodes.Status204NoContent)
+            {
+                context.Response.ContentType = "application/json; charset=UTF-8";
+                await context.Response.WriteAsync(JsonSerializer.Serialize(wrapper), Encoding.UTF8);
+            }
         }
     }
 }

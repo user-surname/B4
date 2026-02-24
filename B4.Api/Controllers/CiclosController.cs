@@ -38,37 +38,30 @@ namespace B4.Api.Controllers
                 });
             // Mapeo automático a DTO
             var dto = _mapper.Map<CiclosGetDto>(record);
-
             return Ok(dto);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CiclosPostDto dto)
         {
+            if (dto == null)
+                throw new ArgumentException("El cuerpo de la petición no puede estar vacío");
+
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                throw new ArgumentException("Los datos enviados no son válidos");
 
-            // Mapeo DTO -> Modelo
             var ciclo = _mapper.Map<LkCiclos>(dto);
-
             await _ciclosService.AddAsync(ciclo);
 
-            // Retornar DTO mapeado
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = ciclo.IdCiclo },
-                _mapper.Map<CiclosGetDto>(ciclo)
-            );
+            return CreatedAtAction(nameof(GetById), new { id = ciclo.IdCiclo }, _mapper.Map<CiclosGetDto>(ciclo));
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var records = await _ciclosService.GetAllAsync();
-
-            // Mapeo lista de modelos -> lista de DTOs
             var dtos = _mapper.Map<List<CiclosGetDto>>(records);
-
             return Ok(dtos);
         }
 
@@ -80,10 +73,11 @@ namespace B4.Api.Controllers
                 await _ciclosService.DeleteAsync(id);
                 return Ok(new { message = "Ciclo eliminado correctamente" });
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(new { message = ex.Message });
             }
         }
+
     }
 }
