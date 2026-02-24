@@ -2,22 +2,23 @@ using Microsoft.Extensions.Configuration;
 
 public static class TestConfig
 {
-    // Cadena de conexión única para TODOS los tests PostgreSQL
     public const string Conn =
-        "Host=pg-3105f5b7-elpuig-23d9.b.aivencloud.com;Port=21134;Database=defaultdb;Username=avnadmin;Password=AVNS_D8EOFxPDlpUH6LhFFLw;Ssl Mode=Require;";
+        "Host=85.215.152.131;Port=15433;Database=b4_data;Username=b4_user;Password=b4_adminsecret852AKD;Trust Server Certificate=true;";
 
-    // Configuración para DapperContext si lo necesitas
     public static IConfiguration Configuration { get; }
 
     static TestConfig()
     {
-        var builder = new ConfigurationBuilder();
+        Configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                // ✅ esta es la que tu contexto está pidiendo ahora
+                { "ConnectionStrings:PostgresConnectionB4Data", Conn },
 
-        builder.AddInMemoryCollection(new Dictionary<string, string?>
-        {
-            { "ConnectionStrings:PostgresAiven", Conn }
-        });
-
-        Configuration = builder.Build();
+                // (opcional) por si algún otro contexto usa otra
+                { "ConnectionStrings:PostgresConnectionB4Control",
+                  "Host=85.215.152.131;Port=15433;Database=b4_control;Username=b4_user;Password=b4_usersecret852AKD;" }
+            })
+            .Build();
     }
 }

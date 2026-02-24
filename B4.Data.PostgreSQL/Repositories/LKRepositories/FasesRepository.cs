@@ -16,9 +16,9 @@ namespace B4.Data.PostgreSQL.Repositories
 
             const string sql = @"
                 INSERT INTO b4.lk_fases
-                    (idfase, fase, createdat, updatedat, isactive)
+                    (idfase, fase, fasealias, createdat, updatedat, isactive)
                 VALUES
-                    (@IdFase, @Fase, @CreatedAt, @UpdatedAt, @IsActive);";
+                    (@IdFase, @Fase, @FaseAlias, @CreatedAt, @UpdatedAt, @IsActive);";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);
@@ -31,6 +31,7 @@ namespace B4.Data.PostgreSQL.Repositories
             const string sql = @"
                 UPDATE b4.lk_fases 
                 SET fase=@Fase,
+                    fasealias=@FaseAlias,
                     updatedat=@UpdatedAt,
                     isactive=@IsActive
                 WHERE idfase=@IdFase;";

@@ -82,7 +82,7 @@ try
     builder.Services.AddScoped<IDataBridgesMonthService, DataBridgesMonthService>();
 
     // Si ya migraste DataActuals al patrón service, registra también:
-    // builder.Services.AddScoped<IDataActualsService, DataActualsService>();
+    builder.Services.AddScoped<IDataActualsService, DataActualsService>();
 
     // DATA BW Services (read-only)
     builder.Services.AddScoped<IDataActualsBwService, DataActualsBwService>();
@@ -242,8 +242,8 @@ try
     // --------------------------------------------------
     // MIDDLEWARES / INFRA
     // --------------------------------------------------
-    builder.Services.AddTransient<ResponseWrapperMiddleware>();
     builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
+    builder.Services.AddTransient<ResponseWrapperMiddleware>();
 
     // Compresión GZIP
     builder.Services.Configure<GzipCompressionProviderOptions>(options =>

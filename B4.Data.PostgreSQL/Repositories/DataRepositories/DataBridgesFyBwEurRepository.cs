@@ -4,7 +4,7 @@ using B4.Models.RepositoryInterfaces.DataInterfaces;
 
 namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
-    public class DataBridgesFyBwEurRepository 
+    public class DataBridgesFyBwEurRepository
         : BaseRepository<DataBridgesFyBwEur>, IDataBridgesFyBwEurRepository
     {
         public DataBridgesFyBwEurRepository(PostgreSQLDapperContext context)
@@ -34,7 +34,7 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                 RETURNING id;";
 
             using var conn = GetConnection();
-            entity.Id = await conn.ExecuteScalarAsync<int>(sql);
+            entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
         }
 
         public async Task UpdateAsync(DataBridgesFyBwEur entity)
@@ -73,10 +73,64 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                     idcarga=@IdCarga,
                     idcargastgbw=@IdCargaSTGBW,
                     idhoja=@IdHoja
-                WHERE id=@Id";
+                WHERE id=@Id;";
 
             using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);
+        }
+
+        // =========================================================
+        // ✅ AÑADIDO: GetByIdAsync específico para evitar "Check"
+        // (el BaseRepository seguramente genera SELECT ... Check ... y peta)
+        // =========================================================
+        public async Task<DataBridgesFyBwEur?> GetByIdAsync(int id)
+        {
+            // Opción robusta: alias explícito para Dapper
+            var sql = @"
+                SELECT
+                    id,
+                    idapicarga,
+                    guidcarga,
+                    fechaultmodif,
+                    idcompany,
+                    ejercicio,
+                    idciclo,
+                    idfase,
+                    idcurrency,
+                    idepigrafe,
+                    actuals,
+                    pctactuals,
+                    budget,
+                    pctbudget,
+                    variance,
+                    volume,
+                    inventorychange,
+                    mix,
+                    new,
+                    economics,
+                    quicksavings,
+                    currencymix,
+                    exchangerate,
+                    rawmaterial,
+                    scrap,
+                    industrialperformance,
+                    prototooling,
+                    other,
+                    ""check"" AS ""Check"",
+                    comments,
+                    idcarga,
+                    idcargastgbw,
+                    idhoja,
+                    createdat,
+                    updatedat,
+                    version,
+                    checksum,
+                    iszero
+                FROM b4.data_bridges_fy_bw_eur
+                WHERE id = @id;";
+
+            using var conn = GetConnection();
+            return await conn.QuerySingleOrDefaultAsync<DataBridgesFyBwEur>(sql, new { id });
         }
     }
 }

@@ -1,3 +1,4 @@
+using AutoMapper;
 using B4.Api.Middleware;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -5,16 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace B4.Api.Controllers;
 
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [CustomAuthorize(Policy = "AdminOnly")]
 public class DataBudgetBwController : ControllerBase
 {
     private readonly IDataBudgetBwService _service;
+    private readonly IMapper _mapper;
 
-    public DataBudgetBwController(IDataBudgetBwService service)
+    public DataBudgetBwController(IDataBudgetBwService service, IMapper mapper)
     {
         _service = service;
+        _mapper = mapper;
     }
 
     [HttpGet("{id:int}")]
@@ -23,13 +26,13 @@ public class DataBudgetBwController : ControllerBase
         var record = await _service.GetByIdAsync(id);
         return record is null
             ? NotFound($"No existe DataBudgetBw con id={id}")
-            : Ok(record);
+            : Ok(record); // luego: Ok(_mapper.Map<...Dto>(record))
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var records = await _service.GetAllAsync();
-        return Ok(records);
+        return Ok(records); // luego: Ok(_mapper.Map<List<...Dto>>(records))
     }
 }

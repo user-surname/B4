@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
@@ -14,12 +15,15 @@ namespace B4.Tests.Api
     public class DataBudgetControllerTest
     {
         private readonly Mock<IDataBudgetService> _mockService;
+        private readonly Mock<IMapper> _mockMapper;
         private readonly DataBudgetController _controller;
 
         public DataBudgetControllerTest()
         {
             _mockService = new Mock<IDataBudgetService>();
-            _controller = new DataBudgetController(_mockService.Object);
+            _mockMapper = new Mock<IMapper>();
+
+            _controller = new DataBudgetController(_mockService.Object, _mockMapper.Object);
         }
 
         [Fact]

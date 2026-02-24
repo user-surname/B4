@@ -1,3 +1,4 @@
+using AutoMapper;
 using B4.Api.Middleware;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
@@ -6,16 +7,18 @@ using Microsoft.AspNetCore.Mvc;
 namespace B4.Api.Controllers;
 
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [CustomAuthorize(Policy = "AdminOnly")]
 public class DataTipoCambioController : ControllerBase
 {
     private readonly IDataTipoCambioService _service;
+    private readonly IMapper _mapper;
 
-    public DataTipoCambioController(IDataTipoCambioService service)
+    public DataTipoCambioController(IDataTipoCambioService service, IMapper mapper)
     {
         _service = service;
+        _mapper = mapper;
     }
 
     // -------------------------
@@ -27,14 +30,14 @@ public class DataTipoCambioController : ControllerBase
         var record = await _service.GetByIdAsync(id);
         return record is null
             ? NotFound($"No existe DataTipoCambio con id={id}")
-            : Ok(record);
+            : Ok(record); // luego: Ok(_mapper.Map<...Dto>(record))
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         var records = await _service.GetAllAsync();
-        return Ok(records);
+        return Ok(records); // luego: Ok(_mapper.Map<List<...Dto>>(records))
     }
 
     // -------------------------
@@ -64,7 +67,7 @@ public class DataTipoCambioController : ControllerBase
             return BadRequest(ModelState);
 
         await _service.AddAsync(entity);
-        return Ok(entity);
+        return Ok(entity); // luego: Ok(_mapper.Map<...Dto>(entity))
     }
 
     [HttpPut("{id:int}")]
@@ -78,7 +81,7 @@ public class DataTipoCambioController : ControllerBase
 
         entity.Id = id;
         await _service.UpdateAsync(entity);
-        return Ok(entity);
+        return Ok(entity); // luego: Ok(_mapper.Map<...Dto>(entity))
     }
 
     [HttpDelete("{id:int}")]

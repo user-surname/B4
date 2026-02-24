@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
@@ -13,12 +14,15 @@ namespace B4.Tests.Api
     public class DataForecastBwControllerTest
     {
         private readonly Mock<IDataForecastBwService> _mockService;
+        private readonly Mock<IMapper> _mockMapper;
         private readonly DataForecastBwController _controller;
 
         public DataForecastBwControllerTest()
         {
             _mockService = new Mock<IDataForecastBwService>();
-            _controller = new DataForecastBwController(_mockService.Object);
+            _mockMapper = new Mock<IMapper>();
+
+            _controller = new DataForecastBwController(_mockService.Object, _mockMapper.Object);
         }
 
         [Fact]
@@ -45,7 +49,8 @@ namespace B4.Tests.Api
         [Fact]
         public async Task GetAll_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<DataForecastBw> { new(), new() });
+            _mockService.Setup(s => s.GetAllAsync())
+                        .ReturnsAsync(new List<DataForecastBw> { new(), new() });
 
             var result = await _controller.GetAll();
 
