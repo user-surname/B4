@@ -1,19 +1,21 @@
-using DbUp;
-using Microsoft.Extensions.Configuration;
 using System;
 using System.Reflection;
-using DbUp.Postgresql;
-using System.Threading;
-
-
+using DbUp;
+using Microsoft.Extensions.Configuration;
 
 namespace B4.Data.PostgreSQL
 {
+    // Clase estática para gestionar las migraciones de PostgreSQL
     public static class DbUpMigrator
     {
         public static void EnsureDatabaseUpdated(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("PostgresConnection");
+            // 👇 Igual que MySQL, pero con la key de Postgres
+            var connectionString = configuration.GetConnectionString("PostgresConnectionB4Data");
+
+            // ✅ Añadido: error claro si está vacía (evita el Regex.Match(null))
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException("Falta ConnectionStrings:PostgresConnectionB4Data en appsettings.json");
 
             var upgrader =
                 DeployChanges.To
@@ -29,7 +31,7 @@ namespace B4.Data.PostgreSQL
                 Console.ForegroundColor = ConsoleColor.Red;
                 Console.WriteLine(result.Error);
                 Console.ResetColor();
-                throw new Exception("Error applying migrations", result.Error);
+                throw new Exception("Error applying migrations (PostgreSQL)", result.Error);
             }
 
             Console.ForegroundColor = ConsoleColor.Green;

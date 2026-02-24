@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace B4.Api.Controllers;
 
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [CustomAuthorize(Policy = "AdminOnly")]
 public class DataForecastBwController : ControllerBase

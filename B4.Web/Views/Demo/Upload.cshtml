@@ -1,0 +1,35 @@
+@model B4.Web.Models.DemoUploadViewModel
+
+<h2>Demo subida DataActuals (con JWT)</h2>
+
+<form asp-action="Upload" method="post" style="display:grid; gap:10px; max-width:800px;">
+    <fieldset>
+        <legend>Login</legend>
+        <label>Email</label>
+        <input asp-for="Email" style="width:100%;" />
+        <label>Password</label>
+        <input asp-for="Password" style="width:100%;" />
+    </fieldset>
+
+    <fieldset>
+        <legend>Ruta DataActuals</legend>
+        <label>Planta</label>
+        <input asp-for="Planta" />
+        <label>Ejercicio</label>
+        <input asp-for="Ejercicio" />
+        <label>Mes</label>
+        <input asp-for="Mes" />
+        <label>Tipo</label>
+        <input asp-for="Tipo" />
+    </fieldset>
+
+    <label>Body JSON</label>
+    <textarea asp-for="JsonBody" rows="12" style="width:100%; font-family: monospace;"></textarea>
+
+    <button type="submit">Login + Subir</button>
+    
+
+    <button type="submit" formaction="/Demo/GetActuals">
+        Login + Consultar (GET)
+    </button>
+</form>

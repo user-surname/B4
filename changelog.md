@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.20260224.1 Victor
+
+- B4.Test
+  - Implementación del nueva cadena de PostgreSQL
+  - Arreglo de los test de Postgres
+- B4.Data.PostgreSQL
+  - Modificacion de DbUpMigrator
+  - Modificacion de PostgreSQLDapperContext
+- B4.Web
+  - Implementacion parcial de Frontend en Angular
+  
+
 ## v0.20260218.1 Victor
 
 - B4.Api.Controllers

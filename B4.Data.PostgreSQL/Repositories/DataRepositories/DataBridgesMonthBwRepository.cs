@@ -4,7 +4,7 @@ using B4.Models.RepositoryInterfaces.DataInterfaces;
 
 namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
-    public class DataBridgesMonthBwRepository 
+    public class DataBridgesMonthBwRepository
         : BaseRepository<DataBridgesMonthBw>, IDataBridgesMonthBwRepository
     {
         public DataBridgesMonthBwRepository(PostgreSQLDapperContext context)
@@ -17,7 +17,7 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                     idapicarga, guidcarga, fechaultmodif,
                     idcompany, ejercicio, idciclo, idfase,
                     idcurrency, idepigrafe,
-                    volume, inventorychange, mix, new, economics,
+                    volume, inventorychange, mix, ""new"", economics,
                     quicksavings, currencymix, exchangerate,
                     rawmaterial, scrap, industrialperformance,
                     prototooling, other, ""check"", comments,
@@ -36,7 +36,8 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                 RETURNING id;";
 
             using var conn = GetConnection();
-            entity.Id = await conn.ExecuteScalarAsync<int>(sql);
+            // ✅ FIX: pasar entity
+            entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
         }
 
         public async Task UpdateAsync(DataBridgesMonthBw entity)
@@ -55,7 +56,7 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                     volume=@Volume,
                     inventorychange=@InventoryChange,
                     mix=@Mix,
-                    new=@New,
+                    ""new""=@New,
                     economics=@Economics,
                     quicksavings=@QuickSavings,
                     currencymix=@CurrencyMix,
@@ -70,10 +71,55 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                     idcarga=@IdCarga,
                     idcargastgbw=@IdCargaSTGBW,
                     idhoja=@IdHoja
-                WHERE id=@Id";
+                WHERE id=@Id;";
 
             using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);
+        }
+
+        // ✅ AÑADIDO: SELECT con alias para "check" (y "new" por seguridad)
+        public async Task<DataBridgesMonthBw?> GetByIdAsync(int id)
+        {
+            var sql = @"
+                SELECT
+                    id,
+                    idapicarga,
+                    guidcarga,
+                    fechaultmodif,
+                    idcompany,
+                    ejercicio,
+                    idciclo,
+                    idfase,
+                    idcurrency,
+                    idepigrafe,
+                    volume,
+                    inventorychange,
+                    mix,
+                    ""new"" AS ""New"",
+                    economics,
+                    quicksavings,
+                    currencymix,
+                    exchangerate,
+                    rawmaterial,
+                    scrap,
+                    industrialperformance,
+                    prototooling,
+                    other,
+                    ""check"" AS ""Check"",
+                    comments,
+                    idcarga,
+                    idcargastgbw,
+                    idhoja,
+                    createdat,
+                    updatedat,
+                    version,
+                    checksum,
+                    iszero
+                FROM ""b4"".""data_bridges_month_bw""
+                WHERE id = @id;";
+
+            using var conn = GetConnection();
+            return await conn.QuerySingleOrDefaultAsync<DataBridgesMonthBw>(sql, new { id });
         }
     }
 }

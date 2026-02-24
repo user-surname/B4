@@ -4,7 +4,7 @@ using B4.Models.RepositoryInterfaces.DataInterfaces;
 
 namespace B4.Data.PostgreSQL.Repositories.DataRepositories
 {
-    public class DataTipoCambioRepository 
+    public class DataTipoCambioRepository
         : BaseRepository<DataTipoCambio>, IDataTipoCambioRepository
     {
         public DataTipoCambioRepository(PostgreSQLDapperContext context)
@@ -38,18 +38,72 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
                     idcurrency=@IdCurrency,
                     calendarday=@CalendarDay,
                     mes=@Mes,
-                    p=@P, fc=@FC, fb=@FB,
-                    idcarga=@IdCarga, idcargastgbw=@IdCargaSTGBW, idhoja=@IdHoja
-                WHERE id=@Id";
+                    p=@P,
+                    fc=@FC,
+                    fb=@FB,
+                    idcarga=@IdCarga,
+                    idcargastgbw=@IdCargaSTGBW,
+                    idhoja=@IdHoja
+                WHERE id=@Id;";
 
             using var conn = GetConnection();
             await conn.ExecuteAsync(sql, entity);
         }
 
+        // ✅ AÑADIDO: GetByIdAsync seguro (por si tus tests usan BaseRepository y hace SELECT *)
+        public async Task<DataTipoCambio?> GetByIdAsync(int id)
+        {
+            var sql = @"
+                SELECT
+                    id                              AS ""Id"",
+                    idapicarga                      AS ""IdAPICarga"",
+                    guidcarga                       AS ""GuidCarga"",
+                    fechaultmodif                   AS ""FechaUltModif"",
+                    ejercicio                       AS ""Ejercicio"",
+                    idcurrency                      AS ""IdCurrency"",
+                    calendarday::timestamp          AS ""CalendarDay"",
+                    mes                             AS ""Mes"",
+                    p                               AS ""P"",
+                    fc                              AS ""FC"",
+                    fb                              AS ""FB"",
+                    idcarga                         AS ""IdCarga"",
+                    idcargastgbw                    AS ""IdCargaSTGBW"",
+                    idhoja                          AS ""IdHoja"",
+                    createdat                       AS ""CreatedAt"",
+                    updatedat                       AS ""UpdatedAt"",
+                    version                         AS ""Version"",
+                    checksum                        AS ""Checksum"",
+                    iszero                          AS ""IsZero""
+                FROM b4.data_tipo_cambio
+                WHERE id = @id;";
+
+            using var conn = GetConnection();
+            return await conn.QuerySingleOrDefaultAsync<DataTipoCambio>(sql, new { id });
+        }
+
         public async Task<IEnumerable<DataTipoCambio>> GetByEjercicioAsync(int ejercicio)
         {
             var sql = @"
-                SELECT *
+                SELECT
+                    id                              AS ""Id"",
+                    idapicarga                      AS ""IdAPICarga"",
+                    guidcarga                       AS ""GuidCarga"",
+                    fechaultmodif                   AS ""FechaUltModif"",
+                    ejercicio                       AS ""Ejercicio"",
+                    idcurrency                      AS ""IdCurrency"",
+                    calendarday::timestamp          AS ""CalendarDay"",
+                    mes                             AS ""Mes"",
+                    p                               AS ""P"",
+                    fc                              AS ""FC"",
+                    fb                              AS ""FB"",
+                    idcarga                         AS ""IdCarga"",
+                    idcargastgbw                    AS ""IdCargaSTGBW"",
+                    idhoja                          AS ""IdHoja"",
+                    createdat                       AS ""CreatedAt"",
+                    updatedat                       AS ""UpdatedAt"",
+                    version                         AS ""Version"",
+                    checksum                        AS ""Checksum"",
+                    iszero                          AS ""IsZero""
                 FROM b4.data_tipo_cambio
                 WHERE ejercicio = @ejercicio
                 ORDER BY calendarday;";
@@ -61,15 +115,33 @@ namespace B4.Data.PostgreSQL.Repositories.DataRepositories
         public async Task<IEnumerable<DataTipoCambio>> GetByEjercicioCurrencyAsync(int ejercicio, int idCurrency)
         {
             var sql = @"
-                SELECT *
+                SELECT
+                    id                              AS ""Id"",
+                    idapicarga                      AS ""IdAPICarga"",
+                    guidcarga                       AS ""GuidCarga"",
+                    fechaultmodif                   AS ""FechaUltModif"",
+                    ejercicio                       AS ""Ejercicio"",
+                    idcurrency                      AS ""IdCurrency"",
+                    calendarday::timestamp          AS ""CalendarDay"",
+                    mes                             AS ""Mes"",
+                    p                               AS ""P"",
+                    fc                              AS ""FC"",
+                    fb                              AS ""FB"",
+                    idcarga                         AS ""IdCarga"",
+                    idcargastgbw                    AS ""IdCargaSTGBW"",
+                    idhoja                          AS ""IdHoja"",
+                    createdat                       AS ""CreatedAt"",
+                    updatedat                       AS ""UpdatedAt"",
+                    version                         AS ""Version"",
+                    checksum                        AS ""Checksum"",
+                    iszero                          AS ""IsZero""
                 FROM b4.data_tipo_cambio
                 WHERE ejercicio = @ejercicio
-                AND idcurrency = @idCurrency
+                  AND idcurrency = @idCurrency
                 ORDER BY calendarday;";
 
             using var conn = GetConnection();
             return await conn.QueryAsync<DataTipoCambio>(sql, new { ejercicio, idCurrency });
         }
-
     }
 }
