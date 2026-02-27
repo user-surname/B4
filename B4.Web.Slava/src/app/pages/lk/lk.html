@@ -1,0 +1,73 @@
+<div class="container">
+
+  <h2>Gestión de Ciclos</h2>
+
+  <div class="messages">
+    <p class="success" *ngIf="mensaje">{{ mensaje }}</p>
+    <p class="error" *ngIf="error">{{ error }}</p>
+  </div>
+
+  <!-- CREATE -->
+  <div class="card">
+    <h3>Crear Ciclo</h3>
+    <form (ngSubmit)="create()">
+      <input type="text" placeholder="Ciclo"
+             [(ngModel)]="nuevoCiclo.ciclo"
+             name="ciclo"
+             required>
+
+      <input type="text" placeholder="Descripción"
+             [(ngModel)]="nuevoCiclo.descripcion"
+             name="descripcion"
+             required>
+
+      <button type="submit">Crear</button>
+    </form>
+  </div>
+
+  <!-- GET BY ID -->
+  <div class="card">
+    <h3>Buscar por ID</h3>
+    <input type="number" [(ngModel)]="idBusqueda" name="idBusqueda">
+    <button (click)="getById()">Buscar</button>
+
+    <div *ngIf="cicloSeleccionado" class="result">
+      <p><strong>ID:</strong> {{ cicloSeleccionado.idCiclo }}</p>
+      <p><strong>Ciclo:</strong> {{ cicloSeleccionado.ciclo }}</p>
+      <p><strong>Descripción:</strong> {{ cicloSeleccionado.descripcion }}</p>
+    </div>
+  </div>
+
+  <!-- DELETE -->
+  <div class="card delete">
+    <h3>Eliminar Ciclo</h3>
+    <input type="number" [(ngModel)]="idEliminar" name="idEliminar">
+    <button (click)="delete()">Eliminar</button>
+  </div>
+
+  <!-- GET ALL -->
+  <div class="card">
+    <h3>Listado de Ciclos</h3>
+    <button (click)="getAll()">Refrescar</button>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Ciclo</th>
+          <th>Descripción</th>
+          <th>Activo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of ciclos">
+          <td>{{ c.idCiclo }}</td>
+          <td>{{ c.ciclo }}</td>
+          <td>{{ c.descripcion }}</td>
+          <td>{{ c.isActive }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

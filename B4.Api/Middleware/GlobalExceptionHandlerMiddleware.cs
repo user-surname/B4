@@ -9,19 +9,17 @@ using System.Threading.Tasks;
 
 namespace B4.Api.Middleware
 {
-    
-
     public class GlobalExceptionHandlerMiddleware : IMiddleware
     {
         private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
 
-        public GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMiddleware> logger)
+        public GlobalExceptionHandlerMiddleware(
+            ILogger<GlobalExceptionHandlerMiddleware> logger)
         {
             _logger = logger;
         }
 
-
-        async Task IMiddleware.InvokeAsync(HttpContext context, RequestDelegate next)
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
@@ -31,26 +29,24 @@ namespace B4.Api.Middleware
             {
                 _logger.LogError(ex, ex.Message);
 
-                context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                if (context.Response.HasStarted)
+                    throw;
+
+                context.Response.Clear();
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                context.Response.ContentType = "application/json";
 
                 var problemDetails = new ProblemDetails
                 {
-                    Status = (int)StatusCodes.Status500InternalServerError,
-                    Title = "Server Error",
-                    Type = "Server Error",
-                    Instance = "",
-                    Detail = @"An internal server error has ocurred",
-                    //Detail = ex.Message,
+                    Status = StatusCodes.Status500InternalServerError,
+                    Title = "Internal Server Error",
+                    Type = "https://httpstatuses.com/500",
+                    Instance = context.Request.Path,
+                    Detail = "An unexpected error occurred."
                 };
 
-                var json = JsonConvert.SerializeObject(problemDetails);
-
-                context.Response.ContentType = "application/json";
-
-                //await context.Response.WriteAsync(json);  
                 await context.Response.WriteAsJsonAsync(problemDetails);
             }
         }
     }
-
 }

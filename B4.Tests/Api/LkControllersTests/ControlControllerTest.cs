@@ -16,28 +16,16 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class ControlControllerTest
+    public class ControlControllerTest : TestBase
     {
         private readonly Mock<IControlService> _mockService;
-        private readonly IMapper _mapper;
         private readonly ControlController _controller;
 
         public ControlControllerTest()
         {
             _mockService = new Mock<IControlService>();
 
-            // Configuración de AutoMapper
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            _mapper = config.CreateMapper();
-
-            _controller = new ControlController(_mockService.Object, _mapper);
+            _controller = new ControlController(_mockService.Object, Mapper);
         }
 
         // -----------------------------------------

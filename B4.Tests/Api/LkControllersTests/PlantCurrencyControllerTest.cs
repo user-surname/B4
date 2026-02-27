@@ -16,7 +16,7 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class PlantCurrencyControllerTest
+    public class PlantCurrencyControllerTest : TestBase
     {
         private readonly Mock<IPlantCurrencyService> _mockService;
         private readonly PlantCurrencyController _controller;
@@ -25,17 +25,7 @@ namespace B4.Tests.Controllers
         {
             _mockService = new Mock<IPlantCurrencyService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new PlantCurrencyController(_mockService.Object, mapper);
+            _controller = new PlantCurrencyController(_mockService.Object, Mapper);
         }
 
         [Fact]

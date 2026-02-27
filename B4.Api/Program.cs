@@ -1,19 +1,17 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
+using Azure.Core.Serialization;
 using B4.Api.Middleware;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Services;
 using B4.Domain.Services;
-using B4.Models.RepositoryInterfaces;
 using B4.Models.Entities.DataEntities;
+using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.DataInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Models.ServiceInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -24,6 +22,11 @@ using NLog.Config;
 using NLog.Targets;
 using NLog.Web;
 using Npgsql;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -362,14 +365,61 @@ try
             ValidAudience = audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // Evita el mensaje genérico de WWW-Authenticate
+                context.HandleResponse();
+
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize (new
+                {
+                    coderror = 401,
+                    action = context?.Request?.Path.Value,
+                    msg = "No estás autorizado",
+                    ts = DateTime.UtcNow,
+                    exectimems = 0,
+                    count = 0,
+                    data = (object)null
+                });
+
+                return context.Response.WriteAsync(result);
+            }
+        };
+
     });
 
     builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
+        // Política global que requiere autenticación para todas las rutas por defecto
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
     });
 
     builder.Services.AddScoped<JwtService>();
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    });
+
+    // Añadir servicios de controladores y configurar JSON
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            // Convierte PascalCase del backend a camelCase para Angular
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
+
 
     // --------------------------------------------------
     // BUILD APP
@@ -404,8 +454,54 @@ try
     // Response wrapper
     app.UseMiddleware<ResponseWrapperMiddleware>();
 
+    // try/catch para errores de binding
+    app.Use(async (context, next) =>
+    {
+        var endpoint = context.GetEndpoint();
+        if (endpoint == null)
+        {
+            context.Response.StatusCode = 404;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new
+            {
+                coderror = 404,
+                action = context.Request.Path,
+                msg = "Ruta o parámetro enviado no es válido",
+                ts = DateTime.UtcNow,
+                exectimems = 0,
+                count = 0,
+                data = (object)null
+            });
+            return;
+        }
+
+        await next();
+    });
+
     app.UseAuthentication();
     app.UseAuthorization();
+
+    // Middleware para rutas inexistentes
+    app.UseStatusCodePages(async context =>
+    {
+        var response = context.HttpContext.Response;
+
+        if (response.StatusCode == StatusCodes.Status404NotFound)
+        {
+            response.ContentType = "application/json";
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Route Not Found",
+                Type = "https://httpstatuses.com/404",
+                Detail = "The requested route does not exist.",
+                Instance = context.HttpContext.Request.Path
+            };
+
+            await response.WriteAsJsonAsync(problemDetails);
+        }
+    });
 
     app.UseCors("AllowAll");
 

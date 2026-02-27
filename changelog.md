@@ -1,14 +1,5 @@
 # Changelog
 
-## v0.20260227.1 Victor
-
-- B4.WebActuals
-  - Implementación del proyecto en Angular
-  - Implentacion de la views
-- B4.Api
-  - Creación de Scripts para el arranque automatico
-  - Implentación del http
-
 ## v0.20260224.1 Victor
 
 - B4.Test
@@ -46,6 +37,12 @@
   - Implementación de tests unitarios para todos los DataControllers
   - Implementación de ControlControllerTest con AutoMapper real
   
+## v0.20260211.1 - Slava
+
+- B4.Tests -> TestBase creado
+- B4.Api.Prpgram -> Exepciones mas informativas y autenticacion para todos los controllers
+- B4.Api.middleware -> Separacion de funciones entre ResponseWrapperMiddleware y GlobalExceptionHandlerMiddleware
+
 ## v0.20260211.1 - Slava
 
 - B4 -> Implementacion de la tabla Control y Tests

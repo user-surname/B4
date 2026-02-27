@@ -24,13 +24,22 @@
 
     <PackageReference Include="Npgsql" Version="10.0.0" />
 
+    <PackageReference Include="Numind.AspNetCore.SpaServices.Extensions" Version="1.0.1" />
+
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.0-preview.322" />
+
+    <PackageReference Include="System.Runtime.Serialization.Json" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\B4.Helpers\B4.Helpers.csproj" />
     <ProjectReference Include="..\B4.Domain\B4.Domain.csproj" />
     <ProjectReference Include="..\B4.Shared\B4.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ClientApp\src\app\Models\" />
+    <Folder Include="ClientApp\src\app\Components\" />
   </ItemGroup>
 
   <PropertyGroup>

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace B4.Api.Controllers
 {
     [ApiController]
+    [ApiExplorerSettings(GroupName = "v2")]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class EpigrafeController : ControllerBase
