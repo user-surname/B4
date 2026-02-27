@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.20260227.1 Victor
+
+- B4.WebActuals
+  - Implementación del proyecto en Angular
+  - Implentacion de la views
+- B4.Api
+  - Creación de Scripts para el arranque automatico
+  - Implentación del http
+
 ## v0.20260224.1 Victor
 
 - B4.Test

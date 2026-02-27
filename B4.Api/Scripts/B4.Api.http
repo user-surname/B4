@@ -1,0 +1,76 @@
+@B4.Api_HostAddress = http://localhost:5029
+@token = PEGA_AQUI_TU_JWT
+
+###
+# 0) LOGIN
+POST {{B4.Api_HostAddress}}/api/v1/Auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@ejemplo.com",
+  "password": "1234"
+}
+
+###
+# 1) GET - obtener todos los ciclos
+GET {{B4.Api_HostAddress}}/api/v1/Ciclos
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+# 2) GET - obtener ciclo por id
+GET {{B4.Api_HostAddress}}/api/v1/Ciclos/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+# 3) POST - crear nuevo ciclo
+POST {{B4.Api_HostAddress}}/api/v1/Ciclos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: application/json
+
+{
+  "idCiclo": 0,
+  "ciclo": "string",
+  "descripcion": "string"
+}
+
+###
+# 4) DELETE - eliminar ciclo por id
+DELETE {{B4.Api_HostAddress}}/api/v1/Ciclos/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+# 5) GET DataActuals por planta/ejercicio/epigrafe
+GET {{B4.Api_HostAddress}}/api/v1/DataActuals/10/2024/100
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+# 6) POST DataActuals
+POST {{B4.Api_HostAddress}}/api/v1/DataActuals/10/2024/1/EUR
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: application/json
+
+[
+  {
+    "e": 100,
+    "m1": 0,
+    "m2": 1,
+    "m3": 2,
+    "m4": 3,
+    "m5": 4,
+    "m6": 5,
+    "m7": 6,
+    "m8": 7,
+    "m9": 8,
+    "m10": 9,
+    "m11": 10,
+    "m12": 11,
+    "m13": 12
+  }
+]

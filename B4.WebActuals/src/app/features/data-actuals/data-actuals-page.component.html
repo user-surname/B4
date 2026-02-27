@@ -1,0 +1,49 @@
+<h2>Demo DataActuals</h2>
+
+<section style="margin-bottom: 16px; padding: 12px; border: 1px solid #ddd;">
+  <h3>JWT</h3>
+  <input style="width: 60%" [(ngModel)]="token" placeholder="Pega aquí el JWT (Bearer se añade solo)" />
+  <button (click)="saveToken()">Guardar token</button>
+  <button (click)="clearToken()">Borrar token</button>
+</section>
+
+<section style="margin-bottom: 16px; padding: 12px; border: 1px solid #ddd;">
+  <h3>GET Actuals</h3>
+
+  <label>Planta: <input type="number" [(ngModel)]="planta"></label>
+  <label>Ejercicio: <input type="number" [(ngModel)]="ejercicio"></label>
+  <label>Epígrafe: <input type="number" [(ngModel)]="epigrafe"></label>
+
+  <button (click)="fetch()">Buscar</button>
+
+  <p *ngIf="loading">Cargando...</p>
+  <p *ngIf="error" style="color: darkred;">{{ error }}</p>
+</section>
+
+<section *ngIf="dto" style="padding: 12px; border: 1px solid #ddd;">
+  <h3>Head</h3>
+  <ul>
+    <li><b>ts</b>: {{ dto.head.ts }}</li>
+    <li><b>p</b>: {{ dto.head.p }}</li>
+    <li><b>e</b>: {{ dto.head.e }}</li>
+    <li><b>c</b>: {{ dto.head.c }}</li>
+    <li><b>f</b>: {{ dto.head.f }}</li>
+    <li><b>m</b>: {{ dto.head.m }}</li>
+  </ul>
+
+  <h3>Detail</h3>
+  <table border="1" cellspacing="0" cellpadding="6">
+    <thead>
+      <tr>
+        <th>Epígrafe</th>
+        <th *ngFor="let h of monthsHeaders()">{{ h }}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of dto.detail">
+        <td>{{ row.e }}</td>
+        <td *ngFor="let v of row.v">{{ v }}</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
