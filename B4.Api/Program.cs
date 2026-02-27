@@ -31,12 +31,15 @@ using System.Text.Json;
 var builder = WebApplication.CreateBuilder(args);
 
 // NLog
-builder.Logging.ClearProviders();
-builder.Host.UseNLog();
 
 var logger = LogManager.Setup()
     .LoadConfigurationFromFile(Path.Combine(AppContext.BaseDirectory, "nlog.config"))
     .GetCurrentClassLogger();
+
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
+
+var nlogConfig = LogManager.Configuration;
 
 try
 {
@@ -44,6 +47,9 @@ try
 
     var sharedConfig = SharedConfig.Load();
     var bbdd = sharedConfig["bbdd"]?.Trim();
+    var config = SharedConfig.Load();
+    string connectionString;
+    string dbProvider;
 
     if (string.IsNullOrWhiteSpace(bbdd))
     {
@@ -99,11 +105,30 @@ try
     {
         if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
         {
+
             logger.Info("Iniciando migraciones para MySQL...");
             B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
             logger.Info("Base de datos MySQL actualizada correctamente.");
 
+            connectionString = config.GetConnectionString("MySQLConnectionB4Data");
+
             var ctx = new MySQLDapperContext(sharedConfig);
+
+            foreach (var rule in nlogConfig.LoggingRules)
+            {
+                // Encontrar los targets que tengan ese nombre
+                var targetsToRemove = rule.Targets.Where(t => t.Name == "PostgresLogger").ToList();
+
+                foreach (var t in targetsToRemove)
+                {
+                    rule.Targets.Remove(t);
+                }
+            }
+
+            LogManager.Configuration.Variables["MySQLConnectionString"] = connectionString;
+
+            LogManager.ReconfigExistingLoggers();
+
             builder.Services.AddSingleton(ctx);
 
             // LK repos (MySQL)
@@ -199,6 +224,24 @@ try
             logger.Info("Base de datos PostgreSQL actualizada correctamente.");
 
             var ctx = new PostgreSQLDapperContext(sharedConfig);
+
+            connectionString = config.GetConnectionString("PostgresConnectionB4Data");
+
+            foreach (var rule in nlogConfig.LoggingRules)
+            {
+                // Encontrar los targets que tengan ese nombre
+                var targetsToRemove = rule.Targets.Where(t => t.Name == "PostgresLogger").ToList();
+
+                foreach (var t in targetsToRemove)
+                {
+                    rule.Targets.Remove(t);
+                }
+            }
+
+            LogManager.Configuration.Variables["PostgresConnectionString"] = connectionString;
+
+            LogManager.ReconfigExistingLoggers();
+
             builder.Services.AddSingleton(ctx);
 
             // LK repos (PostgreSQL) — añade los que falten según tu proyecto
