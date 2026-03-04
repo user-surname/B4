@@ -16,7 +16,7 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class PlantSubdivisionControllerTest
+    public class PlantSubdivisionControllerTest : TestBase
     {
         private readonly Mock<IPlantSubdivisionService> _mockService;
         private readonly PlantSubdivisionController _controller;
@@ -25,17 +25,7 @@ namespace B4.Tests.Controllers
         {
             _mockService = new Mock<IPlantSubdivisionService>();
 
-            var expression = new MapperConfigurationExpression();
-            expression.AddProfile<MappingProfile>();
-
-            var config = new MapperConfiguration(
-                expression,
-                NullLoggerFactory.Instance
-            );
-
-            var mapper = config.CreateMapper();
-
-            _controller = new PlantSubdivisionController(_mockService.Object, mapper);
+            _controller = new PlantSubdivisionController(_mockService.Object, Mapper);
         }
 
         [Fact]

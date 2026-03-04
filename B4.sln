@@ -24,8 +24,16 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Elementos de la solución", "Elementos de la solución", "{D107F4C8-89CC-BEA8-D3D7-CA6B7733353D}"
 	ProjectSection(SolutionItems) = preProject
 		changelog.md = changelog.md
-		JWT_README.md = JWT_README.md
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "READMES", "READMES", "{E98096BD-D8AD-4157-A3C7-35A36851377A}"
+	ProjectSection(SolutionItems) = preProject
+		AutoMappingREADME.md = AutoMappingREADME.md
+		JWT_README.md = JWT_README.md
+		UsuariosTableREADME.md = UsuariosTableREADME.md
+	EndProjectSection
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "B4.Web.Slava", "B4.Web.Slava\B4.Web.Slava.esproj", "{3F592504-09B1-CE89-5439-56E4CD8289FD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,12 +77,21 @@ Global
 		{00000000-0000-0000-0000-000000000001}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00000000-0000-0000-0000-000000000001}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00000000-0000-0000-0000-000000000001}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E98096BD-D8AD-4157-A3C7-35A36851377A} = {D107F4C8-89CC-BEA8-D3D7-CA6B7733353D}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
 		SolutionGuid = {86D7D857-7568-4773-B4DF-40662B033150}
+		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
 	EndGlobalSection
 EndGlobal

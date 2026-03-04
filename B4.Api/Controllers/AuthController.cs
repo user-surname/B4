@@ -3,10 +3,12 @@ using B4.Models.Entities;
 using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]

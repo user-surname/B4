@@ -14,11 +14,12 @@ namespace B4.Data.PostgreSQL.Repositories
         {
             PrepareForInsert(entity);
 
+            // ✅ CAMBIO: añadimos currencyalias (NOT NULL)
             const string sql = @"
                 INSERT INTO b4.lk_plant_currency
-                    (idcurrency, currency, createdat, updatedat, isactive)
+                    (idcurrency, currency, currencyalias, createdat, updatedat, isactive)
                 VALUES
-                    (@IdCurrency, @Currency, @CreatedAt, @UpdatedAt, @IsActive);";
+                    (@IdCurrency, @Currency, @CurrencyAlias, @CreatedAt, @UpdatedAt, @IsActive);";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);
@@ -28,9 +29,11 @@ namespace B4.Data.PostgreSQL.Repositories
         {
             PrepareForUpdate(entity);
 
+            // ✅ CAMBIO: también se actualiza currencyalias
             const string sql = @"
                 UPDATE b4.lk_plant_currency 
                 SET currency=@Currency,
+                    currencyalias=@CurrencyAlias,
                     updatedat=@UpdatedAt,
                     isactive=@IsActive
                 WHERE idcurrency=@IdCurrency;";

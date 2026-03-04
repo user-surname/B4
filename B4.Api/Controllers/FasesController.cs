@@ -9,6 +9,7 @@ namespace B4.Api.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
+    [ApiExplorerSettings(GroupName = "v2")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class FasesController : ControllerBase
     {

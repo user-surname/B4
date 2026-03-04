@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 namespace B4.Api.Controllers
 {
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class ControlController : ControllerBase

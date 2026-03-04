@@ -7,8 +7,9 @@ namespace B4.Data.PostgreSQL.Repositories
     public class CiclosRepository
         : BaseLkRepository<LkCiclos>, ICiclosRepository
     {
+        // ✅ CAMBIO: la key del repositorio pasa a ser "id" (PK real)
         public CiclosRepository(PostgreSQLDapperContext ctx)
-            : base(ctx, "b4.lk_ciclos", "idciclo") { }
+            : base(ctx, "b4.lk_ciclos", "id") { }
 
         public override async Task AddAsync(LkCiclos entity)
         {
@@ -18,10 +19,13 @@ namespace B4.Data.PostgreSQL.Repositories
                 INSERT INTO b4.lk_ciclos
                     (idciclo, ciclo, descripcion, createdat, updatedat, isactive)
                 VALUES
-                    (@IdCiclo, @Ciclo, @Descripcion, @CreatedAt, @UpdatedAt, @IsActive);";
+                    (@IdCiclo, @Ciclo, @Descripcion, @CreatedAt, @UpdatedAt, @IsActive)
+                RETURNING id;";
 
             using var conn = _context.CreateConnection();
-            await conn.ExecuteAsync(sql, entity);
+
+            // ✅ CAMBIO: recuperamos el id generado y lo ponemos en entity.Id
+            entity.Id = await conn.ExecuteScalarAsync<int>(sql, entity);
         }
 
         public override async Task UpdateAsync(LkCiclos entity)
@@ -30,13 +34,16 @@ namespace B4.Data.PostgreSQL.Repositories
 
             const string sql = @"
                 UPDATE b4.lk_ciclos SET 
+                    idciclo=@IdCiclo,
                     ciclo=@Ciclo,
                     descripcion=@Descripcion,
                     updatedat=@UpdatedAt,
                     isactive=@IsActive
-                WHERE idciclo=@IdCiclo;";
+                WHERE id=@Id;";
 
             using var conn = _context.CreateConnection();
+
+            // ✅ CAMBIO: ahora actualizamos por PK real (id)
             await conn.ExecuteAsync(sql, entity);
         }
     }

@@ -1,26 +1,32 @@
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
+using Azure.Core.Serialization;
 using B4.Api.Middleware;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Services;
 using B4.Domain.Services;
-using B4.Models.RepositoryInterfaces;
 using B4.Models.Entities.DataEntities;
+using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.DataInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
 using B4.Models.ServiceInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
+using NLog.Config;
+using NLog.Targets;
 using NLog.Web;
+using Npgsql;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 
 // --------------------------------------------------
 // CREACIÓN DEL BUILDER
@@ -46,6 +52,11 @@ try
     {
         logger.Error("No se encontró la clave 'bbdd' en el archivo de configuración.");
         throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
+    }
+
+    if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+    {
+        ConfigureNLogPostgreSql(sharedConfig, logger);
     }
 
     // AutoMapper
@@ -79,7 +90,7 @@ try
     builder.Services.AddScoped<IDataBridgesMonthService, DataBridgesMonthService>();
 
     // Si ya migraste DataActuals al patrón service, registra también:
-    // builder.Services.AddScoped<IDataActualsService, DataActualsService>();
+    builder.Services.AddScoped<IDataActualsService, DataActualsService>();
 
     // DATA BW Services (read-only)
     builder.Services.AddScoped<IDataActualsBwService, DataActualsBwService>();
@@ -239,8 +250,8 @@ try
     // --------------------------------------------------
     // MIDDLEWARES / INFRA
     // --------------------------------------------------
-    builder.Services.AddTransient<ResponseWrapperMiddleware>();
     builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
+    builder.Services.AddTransient<ResponseWrapperMiddleware>();
 
     // Compresión GZIP
     builder.Services.Configure<GzipCompressionProviderOptions>(options =>
@@ -354,14 +365,61 @@ try
             ValidAudience = audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
         };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // Evita el mensaje genérico de WWW-Authenticate
+                context.HandleResponse();
+
+                context.Response.StatusCode = 401;
+                context.Response.ContentType = "application/json";
+
+                var result = JsonSerializer.Serialize (new
+                {
+                    coderror = 401,
+                    action = context?.Request?.Path.Value,
+                    msg = "No estás autorizado",
+                    ts = DateTime.UtcNow,
+                    exectimems = 0,
+                    count = 0,
+                    data = (object)null
+                });
+
+                return context.Response.WriteAsync(result);
+            }
+        };
+
     });
 
     builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+
+        // Política global que requiere autenticación para todas las rutas por defecto
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
     });
 
     builder.Services.AddScoped<JwtService>();
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+    });
+
+    // Añadir servicios de controladores y configurar JSON
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            // Convierte PascalCase del backend a camelCase para Angular
+            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        });
+
 
     // --------------------------------------------------
     // BUILD APP
@@ -396,8 +454,54 @@ try
     // Response wrapper
     app.UseMiddleware<ResponseWrapperMiddleware>();
 
+    // try/catch para errores de binding
+    app.Use(async (context, next) =>
+    {
+        var endpoint = context.GetEndpoint();
+        if (endpoint == null)
+        {
+            context.Response.StatusCode = 404;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsJsonAsync(new
+            {
+                coderror = 404,
+                action = context.Request.Path,
+                msg = "Ruta o parámetro enviado no es válido",
+                ts = DateTime.UtcNow,
+                exectimems = 0,
+                count = 0,
+                data = (object)null
+            });
+            return;
+        }
+
+        await next();
+    });
+
     app.UseAuthentication();
     app.UseAuthorization();
+
+    // Middleware para rutas inexistentes
+    app.UseStatusCodePages(async context =>
+    {
+        var response = context.HttpContext.Response;
+
+        if (response.StatusCode == StatusCodes.Status404NotFound)
+        {
+            response.ContentType = "application/json";
+
+            var problemDetails = new ProblemDetails
+            {
+                Status = StatusCodes.Status404NotFound,
+                Title = "Route Not Found",
+                Type = "https://httpstatuses.com/404",
+                Detail = "The requested route does not exist.",
+                Instance = context.HttpContext.Request.Path
+            };
+
+            await response.WriteAsJsonAsync(problemDetails);
+        }
+    });
 
     app.UseCors("AllowAll");
 
@@ -413,6 +517,74 @@ catch (Exception ex)
 finally
 {
     LogManager.Shutdown();
+}
+
+static void ConfigureNLogPostgreSql(IConfiguration configuration, Logger logger)
+{
+    var connectionString = configuration.GetConnectionString("PostgresConnectionB4Control");
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        logger.Warn("NLog PostgreSQL desactivado: falta ConnectionStrings:PostgresConnectionB4Control.");
+        return;
+    }
+
+    EnsureNLogTableExists(connectionString);
+
+    var nlogConfig = LogManager.Configuration;
+    if (nlogConfig is null)
+    {
+        logger.Warn("NLog PostgreSQL desactivado: configuración NLog no disponible.");
+        return;
+    }
+
+    if (nlogConfig.FindTargetByName("postgresDb") is not null)
+    {
+        return;
+    }
+
+    var dbTarget = new DatabaseTarget("postgresDb")
+    {
+        DBProvider = "Npgsql.NpgsqlConnection, Npgsql",
+        ConnectionString = connectionString,
+        CommandText = @"
+            INSERT INTO app_logs (level, logger, message, exception, machine_name, request_url)
+            VALUES (@level, @logger, @message, @exception, @machine_name, @request_url);"
+    };
+
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@level", "${level:uppercase=true}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@logger", "${logger}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@message", "${message}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@exception", "${exception:format=tostring}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@machine_name", "${machinename}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@request_url", "${aspnet-request-url}"));
+
+    nlogConfig.AddTarget(dbTarget);
+    nlogConfig.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Info, dbTarget));
+    LogManager.ReconfigExistingLoggers();
+
+    logger.Info("NLog PostgreSQL target activo.");
+}
+
+static void EnsureNLogTableExists(string connectionString)
+{
+    const string sql = @"
+        CREATE TABLE IF NOT EXISTS app_logs (
+            id BIGSERIAL PRIMARY KEY,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            level VARCHAR(20) NOT NULL,
+            logger VARCHAR(300) NULL,
+            message TEXT NOT NULL,
+            exception TEXT NULL,
+            machine_name VARCHAR(200) NULL,
+            request_url TEXT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_app_logs_created_at ON app_logs (created_at DESC);";
+
+    using var connection = new NpgsqlConnection(connectionString);
+    connection.Open();
+    using var command = new NpgsqlCommand(sql, connection);
+    command.ExecuteNonQuery();
 }
 
 // ✅ Necesario para tests con WebApplicationFactory (PUNTO 7)

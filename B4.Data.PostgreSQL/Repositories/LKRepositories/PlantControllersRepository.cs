@@ -7,18 +7,20 @@ namespace B4.Data.PostgreSQL.Repositories
     public class PlantControllersRepository
         : BaseLkRepository<LkPlantControllers>, IPlantControllersRepository
     {
+        // ✅ CAMBIO: key real en Postgres = idcompanycontroller (no idcontroller)
         public PlantControllersRepository(PostgreSQLDapperContext ctx)
-            : base(ctx, "b4.lk_plant_controllers", "idcontroller") { }
+            : base(ctx, "b4.lk_plant_controllers", "idcompanycontroller") { }
 
         public override async Task AddAsync(LkPlantControllers entity)
         {
             PrepareForInsert(entity);
 
+            // ✅ CAMBIO: columnas reales + NOT NULL (idcompany, email)
             const string sql = @"
                 INSERT INTO b4.lk_plant_controllers
-                    (idcontroller, controller, createdat, updatedat, isactive)
+                    (idcompanycontroller, idcompany, controller, email, createdat, updatedat, isactive)
                 VALUES
-                    (@IdController, @Controller, @CreatedAt, @UpdatedAt, @IsActive);";
+                    (@IdCompanyController, @IdCompany, @Controller, @Email, @CreatedAt, @UpdatedAt, @IsActive);";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);
@@ -30,10 +32,13 @@ namespace B4.Data.PostgreSQL.Repositories
 
             const string sql = @"
                 UPDATE b4.lk_plant_controllers 
-                SET controller=@Controller,
+                SET
+                    idcompany=@IdCompany,
+                    controller=@Controller,
+                    email=@Email,
                     updatedat=@UpdatedAt,
                     isactive=@IsActive
-                WHERE idcontroller=@IdController;";
+                WHERE idcompanycontroller=@IdCompanyController;";
 
             using var conn = _context.CreateConnection();
             await conn.ExecuteAsync(sql, entity);

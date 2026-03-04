@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.20260224.1 Victor
+
+- B4.Test
+  - Implementación del nueva cadena de PostgreSQL
+  - Arreglo de los test de Postgres
+- B4.Data.PostgreSQL
+  - Modificacion de DbUpMigrator
+  - Modificacion de PostgreSQLDapperContext
+- B4.Web
+  - Implementacion parcial de Frontend en Angular
+  
+
 ## v0.20260218.1 Victor
 
 - B4.Api.Controllers
@@ -25,6 +37,12 @@
   - Implementación de tests unitarios para todos los DataControllers
   - Implementación de ControlControllerTest con AutoMapper real
   
+## v0.20260211.1 - Slava
+
+- B4.Tests -> TestBase creado
+- B4.Api.Prpgram -> Exepciones mas informativas y autenticacion para todos los controllers
+- B4.Api.middleware -> Separacion de funciones entre ResponseWrapperMiddleware y GlobalExceptionHandlerMiddleware
+
 ## v0.20260211.1 - Slava
 
 - B4 -> Implementacion de la tabla Control y Tests
