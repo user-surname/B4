@@ -35,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "READMES", "READMES", "{E980
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "B4.Web.Slava", "B4.Web.Slava\B4.Web.Slava.esproj", "{3F592504-09B1-CE89-5439-56E4CD8289FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B4.Data.DataFactory", "B4.Data.DataFactory\B4.Data.DataFactory.csproj", "{FD74B4EA-B0B3-421F-8A38-64C14B797A08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,10 @@ Global
 		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3F592504-09B1-CE89-5439-56E4CD8289FD}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -92,6 +98,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {86D7D857-7568-4773-B4DF-40662B033150}
-		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
+		SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
 	EndGlobalSection
 EndGlobal
