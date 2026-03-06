@@ -1,5 +1,5 @@
 @B4.Api_HostAddress = http://localhost:5029
-@token = PEGA_AQUI_TU_JWT
+@token = {{jwt_token}}
 
 ###
 # 0) LOGIN
@@ -11,6 +11,12 @@ Accept: application/json
   "email": "admin@ejemplo.com",
   "password": "1234"
 }
+
+> {%
+const t = response.body?.token ?? response.body?.accessToken ?? response.body?.jwt;
+if (!t) throw new Error("No se encontró token/accessToken/jwt en la respuesta de login");
+client.global.set("jwt_token", t);
+%}
 
 ###
 # 1) GET - obtener todos los ciclos

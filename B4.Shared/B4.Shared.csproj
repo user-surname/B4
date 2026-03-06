@@ -22,13 +22,13 @@
 </ItemGroup>
 
   <ItemGroup>
-    <None Include="nlog.config" CopyToOutputDirectory="Always" />
+    <None Include="nlog.shared.config" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
     <None Include="appsettings.json" CopyToOutputDirectory="Always" />
     <None Include="appsettings.Development.json" CopyToOutputDirectory="Always" />
-    <None Include="nlog.config" CopyToOutputDirectory="Always" />
+    <None Include="nlog.shared.config" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

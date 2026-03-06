@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2026005.1 Victor
+
+- B4
+  - Implementación del Docker Hub
+  - Creacion del DockerFile para la subida de imagen
+  - Creacion del .Dockerignore
+
+
 ## v0.20260224.1 Victor
 
 - B4.Test
