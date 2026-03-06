@@ -1,6 +1,12 @@
 # Changelog
 
-## v0.2026005.1 Victor
+## v0.20260306.1 Victor
+
+- B4.Data.DataFactory
+  - Creacion del proyecto DataFactory
+  - Creacion de la estructura de DataFactory sin logica
+  
+## v0.20260305.1 Victor
 
 - B4
   - Implementación del Docker Hub
