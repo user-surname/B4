@@ -9,7 +9,7 @@ import { Ciclo, CreateCicloRequest } from '../interfaces/Ciclo';
 })
 export class CiclosService {
 
-  private baseUrl = 'https://localhost:7257/api/v1/Ciclos';
+  private baseUrl = 'http://localhost:5029/api/v1/Ciclos';
 
   constructor(private http: HttpClient) { }
 

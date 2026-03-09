@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  api:
+    image: mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble
+    volumes:
+      - ..:/workspaces:cached
+    command: sleep infinity
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+
+  frontend:
+    image: node:20
+    volumes:
+      - ..:/workspaces:cached
+    command: sleep infinity
+    ports:
+      - "4200:4200"

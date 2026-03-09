@@ -1,0 +1,40 @@
+{
+  "name": "B4 DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "moby": true,
+      "azureDnsAutoDetection": true,
+      "installDockerBuildx": true,
+      "version": "latest",
+      "dockerDashComposeVersion": "none"
+    },
+    "ghcr.io/devcontainers/features/dotnet:2": {
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "ppa": true,
+      "version": "latest"
+    },
+    "ghcr.io/stu-bell/devcontainer-features/node:0": {
+      "nodeGypDependencies": true,
+      "installYarnUsingApt": true,
+      "pnpmVersion": "latest",
+      "nvmVersion": "latest"
+    },
+    "ghcr.io/devcontainers-extra/features/angular-cli:2": {
+      "version": "latest"
+    }
+  },
+
+  "forwardPorts": [5000, 5001, 4200],
+
+  "postCreateCommand": "dotnet restore && cd B4.Web.Slava && npm install",
+
+  "postStartCommand": "echo 'DevContainer ready! Use terminal to run API and frontend'",
+
+  "workspaceFolder": "/workspaces/b4",
+
+  "remoteUser": "vscode"
+}

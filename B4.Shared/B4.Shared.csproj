@@ -21,13 +21,14 @@
 </ItemGroup>
 
   <ItemGroup>
-    <None Include="nlog.config" CopyToOutputDirectory="Always" />
+	  <None Update="nlog.config">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+	  </None>
   </ItemGroup>
 
   <ItemGroup>
     <None Include="appsettings.json" CopyToOutputDirectory="Always" />
     <None Include="appsettings.Development.json" CopyToOutputDirectory="Always" />
-    <None Include="nlog.config" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,46 @@
+@B4.Api_HostAddress = http://localhost:5029
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoiQWRtaW4iLCJleHAiOjE3NzIxOTU2MDcsImlzcyI6IkI0LkFwaSIsImF1ZCI6IkI0LkNsaWVudCJ9.CG76inKekC41IFCQRTY-EBiKoiwdLCqsmUJEH-gOG8s
+
+POST {{B4.Api_HostAddress}}/api/v1/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@ejemplo.com",
+  "password": "1234"
+}
+
+###
+
+# Obtener todos los ciclos
+GET {{B4.Api_HostAddress}}/api/v1/ciclos
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# Obtener un ciclo por id
+GET {{B4.Api_HostAddress}}/api/v1/ciclos/1
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+# POST: Crear un nuevo ciclo
+POST {{B4.Api_HostAddress}}/api/v1/ciclos
+Content-Type: application/json
+Authorization: Bearer {{token}}
+Accept: application/json
+
+{
+  "idCiclo": 0,
+  "ciclo": "string",
+  "descripcion": "string"
+}
+
+###
+
+# DELETE: Eliminar un ciclo por id
+DELETE {{B4.Api_HostAddress}}/api/v1/ciclos/48
+Authorization: Bearer {{token}}
+Accept: application/json
