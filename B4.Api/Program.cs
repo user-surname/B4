@@ -110,24 +110,7 @@ try
             B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
             logger.Info("Base de datos MySQL actualizada correctamente.");
 
-            connectionString = config.GetConnectionString("MySQLConnectionB4Data");
-
             var ctx = new MySQLDapperContext(sharedConfig);
-
-            foreach (var rule in nlogConfig.LoggingRules)
-            {
-                // Encontrar los targets que tengan ese nombre
-                var targetsToRemove = rule.Targets.Where(t => t.Name == "PostgresLogger").ToList();
-
-                foreach (var t in targetsToRemove)
-                {
-                    rule.Targets.Remove(t);
-                }
-            }
-
-            LogManager.Configuration.Variables["MySQLConnectionString"] = connectionString;
-
-            LogManager.ReconfigExistingLoggers();
 
             builder.Services.AddSingleton(ctx);
 
@@ -224,23 +207,6 @@ try
             logger.Info("Base de datos PostgreSQL actualizada correctamente.");
 
             var ctx = new PostgreSQLDapperContext(sharedConfig);
-
-            connectionString = config.GetConnectionString("PostgresConnectionB4Data");
-
-            foreach (var rule in nlogConfig.LoggingRules)
-            {
-                // Encontrar los targets que tengan ese nombre
-                var targetsToRemove = rule.Targets.Where(t => t.Name == "PostgresLogger").ToList();
-
-                foreach (var t in targetsToRemove)
-                {
-                    rule.Targets.Remove(t);
-                }
-            }
-
-            LogManager.Configuration.Variables["PostgresConnectionString"] = connectionString;
-
-            LogManager.ReconfigExistingLoggers();
 
             builder.Services.AddSingleton(ctx);
 

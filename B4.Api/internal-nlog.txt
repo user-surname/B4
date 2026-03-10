@@ -250,3 +250,171 @@
    at NLog.Targets.Target.Initialize(LoggingConfiguration configuration)
    at NLog.Targets.Target.NLog.Internal.ISupportsInitialize.Initialize(LoggingConfiguration configuration)
    at NLog.Config.LoggingConfiguration.InitializeAll()
+2026-03-10 01:26:37.8287 Error Error has been raised. Exception: NLog.NLogConfigurationException: Unrecognized value 'condition'=''${var:dbType}' == 'MySQL'' for element 'logger' in section 'rules'
+2026-03-10 01:26:37.8287 Error Failed loading NLog configuration. Unrecognized value 'condition'=''${var:dbType}' == 'MySQL'' for element 'logger' in section 'rules'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. Unrecognized value 'condition'=''${var:dbType}' == 'MySQL'' for element 'logger' in section 'rules'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: Unrecognized value 'condition'=''${var:dbType}' == 'MySQL'' for element 'logger' in section 'rules'
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection, Int32 rulesInsertPosition)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+2026-03-10 01:26:37.8727 Error Failed loading from config file location: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. Unrecognized value 'condition'=''${var:dbType}' == 'MySQL'' for element 'logger' in section 'rules'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: Unrecognized value 'condition'=''${var:dbType}' == 'MySQL'' for element 'logger' in section 'rules'
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection, Int32 rulesInsertPosition)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   at NLog.Config.XmlLoggingConfiguration..ctor(TextReader xmlSource, String filePath, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2026-03-10 01:29:38.0763 Error Error has been raised. Exception: NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Info Warn Error Fatal ] writeTo: [ console mysqlDB ]
+2026-03-10 01:29:38.0875 Error Failed loading NLog configuration. LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Info Warn Error Fatal ] writeTo: [ console mysqlDB ]  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Info Warn Error Fatal ] writeTo: [ console mysqlDB ]  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Info Warn Error Fatal ] writeTo: [ console mysqlDB ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection, Int32 rulesInsertPosition)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+2026-03-10 01:29:38.1064 Error Failed loading from config file location: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Info Warn Error Fatal ] writeTo: [ console mysqlDB ]  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: LoggingRule where all filters and FilterDefaultAction=Ignore : logNamePattern: (:All) levels: [ Info Warn Error Fatal ] writeTo: [ console mysqlDB ]
+   at NLog.Config.LoggingConfigurationParser.ValidateLoggingRuleFilters(LoggingRule rule)
+   at NLog.Config.LoggingConfigurationParser.ParseRuleElement(ValidatedConfigurationElement loggerElement)
+   at NLog.Config.LoggingConfigurationParser.ParseRulesElement(ValidatedConfigurationElement rulesElement, IList`1 rulesCollection, Int32 rulesInsertPosition)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   at NLog.Config.XmlLoggingConfiguration..ctor(TextReader xmlSource, String filePath, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2026-03-10 01:33:29.0306 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2026-03-10 01:33:29.0641 Error Failed loading NLog configuration. 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+2026-03-10 01:33:29.0641 Error Failed loading from config file location: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   at NLog.Config.XmlLoggingConfiguration..ctor(TextReader xmlSource, String filePath, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2026-03-10 01:34:31.8213 Error Error has been raised. Exception: NLog.NLogConfigurationException: 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+2026-03-10 01:34:31.8588 Error Failed loading NLog configuration. 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+2026-03-10 01:34:31.8635 Error Failed loading from config file location: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config Exception: NLog.NLogConfigurationException: Failed loading NLog configuration. 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'  FilePath: C:\Users\Slava\source\repos\b4\B4.Api\bin\Debug\net8.0\nlog.config
+ ---> NLog.NLogConfigurationException: 'DatabaseTarget' cannot assign unknown property 'enabled'='${when:when='${var:dbType}'=='MySQL':inner=true:else=false}'
+   at NLog.Config.LoggingConfigurationParser.SetPropertyValueFromString[T](T targetObject, String propertyName, String propertyValue, ValidatedConfigurationElement element)
+   at NLog.Config.LoggingConfigurationParser.ConfigureObjectFromAttributes[T](T targetObject, ValidatedConfigurationElement element, Boolean ignoreType)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetElement(Target target, ValidatedConfigurationElement targetElement, Dictionary`2 typeNameToDefaultTargetParameters)
+   at NLog.Config.LoggingConfigurationParser.AddNewTargetFromConfig(String targetTypeName, ValidatedConfigurationElement targetElement, Boolean asyncWrap, Dictionary`2 typeNameToDefaultTargetParameters, ValidatedConfigurationElement defaultWrapperElement)
+   at NLog.Config.LoggingConfigurationParser.ParseTargetsElement(ValidatedConfigurationElement targetsElement)
+   at NLog.Config.LoggingConfigurationParser.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogSection(ILoggingConfigurationElement configSection)
+   at NLog.Config.LoggingConfigurationParser.LoadConfig(ILoggingConfigurationElement nlogConfig, String basePath)
+   at NLog.Config.XmlLoggingConfiguration.ParseNLogElement(ILoggingConfigurationElement nlogElement, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseTopLevel(ILoggingConfigurationElement content, String filePath, Boolean autoReloadDefault)
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   --- End of inner exception stack trace ---
+   at NLog.Config.XmlLoggingConfiguration.ParseFromTextReader(TextReader textReader, String filePath)
+   at NLog.Config.XmlLoggingConfiguration..ctor(TextReader xmlSource, String filePath, LogFactory logFactory)
+   at NLog.Config.LoggingConfigurationFileLoader.LoadXmlLoggingConfigurationFile(LogFactory logFactory, String configFile)
+   at NLog.Config.LoggingConfigurationFileLoader.TryLoadLoggingConfiguration(LogFactory logFactory, String configFile, LoggingConfiguration& config)
+2026-03-10 01:36:23.4556 Error DatabaseTarget(Name=mysqlDB): Failed to create ConnectionType from DBProvider=MySql.Data.MySqlClient.MySqlConnection, MySql.Data Exception: System.IO.FileNotFoundException: Could not load file or assembly 'MySql.Data, Culture=neutral, PublicKeyToken=null'. Не удается найти указанный файл.
+File name: 'MySql.Data, Culture=neutral, PublicKeyToken=null'
+   at System.Reflection.RuntimeAssembly.InternalLoad(AssemblyName assemblyName, StackCrawlMark& stackMark, AssemblyLoadContext assemblyLoadContext, RuntimeAssembly requestingAssembly, Boolean throwOnFileNotFound)
+   at System.Reflection.TypeNameParser.ResolveAssembly(String assemblyName)
+   at System.Reflection.TypeNameParser.GetType(String typeName, ReadOnlySpan`1 nestedTypeNames, String assemblyNameIfAny)
+   at System.Reflection.TypeNameParser.Parse()
+   at System.Reflection.TypeNameParser.GetType(String typeName, Func`2 assemblyResolver, Func`4 typeResolver, Assembly requestingAssembly, Boolean throwOnError, Boolean ignoreCase, Boolean extensibleParser)
+   at System.Type.GetType(String typeName, Boolean throwOnError, Boolean ignoreCase)
+   at NLog.Targets.DatabaseTarget.ResolveConnectionType()
+   at NLog.Targets.DatabaseTarget.InitializeTarget()
+2026-03-10 01:36:23.4867 Error DatabaseTarget(Name=mysqlDB): Error has been raised. Exception: NLog.NLogConfigurationException: Error during initialization of target DatabaseTarget(Name=mysqlDB)
+ ---> System.IO.FileNotFoundException: Could not load file or assembly 'MySql.Data, Culture=neutral, PublicKeyToken=null'. Не удается найти указанный файл.
+File name: 'MySql.Data, Culture=neutral, PublicKeyToken=null'
+   at System.Reflection.RuntimeAssembly.InternalLoad(AssemblyName assemblyName, StackCrawlMark& stackMark, AssemblyLoadContext assemblyLoadContext, RuntimeAssembly requestingAssembly, Boolean throwOnFileNotFound)
+   at System.Reflection.TypeNameParser.ResolveAssembly(String assemblyName)
+   at System.Reflection.TypeNameParser.GetType(String typeName, ReadOnlySpan`1 nestedTypeNames, String assemblyNameIfAny)
+   at System.Reflection.TypeNameParser.Parse()
+   at System.Reflection.TypeNameParser.GetType(String typeName, Func`2 assemblyResolver, Func`4 typeResolver, Assembly requestingAssembly, Boolean throwOnError, Boolean ignoreCase, Boolean extensibleParser)
+   at System.Type.GetType(String typeName, Boolean throwOnError, Boolean ignoreCase)
+   at NLog.Targets.DatabaseTarget.ResolveConnectionType()
+   at NLog.Targets.DatabaseTarget.InitializeTarget()
+   at NLog.Targets.Target.Initialize(LoggingConfiguration configuration)
+   --- End of inner exception stack trace ---
+   at NLog.Targets.Target.Initialize(LoggingConfiguration configuration)
+   at NLog.Targets.Target.NLog.Internal.ISupportsInitialize.Initialize(LoggingConfiguration configuration)
+   at NLog.Config.LoggingConfiguration.InitializeAll()
+2026-03-10 01:40:38.5001 Error DatabaseTarget(Name=mysqlDB): Failed to create ConnectionType from DBProvider=MySql.Data.MySqlClient.MySqlConnection, MySql.Data Exception: System.IO.FileNotFoundException: Could not load file or assembly 'MySql.Data, Culture=neutral, PublicKeyToken=null'. Не удается найти указанный файл.
+File name: 'MySql.Data, Culture=neutral, PublicKeyToken=null'
+   at System.Reflection.RuntimeAssembly.InternalLoad(AssemblyName assemblyName, StackCrawlMark& stackMark, AssemblyLoadContext assemblyLoadContext, RuntimeAssembly requestingAssembly, Boolean throwOnFileNotFound)
+   at System.Reflection.TypeNameParser.ResolveAssembly(String assemblyName)
+   at System.Reflection.TypeNameParser.GetType(String typeName, ReadOnlySpan`1 nestedTypeNames, String assemblyNameIfAny)
+   at System.Reflection.TypeNameParser.Parse()
+   at System.Reflection.TypeNameParser.GetType(String typeName, Func`2 assemblyResolver, Func`4 typeResolver, Assembly requestingAssembly, Boolean throwOnError, Boolean ignoreCase, Boolean extensibleParser)
+   at System.Type.GetType(String typeName, Boolean throwOnError, Boolean ignoreCase)
+   at NLog.Targets.DatabaseTarget.ResolveConnectionType()
+   at NLog.Targets.DatabaseTarget.InitializeTarget()
+2026-03-10 01:40:38.5293 Error DatabaseTarget(Name=mysqlDB): Error has been raised. Exception: NLog.NLogConfigurationException: Error during initialization of target DatabaseTarget(Name=mysqlDB)
+ ---> System.IO.FileNotFoundException: Could not load file or assembly 'MySql.Data, Culture=neutral, PublicKeyToken=null'. Не удается найти указанный файл.
+File name: 'MySql.Data, Culture=neutral, PublicKeyToken=null'
+   at System.Reflection.RuntimeAssembly.InternalLoad(AssemblyName assemblyName, StackCrawlMark& stackMark, AssemblyLoadContext assemblyLoadContext, RuntimeAssembly requestingAssembly, Boolean throwOnFileNotFound)
+   at System.Reflection.TypeNameParser.ResolveAssembly(String assemblyName)
+   at System.Reflection.TypeNameParser.GetType(String typeName, ReadOnlySpan`1 nestedTypeNames, String assemblyNameIfAny)
+   at System.Reflection.TypeNameParser.Parse()
+   at System.Reflection.TypeNameParser.GetType(String typeName, Func`2 assemblyResolver, Func`4 typeResolver, Assembly requestingAssembly, Boolean throwOnError, Boolean ignoreCase, Boolean extensibleParser)
+   at System.Type.GetType(String typeName, Boolean throwOnError, Boolean ignoreCase)
+   at NLog.Targets.DatabaseTarget.ResolveConnectionType()
+   at NLog.Targets.DatabaseTarget.InitializeTarget()
+   at NLog.Targets.Target.Initialize(LoggingConfiguration configuration)
+   --- End of inner exception stack trace ---
+   at NLog.Targets.Target.Initialize(LoggingConfiguration configuration)
+   at NLog.Targets.Target.NLog.Internal.ISupportsInitialize.Initialize(LoggingConfiguration configuration)
+   at NLog.Config.LoggingConfiguration.InitializeAll()

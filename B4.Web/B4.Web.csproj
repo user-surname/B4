@@ -22,8 +22,6 @@
     <PackageReference Include="NLog.Extensions.Logging" Version="6.1.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="6.1.0" />
 
-    <PackageReference Include="Npgsql" Version="10.0.0" />
-
     <PackageReference Include="Numind.AspNetCore.SpaServices.Extensions" Version="1.0.1" />
 
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.0-preview.322" />
