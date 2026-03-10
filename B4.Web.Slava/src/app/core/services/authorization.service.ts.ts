@@ -7,7 +7,7 @@ import { LoginRequest, LoginResponse } from '../interfaces/auth.interface';
   providedIn: 'root',
 })
 export class AuthorizationService {
-  private apiUrl = 'https://localhost:7257/api/v1/Auth';
+  private apiUrl = 'http://localhost:5029/api/v1/Auth';
 
   constructor(private http: HttpClient) {}
 
