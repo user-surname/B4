@@ -18,7 +18,10 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
+using NLog.Config;
+using NLog.Targets;
 using NLog.Web;
+using Npgsql;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -55,6 +58,11 @@ try
     {
         logger.Error("No se encontró la clave 'bbdd' en el archivo de configuración.");
         throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
+    }
+
+    if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
+    {
+        ConfigureNLogPostgreSql(sharedConfig, logger);
     }
 
     // AutoMapper
@@ -518,6 +526,74 @@ catch (Exception ex)
 finally
 {
     LogManager.Shutdown();
+}
+
+static void ConfigureNLogPostgreSql(IConfiguration configuration, Logger logger)
+{
+    var connectionString = configuration.GetConnectionString("PostgresConnectionB4Control");
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        logger.Warn("NLog PostgreSQL desactivado: falta ConnectionStrings:PostgresConnectionB4Control.");
+        return;
+    }
+
+    EnsureNLogTableExists(connectionString);
+
+    var nlogConfig = LogManager.Configuration;
+    if (nlogConfig is null)
+    {
+        logger.Warn("NLog PostgreSQL desactivado: configuración NLog no disponible.");
+        return;
+    }
+
+    if (nlogConfig.FindTargetByName("postgresDb") is not null)
+    {
+        return;
+    }
+
+    var dbTarget = new DatabaseTarget("postgresDb")
+    {
+        DBProvider = "Npgsql.NpgsqlConnection, Npgsql",
+        ConnectionString = connectionString,
+        CommandText = @"
+            INSERT INTO app_logs (level, logger, message, exception, machine_name, request_url)
+            VALUES (@level, @logger, @message, @exception, @machine_name, @request_url);"
+    };
+
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@level", "${level:uppercase=true}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@logger", "${logger}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@message", "${message}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@exception", "${exception:format=tostring}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@machine_name", "${machinename}"));
+    dbTarget.Parameters.Add(new DatabaseParameterInfo("@request_url", "${aspnet-request-url}"));
+
+    nlogConfig.AddTarget(dbTarget);
+    nlogConfig.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Info, dbTarget));
+    LogManager.ReconfigExistingLoggers();
+
+    logger.Info("NLog PostgreSQL target activo.");
+}
+
+static void EnsureNLogTableExists(string connectionString)
+{
+    const string sql = @"
+        CREATE TABLE IF NOT EXISTS app_logs (
+            id BIGSERIAL PRIMARY KEY,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            level VARCHAR(20) NOT NULL,
+            logger VARCHAR(300) NULL,
+            message TEXT NOT NULL,
+            exception TEXT NULL,
+            machine_name VARCHAR(200) NULL,
+            request_url TEXT NULL
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_app_logs_created_at ON app_logs (created_at DESC);";
+
+    using var connection = new NpgsqlConnection(connectionString);
+    connection.Open();
+    using var command = new NpgsqlCommand(sql, connection);
+    command.ExecuteNonQuery();
 }
 
 // ✅ Necesario para tests con WebApplicationFactory (PUNTO 7)

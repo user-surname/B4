@@ -1,9 +1,12 @@
 # Changelog
 
-## v0.20260224.1 Slava
+## v0.2026005.1 Victor
 
-- B4.Web.Slava
-	- Implementación parcial de Frontend en Angular
+- B4
+  - Implementación del Docker Hub
+  - Creacion del DockerFile para la subida de imagen
+  - Creacion del .Dockerignore
+
 
 ## v0.20260224.1 Victor
 
