@@ -1,11 +1,14 @@
 using System;
 using System.Data;
 using B4.Data.DataFactory.Configuration;
+using Microsoft.Extensions.Options;
+using MySqlConnector;
+using Npgsql;
 
 namespace B4.Data.DataFactory.Connections
 {
     /// <summary>
-    /// Base connection factory placeholder for provider-specific connections.
+    /// Creates database connections based on configured provider.
     /// </summary>
     public sealed class DbConnectionFactory : IDbConnectionFactory
     {
@@ -15,9 +18,9 @@ namespace B4.Data.DataFactory.Connections
         /// Initializes a new instance of the <see cref="DbConnectionFactory"/> class.
         /// </summary>
         /// <param name="options">DataFactory options.</param>
-        public DbConnectionFactory(DataFactoryOptions options)
+        public DbConnectionFactory(IOptions<DataFactoryOptions> options)
         {
-            _options = options;
+            _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
@@ -26,8 +29,46 @@ namespace B4.Data.DataFactory.Connections
         /// <returns>A database connection instance.</returns>
         public IDbConnection CreateConnection()
         {
-            throw new NotImplementedException(
-                $"Connection factory is not implemented for provider '{_options.Provider}'.");
+            var provider = (_options.Provider ?? string.Empty).Trim();
+
+            if (string.IsNullOrWhiteSpace(provider))
+            {
+                throw new InvalidOperationException(
+                    $"Falta la clave de configuración '{DataFactoryOptions.ProviderConfigurationKey}'.");
+            }
+
+            if (provider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrWhiteSpace(_options.MySqlConnectionString))
+                {
+                    throw new InvalidOperationException(
+                        $"Falta la cadena de conexión '{DataFactoryOptions.MySqlConnectionStringName}'.");
+                }
+
+                return new MySqlConnection(_options.MySqlConnectionString);
+            }
+
+            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase) ||
+                provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrWhiteSpace(_options.PostgreSqlConnectionString))
+                {
+                    throw new InvalidOperationException(
+                        $"Falta la cadena de conexión '{DataFactoryOptions.PostgreSqlConnectionStringName}'.");
+                }
+
+                return new NpgsqlConnection(_options.PostgreSqlConnectionString);
+            }
+
+            if (provider.Equals("MSSQL", StringComparison.OrdinalIgnoreCase) ||
+                provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new NotSupportedException(
+                    $"El proveedor '{provider}' queda reservado para soporte futuro y todavia no esta implementado.");
+            }
+
+            throw new InvalidOperationException(
+                $"Proveedor no soportado '{provider}'. Proveedores soportados: MySQL, PostgreSQL.");
         }
     }
 }

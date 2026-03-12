@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20260312.1 Victor
+
+- B4.Data.DataFactory
+  - Implementacion de DbConnectionFactory para gestionar conexiones segun proveedor
+  - Preparacion del registro en Dependency Injection
+
 ## v0.20260306.1 Victor
 
 - B4.Data.DataFactory
