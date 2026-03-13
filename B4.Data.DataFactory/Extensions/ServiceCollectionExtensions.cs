@@ -1,6 +1,7 @@
 using System;
 using B4.Data.DataFactory.Configuration;
 using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,6 +37,7 @@ namespace B4.Data.DataFactory.Extensions
             });
 
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
+            services.AddScoped<IDataQueryProvider, DataQueryProvider>();
 
             return services;
         }

@@ -11,5 +11,10 @@ namespace B4.Data.DataFactory.Providers
         /// Gets Usuario queries for the active provider.
         /// </summary>
         IUsuarioQueries UsuarioQueries { get; }
+
+        /// <summary>
+        /// Gets ControlPlanta queries for the active provider.
+        /// </summary>
+        IControlPlantaQueries ControlPlantaQueries { get; }
     }
 }

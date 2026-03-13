@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.20260313.1 Victor
+
+- B4.Data.DataFactory
+  - Implementacion de ConnectionFactory
+  - Integracion en Program.cs mediante AddDataFactory
+  - Implementacion de QueryProvider
+  - Creacion de sistema de queries por proveedor
+  - Implementacion de piloto ControlPlantaRepository
+
 ## v0.20260312.1 Victor
 
 - B4.Data.DataFactory

@@ -1,5 +1,6 @@
 using Azure.Core.Serialization;
 using B4.Api.Middleware;
+using B4.Data.DataFactory.Extensions;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Services;
@@ -61,6 +62,7 @@ try
 
     // AutoMapper
     builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+    builder.Services.AddDataFactory(builder.Configuration);
 
     // --------------------------------------------------
     // SERVICES (DOMAIN)
