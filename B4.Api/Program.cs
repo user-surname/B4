@@ -1,6 +1,6 @@
 using Azure.Core.Serialization;
+using B4.Api.Extensions;
 using B4.Api.Middleware;
-using B4.Data.DataFactory.Extensions;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Services;
@@ -62,8 +62,9 @@ try
 
     // AutoMapper
     builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
-    // DataFactory: registro base para conexiones y queries por proveedor
-    builder.Services.AddDataFactory(builder.Configuration);
+    // Aqui se inicializa la infraestructura de DataFactory para la API.
+    // DataFactory: infraestructura comun y repositorios ya migrados.
+    builder.Services.AddDataFactoryModule(builder.Configuration);
 
     // --------------------------------------------------
     // SERVICES (DOMAIN)
@@ -107,13 +108,6 @@ try
     // --------------------------------------------------
     // DB + REPOSITORIES (según bbdd)
     // --------------------------------------------------
-    // Repositorios ya migrados al patron DataFactory.
-            // Soportan MySQL y PostgreSQL.
-            // El proveedor activo se decide con la clave de configuracion "bbdd".
-            // Si se migra otro repositorio a DataFactory, debe registrarse aqui.
-            // Actuals / ActualsBw
-            builder.Services.AddScoped<IDataActualsRepository, B4.Data.DataFactory.Repositories.DataActualsRepository>();
-            builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.DataFactory.Repositories.DataActualsBwRepository>();
     
     try
     {
@@ -198,13 +192,8 @@ try
             builder.Services.AddScoped<IEpigrafeRepository>(_ =>
                 new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
 
-            // ✅ ACTUALS (MySQL) - ajusta el namespace si tu repo MySQL existe con ese nombre
-            //builder.Services.AddScoped<IDataActualsRepository, B4.Data.DataFactory.Repositories.DataActualsRepository>();
-
             builder.Services.AddScoped<IUsuarioRepository>(_ =>
                 new B4.Data.MySQL.Repositories.UsuarioRepository(ctx));
-
-            builder.Services.AddScoped<IControlPlantaRepository, B4.Data.DataFactory.Repositories.ControlPlantaRepository>();
 
             builder.Services.AddScoped<IControlRepository>(_ =>
                 new B4.Data.MySQL.Repositories.ControlRepository(ctx));
@@ -218,7 +207,7 @@ try
             var ctx = new PostgreSQLDapperContext(sharedConfig);
             builder.Services.AddSingleton(ctx);
 
-            // LK repos (PostgreSQL) — añade los que falten según tu proyecto
+            // LK repos (PostgreSQL)  Eañade los que falten según tu proyecto
             builder.Services.AddScoped<IEpigrafeRepository>(_ => new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(ctx));
             // Si tienes más LK repos en Postgres, regístralos aquí igual que en MySQL:
             // builder.Services.AddScoped<ICiclosRepository>(_ => new ...);
@@ -241,23 +230,16 @@ try
 
             builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
 
-            // Repositorios ya migrados al patron DataFactory.
-            // Soportan MySQL y PostgreSQL.
-            // El proveedor activo se decide con la clave de configuracion "bbdd".
-            // Si se migra otro repositorio a DataFactory, debe registrarse aqui.
-            //builder.Services.AddScoped<IDataActualsRepository, B4.Data.DataFactory.Repositories.DataActualsRepository>();
-            //builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.DataFactory.Repositories.DataActualsBwRepository>();
-            builder.Services.AddScoped<IControlPlantaRepository, B4.Data.DataFactory.Repositories.ControlPlantaRepository>();
         }
         else
         {
-            logger.Error("Valor desconocido para 'bbdd' en configuración: {0}", bbdd);
+            logger.Error("Valor desconocido para 'bbdd' en configuracion: {0}", bbdd);
             throw new InvalidOperationException($"Valor desconocido para 'bbdd': {bbdd}");
         }
     }
     catch (Exception ex)
     {
-        logger.Fatal(ex, $"Error durante la actualización de la base de datos {bbdd}.");
+        logger.Fatal(ex, $"Error durante la actualizacion de la base de datos {bbdd}.");
         throw;
     }
 
@@ -601,5 +583,6 @@ static void EnsureNLogTableExists(string connectionString)
     command.ExecuteNonQuery();
 }
 
-// ✅ Necesario para tests con WebApplicationFactory (PUNTO 7)
+// ✁ENecesario para tests con WebApplicationFactory (PUNTO 7)
 public partial class Program { }
+

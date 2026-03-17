@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.20260317.1 Victor
+
+- B4.Api
+  - Creacion de la extension AddDataFactoryModule para encapsular DataFactory
+  - Refactor de Program.cs para organizar el arranque por bloques
+  - Registro centralizado de los repositorios migrados:
+    - ControlPlantaRepository
+    - DataActualsRepository
+    - DataActualsBwRepository
+
 ## v0.20260316.1 Victor
 
 - B4.Data.DataFactory

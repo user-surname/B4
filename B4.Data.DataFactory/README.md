@@ -43,6 +43,22 @@ DataFactory permite migrar repositorios poco a poco, manteniendo el sistema actu
 - `Repositories`
   Contiene los repositorios que ya usan DataFactory.
 
+## Nota de arquitectura
+
+Hay dos responsabilidades separadas que conviene mantener claras:
+
+- La infraestructura generica pertenece a `B4.Data.DataFactory`.
+- La composicion final de la API y el registro de los repositorios migrados se centraliza en `B4.Api`.
+
+Actualmente esa composicion se hace mediante:
+
+- `AddDataFactoryModule(configuration)`
+
+Este metodo vive en `B4.Api` y encapsula:
+
+- `services.AddDataFactory(configuration)`
+- el registro de los repositorios ya migrados
+
 ## Piezas principales
 
 ### ConnectionFactory
@@ -113,6 +129,28 @@ El resto de repositorios siguen usando todavia las implementaciones antiguas en:
 - `B4.Data.MySQL`
 - `B4.Data.PostgreSQL`
 
+La migracion es incremental. No hace falta mover todos los repositorios a la vez.
+Ahora mismo solo hay 3 repositorios migrados y el resto sigue funcionando con las implementaciones legacy.
+
+## Como migrar un repositorio a DataFactory
+
+El proceso recomendado, segun el estado actual del proyecto, es este:
+
+1. Identificar el repositorio a migrar y revisar bien sus metodos.
+2. Crear la interfaz de queries en `Queries/Common`.
+3. Crear la implementacion SQL en `Queries/MySQL`.
+4. Crear la implementacion SQL en `Queries/PostgreSQL`.
+5. Crear el nuevo repositorio dentro de `B4.Data.DataFactory/Repositories` usando:
+   - `IDbConnectionFactory`
+   - `IDataQueryProvider`
+   - `Dapper`
+6. Registrar el repositorio migrado en la extension de `B4.Api`:
+   - `AddDataFactoryModule(configuration)`
+7. Eliminar o dejar de usar el registro antiguo en `Program.cs` para evitar duplicidades.
+8. Probar que el endpoint o flujo asociado sigue funcionando igual.
+
+La idea es que el repositorio nuevo quede desacoplado del proveedor y que la API siga decidiendo la composicion final en un solo punto.
+
 ## Flujo actual
 
 El flujo general de los repositorios migrados es este:
@@ -129,14 +167,19 @@ Mas en detalle:
 
 ## Papel de Program.cs
 
-`Program.cs` ya integra DataFactory en dos niveles:
+`Program.cs` ya no registra directamente los repositorios migrados dentro de los bloques MySQL/PostgreSQL.
 
-1. Registro base de DataFactory:
-   `builder.Services.AddDataFactory(builder.Configuration);`
+Ahora integra DataFactory a traves de la extension de la API:
 
-2. Registro explicito de los repositorios ya migrados para que la API consuma sus versiones de DataFactory.
+- `builder.Services.AddDataFactoryModule(builder.Configuration);`
 
-Esto significa que la API ya usa DataFactory en repositorios concretos, pero el resto del sistema sigue funcionando con el esquema antiguo.
+Ese metodo agrupa dos niveles de integracion:
+
+1. Registro base de la infraestructura de DataFactory.
+
+2. Registro explicito de los repositorios ya migrados para que la API consuma sus versiones DataFactory.
+
+Esto deja mas limpio el arranque de la API y evita mezclar esos repositorios con los registros especificos de MySQL o PostgreSQL.
 
 ## Que parte del proyecto ya usa DataFactory
 
@@ -145,7 +188,7 @@ Ahora mismo DataFactory ya se esta usando en:
 - `ControlPlantaRepository`
 - `DataActualsRepository`
 - `DataActualsBwRepository`
-- el registro base de DataFactory en `B4.Api/Program.cs`
+- la extension `AddDataFactoryModule(configuration)` en `B4.Api`
 
 ## Que parte sigue usando el sistema antiguo
 
