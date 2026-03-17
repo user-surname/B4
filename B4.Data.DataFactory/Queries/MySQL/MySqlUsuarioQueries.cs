@@ -3,14 +3,15 @@ using B4.Data.DataFactory.Queries.Common;
 namespace B4.Data.DataFactory.Queries.MySQL
 {
     /// <summary>
-    /// MySQL-specific Usuario query definitions.
+    /// Implementa la version MySQL de las queries de Usuario.
+    /// DataQueryProvider devuelve esta clase cuando "bbdd" vale "MySQL".
     /// </summary>
     public sealed class MySqlUsuarioQueries : IUsuarioQueries
     {
         /// <summary>
-        /// Gets the MySQL query used to retrieve a Usuario by identifier.
+        /// Obtiene la query de MySQL para recuperar un Usuario por identificador.
         /// </summary>
-        /// <returns>SQL query text.</returns>
+        /// <returns>Texto SQL de la consulta.</returns>
         public string GetByIdQuery()
         {
             return "SELECT * FROM Usuarios WHERE Id = @Id LIMIT 1;";

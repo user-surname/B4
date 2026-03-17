@@ -3,14 +3,15 @@ using B4.Data.DataFactory.Queries.Common;
 namespace B4.Data.DataFactory.Queries.PostgreSQL
 {
     /// <summary>
-    /// PostgreSQL-specific Usuario query definitions.
+    /// Implementa la version PostgreSQL de las queries de Usuario.
+    /// DataQueryProvider devuelve esta clase cuando "bbdd" vale "PostgreSQL".
     /// </summary>
     public sealed class PostgreSqlUsuarioQueries : IUsuarioQueries
     {
         /// <summary>
-        /// Gets the PostgreSQL query used to retrieve a Usuario by identifier.
+        /// Obtiene la query de PostgreSQL para recuperar un Usuario por identificador.
         /// </summary>
-        /// <returns>SQL query text.</returns>
+        /// <returns>Texto SQL de la consulta.</returns>
         public string GetByIdQuery()
         {
             return "SELECT * FROM \"Usuarios\" WHERE \"Id\" = @Id LIMIT 1;";

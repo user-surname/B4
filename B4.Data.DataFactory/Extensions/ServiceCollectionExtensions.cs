@@ -8,16 +8,16 @@ using Microsoft.Extensions.DependencyInjection;
 namespace B4.Data.DataFactory.Extensions
 {
     /// <summary>
-    /// Registers DataFactory services and options in dependency injection.
+    /// Registra en inyección de dependencias los servicios base de DataFactory.
     /// </summary>
     public static class ServiceCollectionExtensions
     {
         /// <summary>
-        /// Adds DataFactory options and connection factory services.
+        /// Añade a DI las opciones, la factoría de conexiones y el proveedor de queries.
         /// </summary>
-        /// <param name="services">Service collection to update.</param>
-        /// <param name="configuration">Application configuration source.</param>
-        /// <returns>The same service collection for chaining.</returns>
+        /// <param name="services">Colección de servicios a configurar.</param>
+        /// <param name="configuration">Origen de configuración de la aplicación.</param>
+        /// <returns>La misma colección de servicios para continuar el registro.</returns>
         public static IServiceCollection AddDataFactory(
             this IServiceCollection services,
             IConfiguration configuration)

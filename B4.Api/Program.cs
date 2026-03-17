@@ -62,6 +62,7 @@ try
 
     // AutoMapper
     builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+    // DataFactory: registro base para conexiones y queries por proveedor
     builder.Services.AddDataFactory(builder.Configuration);
 
     // --------------------------------------------------
@@ -81,6 +82,7 @@ try
     builder.Services.AddScoped<IPlantSubdivisionService, PlantSubdivisionService>();
     builder.Services.AddScoped<IPlantTreeService, PlantTreeService>();
     builder.Services.AddScoped<IControlService, ControlService>();
+    builder.Services.AddScoped<IControlPlantaService, ControlPlantaService>();
 
 
     // DATA Services (contribuido)
@@ -105,6 +107,14 @@ try
     // --------------------------------------------------
     // DB + REPOSITORIES (según bbdd)
     // --------------------------------------------------
+    // Repositorios ya migrados al patron DataFactory.
+            // Soportan MySQL y PostgreSQL.
+            // El proveedor activo se decide con la clave de configuracion "bbdd".
+            // Si se migra otro repositorio a DataFactory, debe registrarse aqui.
+            // Actuals / ActualsBw
+            builder.Services.AddScoped<IDataActualsRepository, B4.Data.DataFactory.Repositories.DataActualsRepository>();
+            builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.DataFactory.Repositories.DataActualsBwRepository>();
+    
     try
     {
         if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
@@ -145,10 +155,6 @@ try
             builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
 
             builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
-
-            // Actuals / ActualsBw
-            builder.Services.AddScoped<IDataActualsRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
-            builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.MySQL.Repositories.DataRepositories.DataActualsBwRepository>();
 
             builder.Services.AddScoped<IPlantCurrencyRepository>(_ =>
                 new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
@@ -193,11 +199,12 @@ try
                 new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
 
             // ✅ ACTUALS (MySQL) - ajusta el namespace si tu repo MySQL existe con ese nombre
-            builder.Services.AddScoped<IDataActualsRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
+            //builder.Services.AddScoped<IDataActualsRepository, B4.Data.DataFactory.Repositories.DataActualsRepository>();
 
             builder.Services.AddScoped<IUsuarioRepository>(_ =>
                 new B4.Data.MySQL.Repositories.UsuarioRepository(ctx));
+
+            builder.Services.AddScoped<IControlPlantaRepository, B4.Data.DataFactory.Repositories.ControlPlantaRepository>();
 
             builder.Services.AddScoped<IControlRepository>(_ =>
                 new B4.Data.MySQL.Repositories.ControlRepository(ctx));
@@ -234,8 +241,13 @@ try
 
             builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
 
-            builder.Services.AddScoped<IDataActualsRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsRepository(ctx));
-            builder.Services.AddScoped<IDataActualsBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsBwRepository(ctx));
+            // Repositorios ya migrados al patron DataFactory.
+            // Soportan MySQL y PostgreSQL.
+            // El proveedor activo se decide con la clave de configuracion "bbdd".
+            // Si se migra otro repositorio a DataFactory, debe registrarse aqui.
+            //builder.Services.AddScoped<IDataActualsRepository, B4.Data.DataFactory.Repositories.DataActualsRepository>();
+            //builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.DataFactory.Repositories.DataActualsBwRepository>();
+            builder.Services.AddScoped<IControlPlantaRepository, B4.Data.DataFactory.Repositories.ControlPlantaRepository>();
         }
         else
         {

@@ -1,14 +1,15 @@
 namespace B4.Data.DataFactory.Queries.Common
 {
     /// <summary>
-    /// Defines SQL query contracts for Usuario operations.
+    /// Define las queries SQL de Usuario que DataFactory puede resolver
+    /// segun el proveedor activo.
     /// </summary>
     public interface IUsuarioQueries
     {
         /// <summary>
-        /// Gets the query used to retrieve a Usuario by identifier.
+        /// Obtiene la query para recuperar un Usuario por identificador.
         /// </summary>
-        /// <returns>SQL query text.</returns>
+        /// <returns>Texto SQL de la consulta.</returns>
         string GetByIdQuery();
     }
 }

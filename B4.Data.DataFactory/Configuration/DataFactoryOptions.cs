@@ -1,47 +1,47 @@
 namespace B4.Data.DataFactory.Configuration
 {
     /// <summary>
-    /// Stores provider and connection strings used by DataFactory.
+    /// Almacena el proveedor activo y las cadenas de conexión usadas por DataFactory.
     /// </summary>
     public sealed class DataFactoryOptions
     {
         /// <summary>
-        /// Configuration key used to select the active provider.
+        /// Clave de configuración usada para seleccionar el proveedor activo.
         /// </summary>
         public const string ProviderConfigurationKey = "bbdd";
 
         /// <summary>
-        /// Connection string name for MySQL data database.
+        /// Nombre de la cadena de conexión para la base de datos de datos en MySQL.
         /// </summary>
         public const string MySqlConnectionStringName = "MySQLConnectionB4Data";
 
         /// <summary>
-        /// Connection string name for PostgreSQL data database.
+        /// Nombre de la cadena de conexión para la base de datos de datos en PostgreSQL.
         /// </summary>
         public const string PostgreSqlConnectionStringName = "PostgresConnectionB4Data";
 
         /// <summary>
-        /// Connection string name reserved for future SQL Server support.
+        /// Nombre reservado para una futura cadena de conexión de SQL Server.
         /// </summary>
         public const string SqlServerConnectionStringName = "SqlServerConnectionB4Data";
 
         /// <summary>
-        /// Gets or sets the active provider value read from configuration.
+        /// Obtiene o establece el proveedor activo leído desde configuración.
         /// </summary>
         public string Provider { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the MySQL connection string.
+        /// Obtiene o establece la cadena de conexión de MySQL.
         /// </summary>
         public string MySqlConnectionString { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the PostgreSQL connection string.
+        /// Obtiene o establece la cadena de conexión de PostgreSQL.
         /// </summary>
         public string PostgreSqlConnectionString { get; set; } = string.Empty;
 
         /// <summary>
-        /// Gets or sets the SQL Server connection string for future usage.
+        /// Obtiene o establece la cadena de conexión de SQL Server para uso futuro.
         /// </summary>
         public string SqlServerConnectionString { get; set; } = string.Empty;
     }

@@ -3,12 +3,13 @@ using B4.Data.DataFactory.Queries.Common;
 namespace B4.Data.DataFactory.Queries.PostgreSQL
 {
     /// <summary>
-    /// PostgreSQL-specific ControlPlanta query definitions.
+    /// Implementa la version PostgreSQL de las queries de ControlPlanta.
+    /// DataQueryProvider devuelve esta clase cuando "bbdd" vale "PostgreSQL".
     /// </summary>
     public sealed class PostgreSqlControlPlantaQueries : IControlPlantaQueries
     {
         /// <summary>
-        /// Gets the query used to insert a ControlPlanta.
+        /// Obtiene la query para insertar un ControlPlanta en PostgreSQL.
         /// </summary>
         public string AddQuery()
         {
@@ -19,7 +20,7 @@ namespace B4.Data.DataFactory.Queries.PostgreSQL
         }
 
         /// <summary>
-        /// Gets the query used to retrieve a ControlPlanta by identifier.
+        /// Obtiene la query para recuperar un ControlPlanta por identificador en PostgreSQL.
         /// </summary>
         public string GetByIdQuery()
         {
@@ -27,7 +28,7 @@ namespace B4.Data.DataFactory.Queries.PostgreSQL
         }
 
         /// <summary>
-        /// Gets the query used to retrieve all ControlPlanta records.
+        /// Obtiene la query para recuperar todos los registros de ControlPlanta en PostgreSQL.
         /// </summary>
         public string GetAllQuery()
         {
@@ -35,7 +36,7 @@ namespace B4.Data.DataFactory.Queries.PostgreSQL
         }
 
         /// <summary>
-        /// Gets the query used to update a ControlPlanta.
+        /// Obtiene la query para actualizar un ControlPlanta en PostgreSQL.
         /// </summary>
         public string UpdateQuery()
         {
@@ -47,7 +48,7 @@ namespace B4.Data.DataFactory.Queries.PostgreSQL
         }
 
         /// <summary>
-        /// Gets the query used to delete a ControlPlanta.
+        /// Obtiene la query para eliminar un ControlPlanta en PostgreSQL.
         /// </summary>
         public string DeleteQuery()
         {

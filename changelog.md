@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.20260316.1 Victor
+
+- B4.Data.DataFactory
+  - Migracion de los repositorios DataActuals y DataActualsBW
+  - Integracion en Program.cs
+  - Creacion de un ReadMe en DataFactory 
+  
 ## v0.20260313.1 Victor
 
 - B4.Data.DataFactory

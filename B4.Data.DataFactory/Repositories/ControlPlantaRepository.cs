@@ -10,7 +10,8 @@ using Dapper;
 namespace B4.Data.DataFactory.Repositories
 {
     /// <summary>
-    /// Pilot ControlPlanta repository backed by DataFactory connections and queries.
+    /// Repositorio de ControlPlanta migrado a DataFactory.
+    /// Obtiene la conexion desde IDbConnectionFactory y el SQL desde IDataQueryProvider.
     /// </summary>
     public sealed class ControlPlantaRepository : IControlPlantaRepository
     {
@@ -18,10 +19,10 @@ namespace B4.Data.DataFactory.Repositories
         private readonly IDataQueryProvider _queryProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ControlPlantaRepository"/> class.
+        /// Inicializa el repositorio con los componentes comunes de DataFactory.
         /// </summary>
-        /// <param name="connectionFactory">Database connection factory.</param>
-        /// <param name="queryProvider">Provider-specific SQL query source.</param>
+        /// <param name="connectionFactory">Factoría de conexiones a base de datos.</param>
+        /// <param name="queryProvider">Origen de queries según proveedor.</param>
         public ControlPlantaRepository(
             IDbConnectionFactory connectionFactory,
             IDataQueryProvider queryProvider)
@@ -31,9 +32,9 @@ namespace B4.Data.DataFactory.Repositories
         }
 
         /// <summary>
-        /// Inserts a new ControlPlanta.
+        /// Inserta un nuevo ControlPlanta.
         /// </summary>
-        /// <param name="entity">Entity to insert.</param>
+        /// <param name="entity">Entidad a insertar.</param>
         public async Task AddAsync(ControlPlanta entity)
         {
             try
@@ -48,10 +49,10 @@ namespace B4.Data.DataFactory.Repositories
         }
 
         /// <summary>
-        /// Retrieves a ControlPlanta by identifier.
+        /// Recupera un ControlPlanta por identificador.
         /// </summary>
-        /// <param name="id">Identifier to search.</param>
-        /// <returns>The matching entity or null.</returns>
+        /// <param name="id">Identificador a buscar.</param>
+        /// <returns>La entidad encontrada o null.</returns>
         public async Task<ControlPlanta?> GetByIdAsync(int id)
         {
             try
@@ -68,9 +69,9 @@ namespace B4.Data.DataFactory.Repositories
         }
 
         /// <summary>
-        /// Retrieves all ControlPlanta records.
+        /// Recupera todos los registros de ControlPlanta.
         /// </summary>
-        /// <returns>Collection of entities.</returns>
+        /// <returns>Colección de entidades.</returns>
         public async Task<IEnumerable<ControlPlanta>> GetAllAsync()
         {
             try
@@ -86,9 +87,9 @@ namespace B4.Data.DataFactory.Repositories
         }
 
         /// <summary>
-        /// Updates an existing ControlPlanta.
+        /// Actualiza un ControlPlanta existente.
         /// </summary>
-        /// <param name="entity">Entity to update.</param>
+        /// <param name="entity">Entidad a actualizar.</param>
         public async Task UpdateAsync(ControlPlanta entity)
         {
             try
@@ -111,9 +112,9 @@ namespace B4.Data.DataFactory.Repositories
         }
 
         /// <summary>
-        /// Deletes an existing ControlPlanta.
+        /// Elimina un ControlPlanta existente.
         /// </summary>
-        /// <param name="id">Identifier to delete.</param>
+        /// <param name="id">Identificador a eliminar.</param>
         public async Task DeleteAsync(int id)
         {
             try

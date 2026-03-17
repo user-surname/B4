@@ -8,25 +8,27 @@ using Npgsql;
 namespace B4.Data.DataFactory.Connections
 {
     /// <summary>
-    /// Creates database connections based on configured provider.
+    /// Implementa la creacion de conexiones de DataFactory y resuelve
+    /// el proveedor activo a partir de la configuracion cargada en la API.
     /// </summary>
     public sealed class DbConnectionFactory : IDbConnectionFactory
     {
         private readonly DataFactoryOptions _options;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DbConnectionFactory"/> class.
+        /// Inicializa una nueva instancia de la clase <see cref="DbConnectionFactory"/>.
         /// </summary>
-        /// <param name="options">DataFactory options.</param>
+        /// <param name="options">Opciones de configuración de DataFactory.</param>
         public DbConnectionFactory(IOptions<DataFactoryOptions> options)
         {
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         /// <summary>
-        /// Creates a provider-specific database connection.
+        /// Crea una conexion del tipo adecuado para el proveedor activo.
+        /// DataFactory usa este punto para abstraer si la base real es MySQL o PostgreSQL.
         /// </summary>
-        /// <returns>A database connection instance.</returns>
+        /// <returns>Instancia de conexion lista para usar con Dapper.</returns>
         public IDbConnection CreateConnection()
         {
             var provider = (_options.Provider ?? string.Empty).Trim();

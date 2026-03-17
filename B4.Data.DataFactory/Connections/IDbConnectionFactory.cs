@@ -3,14 +3,16 @@ using System.Data;
 namespace B4.Data.DataFactory.Connections
 {
     /// <summary>
-    /// Exposes a factory contract to create database connections.
+    /// Define la factoria comun que usa DataFactory para abrir la conexion
+    /// correcta segun el proveedor activo configurado en la aplicacion.
     /// </summary>
     public interface IDbConnectionFactory
     {
         /// <summary>
-        /// Creates a new database connection instance.
+        /// Crea una nueva conexion a base de datos para MySQL o PostgreSQL
+        /// segun el valor configurado en la clave "bbdd".
         /// </summary>
-        /// <returns>A database connection.</returns>
+        /// <returns>Conexion lista para usar.</returns>
         IDbConnection CreateConnection();
     }
 }

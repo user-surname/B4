@@ -1,32 +1,33 @@
 namespace B4.Data.DataFactory.Queries.Common
 {
     /// <summary>
-    /// Defines SQL query contracts for ControlPlanta operations.
+    /// Define las queries SQL que necesita el repositorio de ControlPlanta
+    /// sin acoplarlo a un proveedor concreto de base de datos.
     /// </summary>
     public interface IControlPlantaQueries
     {
         /// <summary>
-        /// Gets the query used to insert a ControlPlanta.
+        /// Obtiene la query para insertar un ControlPlanta.
         /// </summary>
         string AddQuery();
 
         /// <summary>
-        /// Gets the query used to retrieve a ControlPlanta by identifier.
+        /// Obtiene la query para recuperar un ControlPlanta por identificador.
         /// </summary>
         string GetByIdQuery();
 
         /// <summary>
-        /// Gets the query used to retrieve all ControlPlanta records.
+        /// Obtiene la query para recuperar todos los registros de ControlPlanta.
         /// </summary>
         string GetAllQuery();
 
         /// <summary>
-        /// Gets the query used to update a ControlPlanta.
+        /// Obtiene la query para actualizar un ControlPlanta.
         /// </summary>
         string UpdateQuery();
 
         /// <summary>
-        /// Gets the query used to delete a ControlPlanta.
+        /// Obtiene la query para eliminar un ControlPlanta.
         /// </summary>
         string DeleteQuery();
     }
