@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20260318.2 - Slava
+
+- B4
+	- Integracion de la rama de Victor de DataFactory
+
 ## v0.20260317.1 Victor
 
 - B4.Api
