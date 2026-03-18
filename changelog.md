@@ -1,5 +1,44 @@
 # Changelog
 
+## v0.20260317.1 Victor
+
+- B4.Api
+  - Creacion de la extension AddDataFactoryModule para encapsular DataFactory
+  - Refactor de Program.cs para organizar el arranque por bloques
+  - Registro centralizado de los repositorios migrados:
+    - ControlPlantaRepository
+    - DataActualsRepository
+    - DataActualsBwRepository
+
+## v0.20260316.1 Victor
+
+- B4.Data.DataFactory
+  - Migracion de los repositorios DataActuals y DataActualsBW
+  - Integracion en Program.cs
+  - Creacion de un ReadMe en DataFactory 
+  
+## v0.20260313.1 Victor
+
+- B4.Data.DataFactory
+  - Implementacion de ConnectionFactory
+  - Integracion en Program.cs mediante AddDataFactory
+  - Implementacion de QueryProvider
+  - Creacion de sistema de queries por proveedor
+  - Implementacion de piloto ControlPlantaRepository
+
+## v0.20260312.1 Victor
+
+- B4.Data.DataFactory
+  - Implementacion de DbConnectionFactory para gestionar conexiones segun proveedor
+  - Preparacion del registro en Dependency Injection
+
+## v0.20260306.1 Victor
+
+- B4.Data.DataFactory
+  - Creacion del proyecto DataFactory
+  - Creacion de la estructura de DataFactory sin logica
+  
+## v0.20260305.1 Victor
 ## v0.20260318.1 - Slava
 
 - B4

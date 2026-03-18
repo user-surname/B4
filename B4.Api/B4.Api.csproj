@@ -54,6 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\B4.Data.DataFactory\B4.Data.DataFactory.csproj" />
     <ProjectReference Include="..\B4.Helpers\B4.Helpers.csproj" />
     <ProjectReference Include="..\B4.Domain\B4.Domain.csproj" />
     <ProjectReference Include="..\B4.Models\B4.Models.csproj" />

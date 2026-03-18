@@ -1,4 +1,5 @@
 using Azure.Core.Serialization;
+using B4.Api.Extensions;
 using B4.Api.Middleware;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
@@ -67,6 +68,9 @@ try
 
     // AutoMapper
     builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
+    // Aqui se inicializa la infraestructura de DataFactory para la API.
+    // DataFactory: infraestructura comun y repositorios ya migrados.
+    builder.Services.AddDataFactoryModule(builder.Configuration);
 
     // --------------------------------------------------
     // SERVICES (DOMAIN)
@@ -85,6 +89,7 @@ try
     builder.Services.AddScoped<IPlantSubdivisionService, PlantSubdivisionService>();
     builder.Services.AddScoped<IPlantTreeService, PlantTreeService>();
     builder.Services.AddScoped<IControlService, ControlService>();
+    builder.Services.AddScoped<IControlPlantaService, ControlPlantaService>();
 
 
     // DATA Services (contribuido)
@@ -109,6 +114,7 @@ try
     // --------------------------------------------------
     // DB + REPOSITORIES (según bbdd)
     // --------------------------------------------------
+    
     try
     {
         if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
@@ -152,10 +158,6 @@ try
 
             builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
 
-            // Actuals / ActualsBw
-            builder.Services.AddScoped<IDataActualsRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
-            builder.Services.AddScoped<IDataActualsBwRepository, B4.Data.MySQL.Repositories.DataRepositories.DataActualsBwRepository>();
-
             builder.Services.AddScoped<IPlantCurrencyRepository>(_ =>
                 new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
 
@@ -198,10 +200,6 @@ try
             builder.Services.AddScoped<IEpigrafeRepository>(_ =>
                 new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
 
-            // ✅ ACTUALS (MySQL) - ajusta el namespace si tu repo MySQL existe con ese nombre
-            builder.Services.AddScoped<IDataActualsRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataActualsRepository(ctx));
-
             builder.Services.AddScoped<IUsuarioRepository>(_ =>
                 new B4.Data.MySQL.Repositories.UsuarioRepository(ctx));
 
@@ -218,7 +216,7 @@ try
 
             builder.Services.AddSingleton(ctx);
 
-            // LK repos (PostgreSQL) — añade los que falten según tu proyecto
+            // LK repos (PostgreSQL)  Eañade los que falten según tu proyecto
             builder.Services.AddScoped<IEpigrafeRepository>(_ => new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(ctx));
             // Si tienes más LK repos en Postgres, regístralos aquí igual que en MySQL:
             // builder.Services.AddScoped<ICiclosRepository>(_ => new ...);
@@ -241,18 +239,16 @@ try
 
             builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
 
-            builder.Services.AddScoped<IDataActualsRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsRepository(ctx));
-            builder.Services.AddScoped<IDataActualsBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataActualsBwRepository(ctx));
         }
         else
         {
-            logger.Error("Valor desconocido para 'bbdd' en configuración: {0}", bbdd);
+            logger.Error("Valor desconocido para 'bbdd' en configuracion: {0}", bbdd);
             throw new InvalidOperationException($"Valor desconocido para 'bbdd': {bbdd}");
         }
     }
     catch (Exception ex)
     {
-        logger.Fatal(ex, $"Error durante la actualización de la base de datos {bbdd}.");
+        logger.Fatal(ex, $"Error durante la actualizacion de la base de datos {bbdd}.");
         throw;
     }
 
@@ -596,5 +592,6 @@ static void EnsureNLogTableExists(string connectionString)
     command.ExecuteNonQuery();
 }
 
-// ✅ Necesario para tests con WebApplicationFactory (PUNTO 7)
+// ✁ENecesario para tests con WebApplicationFactory (PUNTO 7)
 public partial class Program { }
+
