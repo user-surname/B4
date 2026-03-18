@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.20260318.1 - Slava
+
+- B4
+	- Dockerfile y docker-compose.yaml para la ejecución de la aplicación con Docker añadidos
+	- Readmes para Automapping y tabla Usuarios
+	- B4.Api.Program -> Activacion de decorators automaticamente 
+	- B4.Web.Slava -> Frontend Angular 
+	- B4.WinFormsApp1 -> Frontend en WinForms
+
 ## v0.2026005.1 Victor
 
 - B4
