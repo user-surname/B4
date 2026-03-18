@@ -1,19 +1,94 @@
+# Versión del formato de docker-compose
+# 3.8 es compatible con Docker moderno y Docker Desktop
 version: '3.8'
 
 services:
+
+  # =====================================================
+  # SERVICIO 1: API (.NET)
+  # =====================================================
   api:
+
+    # Imagen base que se usará para crear el contenedor
+    # Esta imagen viene preparada para entornos de desarrollo
+    # e incluye .NET SDK, herramientas y configuraciones para VS Code DevContainers
     image: mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble
+
+    # Monta un volumen entre la máquina host y el contenedor
+    # ".." significa la carpeta raíz del proyecto en la máquina
+    # "/workspaces" es donde se montará dentro del contenedor
+    #
+    # Esto permite:
+    # - editar código en VS Code
+    # - que el contenedor vea los cambios instantáneamente
     volumes:
       - ..:/workspaces:cached
+
+    # Comando que ejecuta el contenedor al arrancar
+    #
+    # "sleep infinity" mantiene el contenedor corriendo
+    # pero sin iniciar ninguna aplicación.
+    #
+    # Esto es típico en DevContainers porque permite
+    # abrir un terminal dentro del contenedor y ejecutar
+    # manualmente comandos como:
+    #
+    # dotnet run
+    #
     command: sleep infinity
+
+    # Mapea puertos entre el contenedor y la máquina
+    #
+    # formato:
+    # HOST:CONTENEDOR
+    #
+    # 5000:5000 → API HTTP
+    # 5001:5001 → API HTTPS
+    #
+    # Esto permite abrir en el navegador:
+    #
+    # http://localhost:5000
+    #
     ports:
       - "5000:5000"
       - "5001:5001"
 
+
+
+  # =====================================================
+  # SERVICIO 2: FRONTEND (Angular)
+  # =====================================================
   frontend:
+
+    # Imagen base con Node.js 20
+    # necesaria para ejecutar Angular CLI y npm
     image: node:20
+
+    # Igual que en la API, monta el código del host
+    # dentro del contenedor para poder editarlo en tiempo real
     volumes:
       - ..:/workspaces:cached
+
+    # Igual que en la API, mantiene el contenedor vivo
+    # sin ejecutar nada automáticamente.
+    #
+    # Luego desde el terminal se puede ejecutar:
+    #
+    # cd B4.Web.Slava
+    # npm install
+    # ng serve
+    #
     command: sleep infinity
+
+    # Mapea el puerto de Angular dev server
+    #
+    # Cuando se ejecuta:
+    #
+    # ng serve --host 0.0.0.0
+    #
+    # Angular estará disponible en:
+    #
+    # http://localhost:4200
+    #
     ports:
       - "4200:4200"

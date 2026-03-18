@@ -103,7 +103,7 @@ Global
 		{E98096BD-D8AD-4157-A3C7-35A36851377A} = {D107F4C8-89CC-BEA8-D3D7-CA6B7733353D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {86D7D857-7568-4773-B4DF-40662B033150}
 		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
+		SolutionGuid = {86D7D857-7568-4773-B4DF-40662B033150}
 	EndGlobalSection
 EndGlobal

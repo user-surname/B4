@@ -1,40 +1,156 @@
 {
+  // Nombre del DevContainer que aparecerá en VS Code
+  // Sirve solo para identificar el entorno
   "name": "B4 DevContainer",
+
+  // Imagen base que se usará para crear el contenedor
+  // Esta imagen incluye .NET SDK y está optimizada para entornos DevContainer
   "image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
   
+
+  // =========================================================
+  // FEATURES (herramientas adicionales que se instalan)
+  // =========================================================
   "features": {
+
+    // Permite ejecutar Docker dentro del DevContainer
+    // Muy útil si hace falta construir o ejecutar otros contenedores
+    // desde dentro del contenedor de desarrollo
     "ghcr.io/devcontainers/features/docker-in-docker:2": {
+
+      // Instala Docker Engine (Moby)
       "moby": true,
+
+      // Detecta automáticamente DNS de Azure si el contenedor corre allí
       "azureDnsAutoDetection": true,
+
+      // Instala Docker Buildx (necesario para builds avanzados)
       "installDockerBuildx": true,
+
+      // Usa la versión más reciente de la feature
       "version": "latest",
+
+      // Evita instalar docker compose dashboard
       "dockerDashComposeVersion": "none"
     },
+
+
+    // Instala herramientas de .NET dentro del contenedor
+    // (aunque la imagen base ya trae .NET, esto asegura utilidades extra)
     "ghcr.io/devcontainers/features/dotnet:2": {
       "version": "latest"
     },
+
+
+    // Instala Git dentro del contenedor
+    // necesario para clonar repositorios y trabajar con control de versiones
     "ghcr.io/devcontainers/features/git:1": {
+
+      // Instala Git desde el repositorio PPA más reciente
       "ppa": true,
+
+      // Usa la última versión disponible
       "version": "latest"
     },
+
+
+    // Instala Node.js y herramientas relacionadas
+    // necesarias para ejecutar el frontend Angular
     "ghcr.io/stu-bell/devcontainer-features/node:0": {
+
+      // Instala dependencias necesarias para compilar paquetes nativos
       "nodeGypDependencies": true,
+
+      // Instala Yarn usando apt
       "installYarnUsingApt": true,
+
+      // Instala pnpm (gestor de paquetes alternativo)
       "pnpmVersion": "latest",
+
+      // Instala NVM (Node Version Manager)
+      // permite cambiar versiones de Node fácilmente
       "nvmVersion": "latest"
     },
+
+
+    // Instala Angular CLI globalmente dentro del contenedor
+    // para poder ejecutar comandos como:
+    //
+    // ng serve
+    // ng build
+    // ng generate component
+    //
     "ghcr.io/devcontainers-extra/features/angular-cli:2": {
       "version": "latest"
     }
   },
 
-  "forwardPorts": [5000, 5001, 4200],
 
+  // =========================================================
+  // PUERTOS QUE SE EXPONDRÁN AL HOST
+  // =========================================================
+
+  // Estos puertos se "forwardean" automáticamente
+  // para que se pueda acceder desde la máquina host
+  "forwardPorts": [
+
+    // API HTTP
+    5000,
+
+    // API HTTPS
+    5001,
+
+    // Angular dev server
+    4200
+  ],
+
+
+  // =========================================================
+  // COMANDO QUE SE EJECUTA AL CREAR EL CONTENEDOR
+  // =========================================================
+
+  // Este comando se ejecuta SOLO la primera vez
+  // cuando el DevContainer se crea
+  //
+  // Hace dos cosas:
+  //
+  // 1. Restaura dependencias .NET
+  // 2. Instala dependencias npm del frontend
+  //
   "postCreateCommand": "dotnet restore && cd B4.Web.Slava && npm install",
 
+
+  // =========================================================
+  // COMANDO QUE SE EJECUTA CADA VEZ QUE ARRANCA EL CONTENEDOR
+  // =========================================================
+
+  // Aquí solo se imprime un mensaje en la terminal
+  // recordando que hace falta arrancar manualmente la API y el frontend
   "postStartCommand": "echo 'DevContainer ready! Use terminal to run API and frontend'",
 
+
+  // =========================================================
+  // CARPETA DE TRABAJO
+  // =========================================================
+
+  // Directorio que VS Code abrirá automáticamente
+  // dentro del contenedor
+  //
+  // En este caso el repositorio se monta aquí:
+  //
+  // /workspaces/b4
+  //
   "workspaceFolder": "/workspaces/b4",
 
+
+  // =========================================================
+  // USUARIO DEL CONTENEDOR
+  // =========================================================
+
+  // Usuario con el que se trabajara dentro del contenedor
+  //
+  // Usar "vscode" evita problemas de permisos
+  // que ocurren si se trabaja como root
+  //
   "remoteUser": "vscode"
 }
