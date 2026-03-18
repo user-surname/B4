@@ -7,6 +7,7 @@ namespace B4.Api.Middleware
 {
     public sealed class ResponseWrapperMiddleware : IMiddleware
     {
+        /*
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             // Ignorar preflight OPTIONS
@@ -83,5 +84,8 @@ namespace B4.Api.Middleware
                 await context.Response.WriteAsync(JsonSerializer.Serialize(wrapper), Encoding.UTF8);
             }
         }
+
+        */
+
     }
 }

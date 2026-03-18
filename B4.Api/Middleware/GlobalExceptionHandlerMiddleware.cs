@@ -1,52 +1,50 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using B4.Models.Common;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using System;
-using System.Net;
-using System.Threading.Tasks;
+using System.Text.Json;
 
-namespace B4.Api.Middleware
+namespace B4.Api.Middleware;
+
+/// <summary>
+/// Captura excepciones no controladas y devuelve un ApiResponse de error
+/// en lugar de ProblemDetails, manteniendo el mismo envelope que el resto de la API.
+/// </summary>
+public class GlobalExceptionHandlerMiddleware : IMiddleware
 {
-    public class GlobalExceptionHandlerMiddleware : IMiddleware
+    private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
+
+    public GlobalExceptionHandlerMiddleware(ILogger<GlobalExceptionHandlerMiddleware> logger)
     {
-        private readonly ILogger<GlobalExceptionHandlerMiddleware> _logger;
+        _logger = logger;
+    }
 
-        public GlobalExceptionHandlerMiddleware(
-            ILogger<GlobalExceptionHandlerMiddleware> logger)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+    {
+        try
         {
-            _logger = logger;
+            await next(context);
         }
-
-        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        catch (Exception ex)
         {
-            try
-            {
-                await next(context);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, ex.Message);
+            _logger.LogError(ex, "Excepción no controlada en {Path}", context.Request.Path);
 
-                if (context.Response.HasStarted)
-                    throw;
+            if (context.Response.HasStarted)
+                throw;
 
-                context.Response.Clear();
-                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                context.Response.ContentType = "application/json";
+            context.Response.Clear();
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json; charset=UTF-8";
 
-                var problemDetails = new ProblemDetails
+            var response = ApiResponse<object>.ServerError(
+                "Ocurrió un error inesperado. Consulta los logs para más detalle."
+            );
+
+            await context.Response.WriteAsync(
+                JsonSerializer.Serialize(response, new JsonSerializerOptions
                 {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = "Internal Server Error",
-                    Type = "https://httpstatuses.com/500",
-                    Instance = context.Request.Path,
-                    Detail = "An unexpected error occurred."
-                };
-
-                await context.Response.WriteAsJsonAsync(problemDetails);
-            }
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                })
+            );
         }
     }
 }
