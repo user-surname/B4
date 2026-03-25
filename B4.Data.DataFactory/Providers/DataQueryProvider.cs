@@ -8,157 +8,160 @@ using Microsoft.Extensions.Options;
 namespace B4.Data.DataFactory.Providers
 {
     /// <summary>
-    /// Resuelve las colecciones de queries SQL segun el proveedor configurado
-    /// en la clave "bbdd" y devuelve la version correcta para MySQL o PostgreSQL.
+    /// Resuelve los bloques de queries SQL segun el proveedor configurado en "bbdd"
+    /// y devuelve la implementacion MySQL o PostgreSQL correcta para cada repositorio.
     /// </summary>
     public sealed class DataQueryProvider : IDataQueryProvider
     {
         private readonly DataFactoryOptions _options;
 
-        /// <summary>
-        /// Inicializa una nueva instancia de la clase <see cref="DataQueryProvider"/>.
-        /// </summary>
-        /// <param name="options">Opciones de configuración de DataFactory.</param>
         public DataQueryProvider(IOptions<DataFactoryOptions> options)
         {
             _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
-        /// <summary>
-        /// Obtiene las queries de Usuario para el proveedor seleccionado.
-        /// </summary>
-        public IUsuarioQueries UsuarioQueries => ResolveUsuarioQueries();
+        // --- Usuarios / Auth ---
+        public IUsuarioQueries UsuarioQueries => Resolve<IUsuarioQueries>(
+            () => new MySqlUsuarioQueries(),
+            () => new PostgreSqlUsuarioQueries());
 
-        /// <summary>
-        /// Obtiene las queries de ControlPlanta para el proveedor seleccionado.
-        /// </summary>
-        public IControlPlantaQueries ControlPlantaQueries => ResolveControlPlantaQueries();
+        // --- Control ---
+        public IControlQueries ControlQueries => Resolve<IControlQueries>(
+            () => new MySqlControlQueries(),
+            () => new PostgreSqlControlQueries());
 
-        /// <summary>
-        /// Obtiene las queries de DataActualsBw para el proveedor seleccionado.
-        /// </summary>
-        public IDataActualsBwQueries DataActualsBwQueries => ResolveDataActualsBwQueries();
+        public IControlPlantaQueries ControlPlantaQueries => Resolve<IControlPlantaQueries>(
+            () => new MySqlControlPlantaQueries(),
+            () => new PostgreSqlControlPlantaQueries());
 
-        /// <summary>
-        /// Obtiene las queries de DataActuals para el proveedor seleccionado.
-        /// </summary>
-        public IDataActualsQueries DataActualsQueries => ResolveDataActualsQueries();
+        // --- LK ---
+        public ILkCiclosQueries LkCiclosQueries => Resolve<ILkCiclosQueries>(
+            () => new MySqlLkCiclosQueries(),
+            () => new PostgreSqlLkCiclosQueries());
 
-        private IUsuarioQueries ResolveUsuarioQueries()
-        {
-            var provider = GetProvider();
+        public ILkFasesQueries LkFasesQueries => Resolve<ILkFasesQueries>(
+            () => new MySqlLkFasesQueries(),
+            () => new PostgreSqlLkFasesQueries());
 
-            if (provider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-            {
-                return new MySqlUsuarioQueries();
-            }
+        public ILkEpigrafeQueries LkEpigrafeQueries => Resolve<ILkEpigrafeQueries>(
+            () => new MySqlLkEpigrafeQueries(),
+            () => new PostgreSqlLkEpigrafeQueries());
 
-            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
-            {
-                return new PostgreSqlUsuarioQueries();
-            }
+        public ILkPlantCountryQueries LkPlantCountryQueries => Resolve<ILkPlantCountryQueries>(
+            () => new MySqlLkPlantCountryQueries(),
+            () => new PostgreSqlLkPlantCountryQueries());
 
-            if (provider.Equals("MSSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotSupportedException(
-                    $"El proveedor '{provider}' queda reservado para soporte futuro y todavia no esta implementado.");
-            }
+        public ILkPlantCurrencyQueries LkPlantCurrencyQueries => Resolve<ILkPlantCurrencyQueries>(
+            () => new MySqlLkPlantCurrencyQueries(),
+            () => new PostgreSqlLkPlantCurrencyQueries());
 
-            throw new InvalidOperationException(
-                $"Proveedor no soportado '{provider}'. Proveedores soportados: MySQL, PostgreSQL.");
-        }
+        public ILkPlantDivisionQueries LkPlantDivisionQueries => Resolve<ILkPlantDivisionQueries>(
+            () => new MySqlLkPlantDivisionQueries(),
+            () => new PostgreSqlLkPlantDivisionQueries());
 
-        private IControlPlantaQueries ResolveControlPlantaQueries()
-        {
-            var provider = GetProvider();
+        public ILkPlantDivisionCompanyQueries LkPlantDivisionCompanyQueries => Resolve<ILkPlantDivisionCompanyQueries>(
+            () => new MySqlLkPlantDivisionCompanyQueries(),
+            () => new PostgreSqlLkPlantDivisionCompanyQueries());
 
-            if (provider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-            {
-                return new MySqlControlPlantaQueries();
-            }
+        public ILkPlantSubdivisionQueries LkPlantSubdivisionQueries => Resolve<ILkPlantSubdivisionQueries>(
+            () => new MySqlLkPlantSubdivisionQueries(),
+            () => new PostgreSqlLkPlantSubdivisionQueries());
 
-            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
-            {
-                return new PostgreSqlControlPlantaQueries();
-            }
+        public ILkPlantTreeQueries LkPlantTreeQueries => Resolve<ILkPlantTreeQueries>(
+            () => new MySqlLkPlantTreeQueries(),
+            () => new PostgreSqlLkPlantTreeQueries());
 
-            if (provider.Equals("MSSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotSupportedException(
-                    $"El proveedor '{provider}' queda reservado para soporte futuro y todavia no esta implementado.");
-            }
+        public ILkPlantCompanyQueries LkPlantCompanyQueries => Resolve<ILkPlantCompanyQueries>(
+            () => new MySqlLkPlantCompanyQueries(),
+            () => new PostgreSqlLkPlantCompanyQueries());
 
-            throw new InvalidOperationException(
-                $"Proveedor no soportado '{provider}'. Proveedores soportados: MySQL, PostgreSQL.");
-        }
+        public ILkPlantControllersQueries LkPlantControllersQueries => Resolve<ILkPlantControllersQueries>(
+            () => new MySqlLkPlantControllersQueries(),
+            () => new PostgreSqlLkPlantControllersQueries());
 
-        private IDataActualsBwQueries ResolveDataActualsBwQueries()
-        {
-            var provider = GetProvider();
+        public ILkPlantillasBotonesPasosTiposQueries LkPlantillasBotonesPasosTiposQueries =>
+            Resolve<ILkPlantillasBotonesPasosTiposQueries>(
+                () => new MySqlLkPlantillasBotonesPasosTiposQueries(),
+                () => new PostgreSqlLkPlantillasBotonesPasosTiposQueries());
 
-            if (provider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-            {
-                return new MySqlDataActualsBwQueries();
-            }
+        // --- DATA ---
+        public IDataActualsQueries DataActualsQueries => Resolve<IDataActualsQueries>(
+            () => new MySqlDataActualsQueries(),
+            () => new PostgreSqlDataActualsQueries());
 
-            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
-            {
-                return new PostgreSqlDataActualsBwQueries();
-            }
+        public IDataActualsBwQueries DataActualsBwQueries => Resolve<IDataActualsBwQueries>(
+            () => new MySqlDataActualsBwQueries(),
+            () => new PostgreSqlDataActualsBwQueries());
 
-            if (provider.Equals("MSSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotSupportedException(
-                    $"El proveedor '{provider}' queda reservado para soporte futuro y todavia no esta implementado.");
-            }
+        public IDataBudgetQueries DataBudgetQueries => Resolve<IDataBudgetQueries>(
+            () => new MySqlDataBudgetQueries(),
+            () => new PostgreSqlDataBudgetQueries());
 
-            throw new InvalidOperationException(
-                $"Proveedor no soportado '{provider}'. Proveedores soportados: MySQL, PostgreSQL.");
-        }
+        public IDataBudgetBwQueries DataBudgetBwQueries => Resolve<IDataBudgetBwQueries>(
+            () => new MySqlDataBudgetBwQueries(),
+            () => new PostgreSqlDataBudgetBwQueries());
 
-        private IDataActualsQueries ResolveDataActualsQueries()
-        {
-            var provider = GetProvider();
+        public IDataForecastQueries DataForecastQueries => Resolve<IDataForecastQueries>(
+            () => new MySqlDataForecastQueries(),
+            () => new PostgreSqlDataForecastQueries());
 
-            if (provider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-            {
-                return new MySqlDataActualsQueries();
-            }
+        public IDataForecastBwQueries DataForecastBwQueries => Resolve<IDataForecastBwQueries>(
+            () => new MySqlDataForecastBwQueries(),
+            () => new PostgreSqlDataForecastBwQueries());
 
-            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
-            {
-                return new PostgreSqlDataActualsQueries();
-            }
+        public IDataComentariosQueries DataComentariosQueries => Resolve<IDataComentariosQueries>(
+            () => new MySqlDataComentariosQueries(),
+            () => new PostgreSqlDataComentariosQueries());
 
-            if (provider.Equals("MSSQL", StringComparison.OrdinalIgnoreCase) ||
-                provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new NotSupportedException(
-                    $"El proveedor '{provider}' queda reservado para soporte futuro y todavia no esta implementado.");
-            }
+        public IDataTipoCambioQueries DataTipoCambioQueries => Resolve<IDataTipoCambioQueries>(
+            () => new MySqlDataTipoCambioQueries(),
+            () => new PostgreSqlDataTipoCambioQueries());
 
-            throw new InvalidOperationException(
-                $"Proveedor no soportado '{provider}'. Proveedores soportados: MySQL, PostgreSQL.");
-        }
+        public IDataBridgesFyQueries DataBridgesFyQueries => Resolve<IDataBridgesFyQueries>(
+            () => new MySqlDataBridgesFyQueries(),
+            () => new PostgreSqlDataBridgesFyQueries());
 
-        private string GetProvider()
+        public IDataBridgesFyBwQueries DataBridgesFyBwQueries => Resolve<IDataBridgesFyBwQueries>(
+            () => new MySqlDataBridgesFyBwQueries(),
+            () => new PostgreSqlDataBridgesFyBwQueries());
+
+        public IDataBridgesFyBwEurQueries DataBridgesFyBwEurQueries => Resolve<IDataBridgesFyBwEurQueries>(
+            () => new MySqlDataBridgesFyBwEurQueries(),
+            () => new PostgreSqlDataBridgesFyBwEurQueries());
+
+        public IDataBridgesMonthQueries DataBridgesMonthQueries => Resolve<IDataBridgesMonthQueries>(
+            () => new MySqlDataBridgesMonthQueries(),
+            () => new PostgreSqlDataBridgesMonthQueries());
+
+        public IDataBridgesMonthBwQueries DataBridgesMonthBwQueries => Resolve<IDataBridgesMonthBwQueries>(
+            () => new MySqlDataBridgesMonthBwQueries(),
+            () => new PostgreSqlDataBridgesMonthBwQueries());
+
+        // ------------------------------------------------------------------
+        // Helper generico: evita duplicar el if/else en cada propiedad
+        // ------------------------------------------------------------------
+        private T Resolve<T>(Func<T> mysqlFactory, Func<T> postgresFactory)
         {
             var provider = (_options.Provider ?? string.Empty).Trim();
 
             if (string.IsNullOrWhiteSpace(provider))
-            {
                 throw new InvalidOperationException(
                     $"Falta la clave de configuracion '{DataFactoryOptions.ProviderConfigurationKey}'.");
-            }
 
-            return provider;
+            if (provider.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
+                return mysqlFactory();
+
+            if (provider.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase) ||
+                provider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+                return postgresFactory();
+
+            if (provider.Equals("MSSQL", StringComparison.OrdinalIgnoreCase) ||
+                provider.Equals("SqlServer", StringComparison.OrdinalIgnoreCase))
+                throw new NotSupportedException(
+                    $"El proveedor '{provider}' queda reservado para soporte futuro.");
+
+            throw new InvalidOperationException(
+                $"Proveedor no soportado '{provider}'. Proveedores soportados: MySQL, PostgreSQL.");
         }
     }
 }
