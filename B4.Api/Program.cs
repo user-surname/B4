@@ -256,7 +256,6 @@ try
     // MIDDLEWARES / INFRA
     // --------------------------------------------------
     builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
-    builder.Services.AddTransient<ResponseWrapperMiddleware>();
 
     // Compresión GZIP
     builder.Services.Configure<GzipCompressionProviderOptions>(options =>
@@ -455,9 +454,6 @@ try
 
     // Global errors JSON
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
-    // Response wrapper
-    app.UseMiddleware<ResponseWrapperMiddleware>();
 
     // try/catch para errores de binding
     app.Use(async (context, next) =>
