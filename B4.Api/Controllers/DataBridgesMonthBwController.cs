@@ -13,26 +13,35 @@ public class DataBridgesMonthBwController : ControllerBase
 {
     private readonly IDataBridgesMonthBwService _service;
     private readonly IMapper _mapper;
+    private readonly ILogger<DataBridgesMonthBwController> _logger;
 
-    public DataBridgesMonthBwController(IDataBridgesMonthBwService service, IMapper mapper)
+    public DataBridgesMonthBwController(IDataBridgesMonthBwService service, IMapper mapper, ILogger<DataBridgesMonthBwController> logger)
     {
         _service = service;
         _mapper = mapper;
+        _logger = logger;
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
+        _logger.LogInformation("GetById DataBridgesMonthBw requested. Id: {Id}", id);
         var record = await _service.GetByIdAsync(id);
-        return record is null
-            ? NotFound($"No existe DataBridgesMonthBw con id={id}")
-            : Ok(record); // luego: Ok(_mapper.Map<...Dto>(record))
+        if (record is null)
+        {
+            _logger.LogWarning("GetById DataBridgesMonthBw not found. Id: {Id}", id);
+            return NotFound($"No existe DataBridgesMonthBw con id={id}");
+        }
+        _logger.LogInformation("GetById DataBridgesMonthBw succeeded. Id: {Id}", id);
+        return Ok(record);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
+        _logger.LogInformation("GetAll DataBridgesMonthBw requested");
         var records = await _service.GetAllAsync();
-        return Ok(records); // luego: Ok(_mapper.Map<List<...Dto>>(records))
+        _logger.LogInformation("GetAll DataBridgesMonthBw returned records");
+        return Ok(records);
     }
 }

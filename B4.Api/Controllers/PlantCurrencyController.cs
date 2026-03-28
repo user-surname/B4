@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -14,77 +14,72 @@ namespace B4.Api.Controllers
     {
         private readonly IPlantCurrencyService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<PlantCurrencyController> _logger;
 
-        public PlantCurrencyController(IPlantCurrencyService service, IMapper mapper)
+        public PlantCurrencyController(IPlantCurrencyService service, IMapper mapper, ILogger<PlantCurrencyController> logger)
         {
             _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/PlantCurrency/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("GetById PlantCurrencyController requested. Id: {Id}", id);
             var record = await _service.GetByIdAsync(id);
             if (record == null)
-                return NotFound($"No existe currency con id={id}");
-
-            // Mapear entidad -> DTO
+            {
+                _logger.LogWarning("GetById PlantCurrencyController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<PlantCurrencyGetDto>(record);
-
+            _logger.LogInformation("GetById PlantCurrencyController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // GET /api/v1/PlantCurrency
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("GetAll PlantCurrencyController requested");
             var records = await _service.GetAllAsync();
-
-            // Mapear lista de entidades -> lista de DTOs
             var dtos = _mapper.Map<List<PlantCurrencyGetDto>>(records);
-
+            _logger.LogInformation("GetAll PlantCurrencyController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // POST /api/v1/PlantCurrency
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCurrencyPostDto dto)
         {
+            _logger.LogInformation("Create PlantCurrencyController requested");
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create PlantCurrencyController rejected: invalid model state");
                 return BadRequest(ModelState);
-
-            // Mapear DTO -> entidad
+            }
             var entity = _mapper.Map<LkPlantCurrency>(dto);
-
-            // Inicializar campos que no vienen del DTO
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.IsActive = 1;
-
             await _service.AddAsync(entity);
-
-            // Mapear entidad -> DTO para la respuesta
             var createdDto = _mapper.Map<PlantCurrencyGetDto>(entity);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdCurrency },
-                createdDto
-            );
+            _logger.LogInformation("Create PlantCurrencyController succeeded. Id: {Id}", entity.IdCurrency);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdCurrency }, createdDto);
         }
 
-        // DELETE /api/v1/PlantCurrency/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete PlantCurrencyController requested. Id: {Id}", id);
             try
             {
                 await _service.DeleteAsync(id);
+                _logger.LogInformation("Delete PlantCurrencyController succeeded. Id: {Id}", id);
                 return Ok(new { message = "Currency eliminado correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete PlantCurrencyController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

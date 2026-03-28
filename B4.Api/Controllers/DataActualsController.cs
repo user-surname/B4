@@ -16,28 +16,34 @@ namespace B4.Api.Controllers
     {
         private readonly IDataActualsService _actualsService;
         private readonly IMapper _mapper;
+        private readonly ILogger<DataActualsController> _logger;
 
-        public DataActualsController(IDataActualsService actualsService, IMapper mapper)
+        public DataActualsController(IDataActualsService actualsService, IMapper mapper, ILogger<DataActualsController> logger)
         {
             _actualsService = actualsService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet("{planta:int}/{ejercicio:int}/{epigrafe:int}")]
         public async Task<IActionResult> GetActualsByPlantaEjercicioEpigrafe(int planta, int ejercicio, int epigrafe)
         {
+            _logger.LogInformation("GetActuals requested. Planta: {Planta}, Ejercicio: {Ejercicio}, Epigrafe: {Epigrafe}", planta, ejercicio, epigrafe);
             var record = await _actualsService.GetByPlantaEjercicioEpigrafeAsync(planta, ejercicio, epigrafe);
 
             if (record is null)
+            {
+                _logger.LogWarning("GetActuals not found. Planta: {Planta}, Ejercicio: {Ejercicio}, Epigrafe: {Epigrafe}", planta, ejercicio, epigrafe);
                 return NotFound($"No existe actuals para planta={planta}, ejercicio={ejercicio}, epigrafe={epigrafe}");
+            }
 
-            // ✅ Entity -> DTO con AutoMapper (pasando parámetros de ruta para completar "Head")
             var dto = _mapper.Map<DataActualsGetDto>(record, opt =>
             {
                 opt.Items["planta"] = planta;
                 opt.Items["ejercicio"] = ejercicio;
             });
 
+            _logger.LogInformation("GetActuals succeeded. Planta: {Planta}, Ejercicio: {Ejercicio}, Epigrafe: {Epigrafe}", planta, ejercicio, epigrafe);
             return Ok(dto);
         }
 
@@ -46,13 +52,18 @@ namespace B4.Api.Controllers
             int planta, int ejercicio, int mes, string tipo,
             [FromBody] DataActualsPostDto[] nuevosActuals)
         {
+            _logger.LogInformation("PostActuals requested. Planta: {Planta}, Ejercicio: {Ejercicio}, Mes: {Mes}, Tipo: {Tipo}", planta, ejercicio, mes, tipo);
+
             if (nuevosActuals == null || nuevosActuals.Length == 0)
-                return BadRequest("El cuerpo de la petición está vacío o no tiene elementos.");
+            {
+                _logger.LogWarning("PostActuals rejected: empty body. Planta: {Planta}, Ejercicio: {Ejercicio}", planta, ejercicio);
+                return BadRequest("El cuerpo de la peticion esta vacio o no tiene elementos.");
+            }
 
-            // ✅ DTO -> Entity con AutoMapper (lista)
             var entities = _mapper.Map<List<DataActuals>>(nuevosActuals);
-
             int inserted = await _actualsService.AddRangeAsync(planta, ejercicio, mes, tipo, entities);
+
+            _logger.LogInformation("PostActuals succeeded. Inserted: {Inserted}. Planta: {Planta}, Ejercicio: {Ejercicio}", inserted, planta, ejercicio);
             return Ok(new { inserted });
         }
     }

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -9,79 +9,74 @@ namespace B4.Api.Controllers
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [ApiExplorerSettings(GroupName = "v2")]
     [Route("api/v{version:apiVersion}/[controller]")]
     public class FasesController : ControllerBase
     {
-        private readonly IFasesService _fasesService;
+        private readonly IFasesService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<FasesController> _logger;
 
-        public FasesController(IFasesService fasesService, IMapper mapper)
+        public FasesController(IFasesService service, IMapper mapper, ILogger<FasesController> logger)
         {
-            _fasesService = fasesService;
+            _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/Fases/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var record = await _fasesService.GetByIdAsync(id);
-
-            if (record is null)
-                return NotFound($"No existe fase para id={id}");
-
-            // Mapear entidad -> DTO
+            _logger.LogInformation("GetById FasesController requested. Id: {Id}", id);
+            var record = await _service.GetByIdAsync(id);
+            if (record == null)
+            {
+                _logger.LogWarning("GetById FasesController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<FasesGetDto>(record);
-
+            _logger.LogInformation("GetById FasesController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // POST /api/v1/Fases
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] FasesPostDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            // Mapear DTO -> entidad
-            var fase = _mapper.Map<LkFases>(dto);
-
-            await _fasesService.AddAsync(fase);
-
-            // Mapear entidad -> DTO para la respuesta
-            var createdDto = _mapper.Map<FasesGetDto>(fase);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = fase.IdFase },
-                createdDto
-            );
-        }
-
-        // GET /api/v1/Fases
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var records = await _fasesService.GetAllAsync();
-
-            // Mapear lista de entidades -> lista de DTOs
+            _logger.LogInformation("GetAll FasesController requested");
+            var records = await _service.GetAllAsync();
             var dtos = _mapper.Map<List<FasesGetDto>>(records);
-
+            _logger.LogInformation("GetAll FasesController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // DELETE /api/v1/Fases/{id}
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] FasesPostDto dto)
+        {
+            _logger.LogInformation("Create FasesController requested");
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create FasesController rejected: invalid model state");
+                return BadRequest(ModelState);
+            }
+            var entity = _mapper.Map<LkFases>(dto);
+            await _service.AddAsync(entity);
+            var createdDto = _mapper.Map<FasesGetDto>(entity);
+            _logger.LogInformation("Create FasesController succeeded. Id: {Id}", entity.IdFase);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdFase }, createdDto);
+        }
+
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete FasesController requested. Id: {Id}", id);
             try
             {
-                await _fasesService.DeleteAsync(id);
+                await _service.DeleteAsync(id);
+                _logger.LogInformation("Delete FasesController succeeded. Id: {Id}", id);
                 return Ok(new { message = "Fase eliminada correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete FasesController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

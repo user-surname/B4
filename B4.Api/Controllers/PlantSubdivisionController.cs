@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -14,70 +14,72 @@ namespace B4.Api.Controllers
     {
         private readonly IPlantSubdivisionService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<PlantSubdivisionController> _logger;
 
-        public PlantSubdivisionController(IPlantSubdivisionService service, IMapper mapper)
+        public PlantSubdivisionController(IPlantSubdivisionService service, IMapper mapper, ILogger<PlantSubdivisionController> logger)
         {
             _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/PlantSubdivision/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("GetById PlantSubdivisionController requested. Id: {Id}", id);
             var record = await _service.GetByIdAsync(id);
-            if (record is null)
-                return NotFound($"No existe subdivisión con id={id}");
-
+            if (record == null)
+            {
+                _logger.LogWarning("GetById PlantSubdivisionController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<PlantSubdivisionGetDto>(record);
+            _logger.LogInformation("GetById PlantSubdivisionController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // GET /api/v1/PlantSubdivision
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("GetAll PlantSubdivisionController requested");
             var records = await _service.GetAllAsync();
             var dtos = _mapper.Map<List<PlantSubdivisionGetDto>>(records);
+            _logger.LogInformation("GetAll PlantSubdivisionController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // POST /api/v1/PlantSubdivision
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantSubdivisionPostDto dto)
         {
+            _logger.LogInformation("Create PlantSubdivisionController requested");
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create PlantSubdivisionController rejected: invalid model state");
                 return BadRequest(ModelState);
-
+            }
             var entity = _mapper.Map<LkPlantSubdivision>(dto);
-
-            // Inicializar campos adicionales
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.IsActive = 1;
-
             await _service.AddAsync(entity);
-
             var createdDto = _mapper.Map<PlantSubdivisionGetDto>(entity);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdSubdivision },
-                createdDto
-            );
+            _logger.LogInformation("Create PlantSubdivisionController succeeded. Id: {Id}", entity.IdSubdivision);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdSubdivision }, createdDto);
         }
 
-        // DELETE /api/v1/PlantSubdivision/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete PlantSubdivisionController requested. Id: {Id}", id);
             try
             {
                 await _service.DeleteAsync(id);
-                return Ok(new { message = "Subdivisión eliminada correctamente" });
+                _logger.LogInformation("Delete PlantSubdivisionController succeeded. Id: {Id}", id);
+                return Ok(new { message = "Subdivision eliminada correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete PlantSubdivisionController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

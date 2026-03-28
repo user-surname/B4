@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -14,77 +14,72 @@ namespace B4.Api.Controllers
     {
         private readonly IPlantCountryService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<PlantCountryController> _logger;
 
-        public PlantCountryController(IPlantCountryService service, IMapper mapper)
+        public PlantCountryController(IPlantCountryService service, IMapper mapper, ILogger<PlantCountryController> logger)
         {
             _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/PlantCountry/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("GetById PlantCountryController requested. Id: {Id}", id);
             var record = await _service.GetByIdAsync(id);
             if (record == null)
-                return NotFound($"No existe país con id={id}");
-
-            // Mapear entidad -> DTO
+            {
+                _logger.LogWarning("GetById PlantCountryController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<PlantCountryGetDto>(record);
-
+            _logger.LogInformation("GetById PlantCountryController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // GET /api/v1/PlantCountry
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("GetAll PlantCountryController requested");
             var records = await _service.GetAllAsync();
-
-            // Mapear lista de entidades -> lista de DTOs
             var dtos = _mapper.Map<List<PlantCountryGetDto>>(records);
-
+            _logger.LogInformation("GetAll PlantCountryController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // POST /api/v1/PlantCountry
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantCountryPostDto dto)
         {
+            _logger.LogInformation("Create PlantCountryController requested");
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create PlantCountryController rejected: invalid model state");
                 return BadRequest(ModelState);
-
-            // Mapear DTO -> entidad
+            }
             var entity = _mapper.Map<LkPlantCountry>(dto);
-
-            // Inicializar campos que no vienen del DTO
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.IsActive = 1;
-
             await _service.AddAsync(entity);
-
-            // Mapear entidad -> DTO para la respuesta
             var createdDto = _mapper.Map<PlantCountryGetDto>(entity);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdCountry },
-                createdDto
-            );
+            _logger.LogInformation("Create PlantCountryController succeeded. Id: {Id}", entity.IdCountry);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdCountry }, createdDto);
         }
 
-        // DELETE /api/v1/PlantCountry/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete PlantCountryController requested. Id: {Id}", id);
             try
             {
                 await _service.DeleteAsync(id);
-                return Ok(new { message = "País eliminado correctamente" });
+                _logger.LogInformation("Delete PlantCountryController succeeded. Id: {Id}", id);
+                return Ok(new { message = "Pais eliminado correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete PlantCountryController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

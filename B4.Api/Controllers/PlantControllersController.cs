@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -14,77 +14,72 @@ namespace B4.Api.Controllers
     {
         private readonly IPlantControllersService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<PlantControllersController> _logger;
 
-        public PlantControllersController(IPlantControllersService service, IMapper mapper)
+        public PlantControllersController(IPlantControllersService service, IMapper mapper, ILogger<PlantControllersController> logger)
         {
             _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/PlantControllers/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("GetById PlantControllersController requested. Id: {Id}", id);
             var record = await _service.GetByIdAsync(id);
             if (record == null)
-                return NotFound($"No existe controlador para id={id}");
-
-            // Mapear entidad -> DTO
+            {
+                _logger.LogWarning("GetById PlantControllersController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<PlantControllersGetDto>(record);
-
+            _logger.LogInformation("GetById PlantControllersController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // GET /api/v1/PlantControllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("GetAll PlantControllersController requested");
             var records = await _service.GetAllAsync();
-
-            // Mapear lista de entidades -> lista de DTOs
             var dtos = _mapper.Map<List<PlantControllersGetDto>>(records);
-
+            _logger.LogInformation("GetAll PlantControllersController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // POST /api/v1/PlantControllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantControllersPostDto dto)
         {
+            _logger.LogInformation("Create PlantControllersController requested");
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create PlantControllersController rejected: invalid model state");
                 return BadRequest(ModelState);
-
-            // Mapear DTO -> entidad
+            }
             var entity = _mapper.Map<LkPlantControllers>(dto);
-
-            // Inicializar campos que no vienen del DTO
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.IsActive = 1;
-
             await _service.AddAsync(entity);
-
-            // Mapear entidad -> DTO para la respuesta
             var createdDto = _mapper.Map<PlantControllersGetDto>(entity);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdCompanyController },
-                createdDto
-            );
+            _logger.LogInformation("Create PlantControllersController succeeded. Id: {Id}", entity.IdCompanyController);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdCompanyController }, createdDto);
         }
 
-        // DELETE /api/v1/PlantControllers/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete PlantControllersController requested. Id: {Id}", id);
             try
             {
                 await _service.DeleteAsync(id);
+                _logger.LogInformation("Delete PlantControllersController succeeded. Id: {Id}", id);
                 return Ok(new { message = "PlantController eliminado correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete PlantControllersController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

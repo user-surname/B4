@@ -1,9 +1,16 @@
 # Changelog
 
+## v0.20260325.1 - Slava
+
+- B4
+	- B4.DataFacory - Datafactory completamente integrado y funcionando
+	- B4.Api - ApiControllerBase en todos los controllers
+
 ## v0.20260318.2 - Slava
 
 - B4
 	- Integracion de la rama de Victor de DataFactory
+
 
 ## v0.20260317.1 Victor
 

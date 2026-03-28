@@ -12,10 +12,12 @@ namespace B4.Api.Controllers.Lk
     public abstract class LkControllerBase : ControllerBase
     {
         protected readonly IMemoryCacheService _cache;
+        protected readonly ILogger _logger;
 
-        protected LkControllerBase(IMemoryCacheService cache)
+        protected LkControllerBase(IMemoryCacheService cache, ILogger logger)
         {
             _cache = cache;
+            _logger = logger;
         }
 
         /// <summary>
@@ -30,7 +32,9 @@ namespace B4.Api.Controllers.Lk
         /// <returns></returns>
         protected async Task<IActionResult> OkList<T>(Func<bool, Task<IReadOnlyList<T>>> getter, bool onlyActive)
         {
+            _logger.LogInformation("OkList requested for {Type}. OnlyActive: {OnlyActive}", typeof(T).Name, onlyActive);
             var data = await getter(onlyActive);
+            _logger.LogInformation("OkList returned {Count} records for {Type}", data.Count, typeof(T).Name);
             return Ok(data);
         }
     }

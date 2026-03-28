@@ -6,7 +6,8 @@ namespace B4.Api.Controllers.Lk
 {
     public class CiclosController : LkControllerBase
     {
-        public CiclosController(IMemoryCacheService cache) : base(cache) { }
+        public CiclosController(IMemoryCacheService cache, ILogger<CiclosController> logger)
+            : base(cache, logger) { }
 
         // GET /api/v1/lk/ciclos?onlyActive=true
         [HttpGet]

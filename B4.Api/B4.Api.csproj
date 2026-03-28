@@ -65,7 +65,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\LkPruebas\" />
     <Folder Include="Filters\" />
   </ItemGroup>
 

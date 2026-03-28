@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -14,74 +14,72 @@ namespace B4.Api.Controllers
     {
         private readonly IPlantillasBotonesPasosTiposService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<PlantillasBotonesPasosTiposController> _logger;
 
-        public PlantillasBotonesPasosTiposController(
-            IPlantillasBotonesPasosTiposService service,
-            IMapper mapper)
+        public PlantillasBotonesPasosTiposController(IPlantillasBotonesPasosTiposService service, IMapper mapper, ILogger<PlantillasBotonesPasosTiposController> logger)
         {
             _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/PlantillasBotonesPasosTipos/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("GetById PlantillasBotonesPasosTiposController requested. Id: {Id}", id);
             var record = await _service.GetByIdAsync(id);
-            if (record is null)
-                return NotFound($"No existe paso tipo con id={id}");
-
+            if (record == null)
+            {
+                _logger.LogWarning("GetById PlantillasBotonesPasosTiposController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<PlantillasBotonesPasosTiposGetDto>(record);
-
+            _logger.LogInformation("GetById PlantillasBotonesPasosTiposController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // GET /api/v1/PlantillasBotonesPasosTipos
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("GetAll PlantillasBotonesPasosTiposController requested");
             var records = await _service.GetAllAsync();
             var dtos = _mapper.Map<List<PlantillasBotonesPasosTiposGetDto>>(records);
-
+            _logger.LogInformation("GetAll PlantillasBotonesPasosTiposController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // POST /api/v1/PlantillasBotonesPasosTipos
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantillasBotonesPasosTiposPostDto dto)
         {
+            _logger.LogInformation("Create PlantillasBotonesPasosTiposController requested");
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create PlantillasBotonesPasosTiposController rejected: invalid model state");
                 return BadRequest(ModelState);
-
+            }
             var entity = _mapper.Map<LkPlantillasBotonesPasosTipos>(dto);
-
-            // Inicializar campos que no vienen del DTO
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.IsActive = 1;
-
             await _service.AddAsync(entity);
-
             var createdDto = _mapper.Map<PlantillasBotonesPasosTiposGetDto>(entity);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdPasoTipo },
-                createdDto
-            );
+            _logger.LogInformation("Create PlantillasBotonesPasosTiposController succeeded. Id: {Id}", entity.IdPasoTipo);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdPasoTipo }, createdDto);
         }
 
-        // DELETE /api/v1/PlantillasBotonesPasosTipos/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete PlantillasBotonesPasosTiposController requested. Id: {Id}", id);
             try
             {
                 await _service.DeleteAsync(id);
+                _logger.LogInformation("Delete PlantillasBotonesPasosTiposController succeeded. Id: {Id}", id);
                 return Ok(new { message = "Paso tipo eliminado correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete PlantillasBotonesPasosTiposController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

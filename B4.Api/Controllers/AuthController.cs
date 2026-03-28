@@ -35,6 +35,8 @@ namespace B4.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginRequest request)
         {
+            _logger.LogInformation("Login attempt received for email: {Email}", request?.Email ?? "null");
+
             try
             {
                 // 0️ Validación básica
@@ -42,16 +44,21 @@ namespace B4.Api.Controllers
                     string.IsNullOrWhiteSpace(request.Email) ||
                     string.IsNullOrWhiteSpace(request.Password))
                 {
+                    _logger.LogWarning("Login rejected: missing email or password. Email provided: {EmailProvided}", request?.Email != null);
                     return BadRequest(new { message = "Email y contraseña son obligatorios" });
                 }
 
                 // 1️ Buscar usuario
+                _logger.LogDebug("Looking up user by email: {Email}", request.Email);
                 var usuario = await _usuarioRepository.GetByEmailAsync(request.Email);
 
                 if (usuario == null || string.IsNullOrEmpty(usuario.HashedPassword))
                 {
+                    _logger.LogWarning("Login failed: user not found or has no password. Email: {Email}", request.Email);
                     return Unauthorized(new { message = "Email o contraseña incorrectos" });
                 }
+
+                _logger.LogDebug("User found. UserId: {UserId}. Verifying password...", usuario.Id);
 
                 // 2️ Verificar contraseña
                 bool passwordValid = _passwordHasherService.VerifyPassword(
@@ -61,31 +68,34 @@ namespace B4.Api.Controllers
 
                 if (!passwordValid)
                 {
+                    _logger.LogWarning("Login failed: invalid password for UserId: {UserId}", usuario.Id);
                     return Unauthorized(new { message = "Email o contraseña incorrectos" });
                 }
 
                 // 3️ Generar JWT
+                _logger.LogDebug("Password verified. Generating JWT for UserId: {UserId}, Role: {Role}", usuario.Id, usuario.Role);
                 var token = _jwtService.GenerateToken(
                     userId: usuario.Id,
                     role: usuario.Role
                 );
 
                 // 4️ Respuesta OK
+                _logger.LogInformation("Login successful for UserId: {UserId}, Role: {Role}", usuario.Id, usuario.Role);
                 return Ok(new { token });
             }
             catch (ArgumentNullException ex)
             {
-                _logger.LogWarning(ex, "Parámetro nulo en Login");
+                _logger.LogWarning(ex, "Login failed: null argument. Email: {Email}", request?.Email);
                 return BadRequest(new { message = ex.Message });
             }
             catch (InvalidOperationException ex)
             {
-                _logger.LogError(ex, "Error de operación en Login");
+                _logger.LogError(ex, "Login failed: invalid operation. Email: {Email}", request?.Email);
                 return StatusCode(500, new { message = "Error interno de autenticación" });
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "Error crítico en Login");
+                _logger.LogCritical(ex, "Login failed: unhandled exception. Email: {Email}", request?.Email);
                 return StatusCode(500, new
                 {
                     message = "Error interno del servidor",
@@ -94,5 +104,4 @@ namespace B4.Api.Controllers
             }
         }
     }
-
 }

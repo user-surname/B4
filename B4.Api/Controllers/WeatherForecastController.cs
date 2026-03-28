@@ -1,16 +1,23 @@
-﻿
 using Microsoft.AspNetCore.Mvc;
-
-///
 
 namespace B4.Api.Controllers
 {
     /// <summary>
     ///    Controlador de test: Weatherforecast
     /// </summary>
-    [Route("[controller]")] // Define la ruta base como "WeatherForecast"
+    [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
+        private readonly ILogger<WeatherForecastController> _logger;
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        {
+            _logger = logger;
+        }
+
         /// <summary>
         ///     Constructor
         /// </summary>
@@ -26,9 +33,11 @@ namespace B4.Api.Controllers
         ///     Get /weatherforecast
         /// </summary>
         /// <returns></returns>
-        [HttpGet] // Define el método HTTP para GET
+        [HttpGet]
         public IEnumerable<WeatherForecast> Get()
         {
+            _logger.LogInformation("WeatherForecast Get requested");
+
             var summaries = new[]
             {
                 "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -42,6 +51,8 @@ namespace B4.Api.Controllers
                        summaries[Random.Shared.Next(summaries.Length)]
                    ))
                    .ToArray();
+
+            _logger.LogInformation("WeatherForecast Get returned {Count} entries", forecast.Length);
             return forecast;
         }
     }

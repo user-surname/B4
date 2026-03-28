@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
@@ -14,70 +14,72 @@ namespace B4.Api.Controllers
     {
         private readonly IPlantTreeService _service;
         private readonly IMapper _mapper;
+        private readonly ILogger<PlantTreeController> _logger;
 
-        public PlantTreeController(IPlantTreeService service, IMapper mapper)
+        public PlantTreeController(IPlantTreeService service, IMapper mapper, ILogger<PlantTreeController> logger)
         {
             _service = service;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        // GET /api/v1/PlantTree/{id}
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("GetById PlantTreeController requested. Id: {Id}", id);
             var record = await _service.GetByIdAsync(id);
-            if (record is null)
-                return NotFound($"No existe árbol para id={id}");
-
+            if (record == null)
+            {
+                _logger.LogWarning("GetById PlantTreeController not found. Id: {Id}", id);
+                return NotFound($"No existe registro para id={id}");
+            }
             var dto = _mapper.Map<PlantTreeGetDto>(record);
+            _logger.LogInformation("GetById PlantTreeController succeeded. Id: {Id}", id);
             return Ok(dto);
         }
 
-        // GET /api/v1/PlantTree
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("GetAll PlantTreeController requested");
             var records = await _service.GetAllAsync();
             var dtos = _mapper.Map<List<PlantTreeGetDto>>(records);
+            _logger.LogInformation("GetAll PlantTreeController returned {Count} records", dtos.Count);
             return Ok(dtos);
         }
 
-        // POST /api/v1/PlantTree
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] PlantTreePostDto dto)
         {
+            _logger.LogInformation("Create PlantTreeController requested");
             if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Create PlantTreeController rejected: invalid model state");
                 return BadRequest(ModelState);
-
+            }
             var entity = _mapper.Map<LkPlantTree>(dto);
-
-            // Inicializar campos adicionales
             entity.CreatedAt = DateTime.UtcNow;
             entity.UpdatedAt = DateTime.UtcNow;
             entity.IsActive = 1;
-
             await _service.AddAsync(entity);
-
             var createdDto = _mapper.Map<PlantTreeGetDto>(entity);
-
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = entity.IdTree },
-                createdDto
-            );
+            _logger.LogInformation("Create PlantTreeController succeeded. Id: {Id}", entity.IdTree);
+            return CreatedAtAction(nameof(GetById), new { id = entity.IdTree }, createdDto);
         }
 
-        // DELETE /api/v1/PlantTree/{id}
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("Delete PlantTreeController requested. Id: {Id}", id);
             try
             {
                 await _service.DeleteAsync(id);
-                return Ok(new { message = "Árbol eliminado correctamente" });
+                _logger.LogInformation("Delete PlantTreeController succeeded. Id: {Id}", id);
+                return Ok(new { message = "Arbol eliminado correctamente" });
             }
             catch (Exception ex)
             {
+                _logger.LogWarning(ex, "Delete PlantTreeController failed. Id: {Id}", id);
                 return NotFound(new { message = ex.Message });
             }
         }

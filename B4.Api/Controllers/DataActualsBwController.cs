@@ -13,27 +13,37 @@ public class DataActualsBwController : ControllerBase
 {
     private readonly IDataActualsBwService _service;
     private readonly IMapper _mapper;
+    private readonly ILogger<DataActualsBwController> _logger;
 
-    public DataActualsBwController(IDataActualsBwService service, IMapper mapper)
+    public DataActualsBwController(IDataActualsBwService service, IMapper mapper, ILogger<DataActualsBwController> logger)
     {
         _service = service;
         _mapper = mapper;
+        _logger = logger;
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
+        _logger.LogInformation("GetById DataActualsBw requested. Id: {Id}", id);
         var record = await _service.GetByIdAsync(id);
 
-        return record is null
-            ? NotFound($"No existe DataActualsBw con id={id}")
-            : Ok(record); // por ahora devolvemos entidad; cuando tengamos DTO, mapeamos aquí
+        if (record is null)
+        {
+            _logger.LogWarning("GetById DataActualsBw not found. Id: {Id}", id);
+            return NotFound($"No existe DataActualsBw con id={id}");
+        }
+
+        _logger.LogInformation("GetById DataActualsBw succeeded. Id: {Id}", id);
+        return Ok(record);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
+        _logger.LogInformation("GetAll DataActualsBw requested");
         var records = await _service.GetAllAsync();
-        return Ok(records); // idem
+        _logger.LogInformation("GetAll DataActualsBw returned {Count} records", records?.Count() ?? 0);
+        return Ok(records);
     }
 }
