@@ -38,6 +38,8 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "B4.Web.Slava", "B4.Web.Slav
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B4.Data.DataFactory", "B4.Data.DataFactory\B4.Data.DataFactory.csproj", "{FD74B4EA-B0B3-421F-8A38-64C14B797A08}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App1", "App1\App1.csproj", "{7BC57036-665F-45D3-9134-3220D50C5A88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,12 @@ Global
 		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD74B4EA-B0B3-421F-8A38-64C14B797A08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BC57036-665F-45D3-9134-3220D50C5A88}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{7BC57036-665F-45D3-9134-3220D50C5A88}.Debug|Any CPU.Build.0 = Debug|x64
+		{7BC57036-665F-45D3-9134-3220D50C5A88}.Debug|Any CPU.Deploy.0 = Debug|x64
+		{7BC57036-665F-45D3-9134-3220D50C5A88}.Release|Any CPU.ActiveCfg = Release|x64
+		{7BC57036-665F-45D3-9134-3220D50C5A88}.Release|Any CPU.Build.0 = Release|x64
+		{7BC57036-665F-45D3-9134-3220D50C5A88}.Release|Any CPU.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,8 +106,7 @@ Global
 		{E98096BD-D8AD-4157-A3C7-35A36851377A} = {D107F4C8-89CC-BEA8-D3D7-CA6B7733353D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
-		SolutionGuid = {86D7D857-7568-4773-B4DF-40662B033150}
 		SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
+		        SolutionGuid = {32C84765-F0FE-4F79-9236-778D578024D5}
 	EndGlobalSection
 EndGlobal
