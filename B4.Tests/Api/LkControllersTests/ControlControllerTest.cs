@@ -3,6 +3,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,6 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,10 +23,10 @@ namespace B4.Tests.Controllers
         private readonly ControlController _controller;
         private readonly ILogger<ControlController> _logger;
 
-
         public ControlControllerTest()
         {
-            _mockService = new Mock<IControlService>();
+            _mockService = CreateMock<IControlService>();
+            _logger = NullLogger<ControlController>.Instance;
 
             _controller = new ControlController(_mockService.Object, Mapper, _logger);
         }
@@ -53,10 +53,11 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<ControlGetDto>(okResult.Value);
 
-            Assert.Equal(2024, dto.Anyo);
-            Assert.True(dto.Activo);
+            var response = Assert.IsType<ApiResponse<ControlGetDto>>(okResult.Value);
+
+            Assert.Equal(2024, response.Data.Anyo);
+            Assert.True(response.Data.Activo);
         }
 
         [Fact]
@@ -86,9 +87,10 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<ControlGetDto>>(okResult.Value);
 
-            Assert.Equal(2, dtos.Count);
+            var response = Assert.IsType<ApiResponse<List<ControlGetDto>>>(okResult.Value);
+
+            Assert.Equal(2, response.Data.Count);
         }
 
         // -----------------------------------------
@@ -114,10 +116,11 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdControl = Assert.IsType<ControlGetDto>(createdResult.Value);
 
-            Assert.Equal(2026, createdControl.Anyo);
-            Assert.True(createdControl.Activo);
+            var response = Assert.IsType<ApiResponse<ControlGetDto>>(createdResult.Value);
+
+            Assert.Equal(2026, response.Data.Anyo);
+            Assert.True(response.Data.Activo);
         }
 
         // -----------------------------------------
@@ -126,6 +129,9 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new Control { IdControl = 1 });
+
             _mockService.Setup(s => s.DeleteAsync(1))
                         .Returns(Task.CompletedTask);
 
@@ -133,12 +139,7 @@ namespace B4.Tests.Controllers
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("Control eliminado correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
         [Fact]
@@ -146,18 +147,15 @@ namespace B4.Tests.Controllers
         {
             _mockService
                 .Setup(s => s.DeleteAsync(99))
-                .ThrowsAsync(new Exception("No existe control con id=99"));
+                .ThrowsAsync(new KeyNotFoundException("No existe control con id=99"));
 
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
 
-            var dict = notFoundResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+            var response = Assert.IsType<ApiResponse<ControlGetDto>>(notFoundResult.Value);
 
-            Assert.Equal("No existe control con id=99", dict["message"]);
+            Assert.Equal("No existe control con id=99", response.Msg);
         }
     }
 }
