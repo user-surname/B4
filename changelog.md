@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.20260408.1 - Slava
+
+- B4
+	- B4.App1 - Frontend WinUI 3 Creado y funcionando
+
 ## v0.20260325.1 - Slava
 
 - B4

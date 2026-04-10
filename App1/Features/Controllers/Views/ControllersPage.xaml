@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="App1.Features.Controllers.Views.ControllersPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dataGrid="using:CommunityToolkit.WinUI.UI.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Padding="16" ColumnSpacing="16">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="320" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Spacing="12">
+            <TextBlock Text="Controllers CRUD" FontSize="20" FontWeight="SemiBold" />
+            <ComboBox
+                ItemsSource="{Binding Endpoints}"
+                SelectedItem="{Binding SelectedEndpoint, Mode=TwoWay}"
+                DisplayMemberPath="ControllerName"
+                PlaceholderText="Selecciona un controller" />
+
+            <TextBox Header="Id" Text="{Binding GetByIdText, Mode=TwoWay}" />
+            <Button Content="GetAll" Click="GetAll_OnClick" />
+            <Button Content="GetById" Click="GetById_OnClick" />
+            <Button Content="Delete" Click="Delete_OnClick" />
+
+            <TextBox
+                Header="Create JSON Body"
+                AcceptsReturn="True"
+                TextWrapping="Wrap"
+                Height="220"
+                Text="{Binding CreateJson, Mode=TwoWay}" />
+            <Button Content="Create" Click="Create_OnClick" />
+            <TextBlock Text="{Binding StatusMessage}" TextWrapping="Wrap" />
+        </StackPanel>
+
+        <Grid Grid.Column="1" RowSpacing="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <dataGrid:DataGrid
+                x:Name="ResultsGrid"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                HeadersVisibility="Column"
+                GridLinesVisibility="All"
+                ItemsSource="{Binding TableRows}" />
+
+            <TextBox
+                x:Name="RawResultBox"
+                Grid.Row="1"
+                Text="{Binding ResultJson}"
+                AcceptsReturn="True"
+                IsReadOnly="True"
+                TextWrapping="NoWrap"
+                FontFamily="Consolas"
+                Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</Page>
