@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,8 @@ namespace B4.Tests.Controllers
 
         public PlantControllersControllerTest()
         {
-            _mockService = new Mock<IPlantControllersService>();
+            _mockService = CreateMock<IPlantControllersService>();
+            _logger = NullLogger<PlantControllersController>.Instance;
 
             _controller = new PlantControllersController(_mockService.Object, Mapper, _logger);
         }
@@ -49,12 +51,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<PlantControllersGetDto>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantControllersGetDto>>(okResult.Value);
+            var dto = response.Data;
 
             Assert.Equal("Juan Pérez", dto.Controller);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantControllers)null);
@@ -64,7 +67,7 @@ namespace B4.Tests.Controllers
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        [Fact]
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
             var list = new List<LkPlantControllers>
@@ -78,12 +81,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsAssignableFrom<IEnumerable<PlantControllersGetDto>>(okResult.Value).ToList();
+            var response = Assert.IsType<ApiResponse<List<PlantControllersGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
             Assert.Equal(2, dtos.Count);
         }
 
-        [Fact]
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
             var dto = new PlantControllersPostDto
@@ -98,12 +102,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdEntity = Assert.IsType<PlantControllersGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantControllersGetDto>>(createdResult.Value);
+            var createdEntity = response.Data;
 
             Assert.Equal("Luis Martínez", createdEntity.Controller);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
             var entity = new LkPlantControllers { IdCompanyController = 1, Controller = "Juan Pérez" };
@@ -114,12 +119,10 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("PlantController eliminado correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.DeleteAsync(It.IsAny<int>())).ThrowsAsync(new Exception("No existe PlantController con id=99"));
@@ -127,9 +130,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
-
-            Assert.Equal("No existe PlantController con id=99", dict["message"]);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }

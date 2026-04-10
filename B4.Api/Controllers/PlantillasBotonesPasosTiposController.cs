@@ -3,85 +3,96 @@ using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace B4.Api.Controllers
+namespace B4.Api.Controllers;
+
+[AllowAnonymous]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class PlantillasBotonesPasosTiposController : ApiControllerBase
 {
-    [ApiController]
-    [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class PlantillasBotonesPasosTiposController : ControllerBase
+    private readonly IPlantillasBotonesPasosTiposService _plantillasBotonesPasosTiposService;
+    private readonly IMapper _mapper;
+    private readonly ILogger<PlantillasBotonesPasosTiposController> _logger;
+
+    public PlantillasBotonesPasosTiposController(IPlantillasBotonesPasosTiposService plantillasBotonesPasosTiposService, IMapper mapper, ILogger<PlantillasBotonesPasosTiposController> logger)
     {
-        private readonly IPlantillasBotonesPasosTiposService _service;
-        private readonly IMapper _mapper;
-        private readonly ILogger<PlantillasBotonesPasosTiposController> _logger;
+        _plantillasBotonesPasosTiposService = plantillasBotonesPasosTiposService;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
-        public PlantillasBotonesPasosTiposController(IPlantillasBotonesPasosTiposService service, IMapper mapper, ILogger<PlantillasBotonesPasosTiposController> logger)
+    // GET api/v1/plantillasBotonesPasosTipos
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        _logger.LogInformation("GetAll plantillasBotonesPasosTipos requested");
+        var records = await _plantillasBotonesPasosTiposService.GetAllAsync();
+        var dtos = _mapper.Map<List<PlantillasBotonesPasosTiposGetDto>>(records);
+        _logger.LogInformation("GetAll plantillasBotonesPasosTipos returned {Count} records", dtos.Count);
+        return OkResponse(dtos);
+    }
+
+    // GET api/v1/plantillasBotonesPasosTipos/5
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        _logger.LogInformation("GetById plantillasBotonesPasosTipos requested. Id: {Id}", id);
+        var result = await ExecuteAsync(
+            () => _plantillasBotonesPasosTiposService.GetByIdAsync(id)
+                                .ContinueWith(t => t.Result is null ? null : _mapper.Map<PlantillasBotonesPasosTiposGetDto>(t.Result)),
+            $"No existe plantillasBotonesPasosTipos para id={id}"
+        );
+        if (result is NotFoundObjectResult)
+            _logger.LogWarning("GetById plantillasBotonesPasosTipos not found. Id: {Id}", id);
+        return result;
+    }
+
+    // POST api/v1/plantillasBotonesPasosTipos
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] PlantillasBotonesPasosTiposPostDto dto)
+    {
+        _logger.LogInformation("Create plantillasBotonesPasosTipos requested");
+
+        if (dto is null)
         {
-            _service = service;
-            _mapper = mapper;
-            _logger = logger;
+            _logger.LogWarning("Create plantillasBotonesPasosTipos rejected: empty body");
+            return BadRequestResponse<PlantillasBotonesPasosTiposGetDto>("El cuerpo de la petición no puede estar vacío");
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        if (!ModelState.IsValid)
         {
-            _logger.LogInformation("GetById PlantillasBotonesPasosTiposController requested. Id: {Id}", id);
-            var record = await _service.GetByIdAsync(id);
-            if (record == null)
-            {
-                _logger.LogWarning("GetById PlantillasBotonesPasosTiposController not found. Id: {Id}", id);
-                return NotFound($"No existe registro para id={id}");
-            }
-            var dto = _mapper.Map<PlantillasBotonesPasosTiposGetDto>(record);
-            _logger.LogInformation("GetById PlantillasBotonesPasosTiposController succeeded. Id: {Id}", id);
-            return Ok(dto);
+            _logger.LogWarning("Create plantillasBotonesPasosTipos rejected: invalid model state");
+            return BadRequestResponse<PlantillasBotonesPasosTiposGetDto>("Los datos enviados no son válidos");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        var entity = _mapper.Map<LkPlantillasBotonesPasosTipos>(dto);
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.UpdatedAt = DateTime.UtcNow;
+        entity.IsActive = 1;
+        await _plantillasBotonesPasosTiposService.AddAsync(entity);
+
+        _logger.LogInformation("Create plantillasBotonesPasosTipos succeeded. IdPasoTipo: {IdPasoTipo}", entity.IdPasoTipo);
+        var resultDto = _mapper.Map<PlantillasBotonesPasosTiposGetDto>(entity);
+        return CreatedResponse(nameof(GetById), new { id = entity.IdPasoTipo }, resultDto);
+    }
+    // DELETE api/v1/plantillasBotonesPasosTipos/5
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("Delete plantillasBotonesPasosTipos requested. Id: {Id}", id);
+
+        var existing = await _plantillasBotonesPasosTiposService.GetByIdAsync(id);
+        if (existing is null)
         {
-            _logger.LogInformation("GetAll PlantillasBotonesPasosTiposController requested");
-            var records = await _service.GetAllAsync();
-            var dtos = _mapper.Map<List<PlantillasBotonesPasosTiposGetDto>>(records);
-            _logger.LogInformation("GetAll PlantillasBotonesPasosTiposController returned {Count} records", dtos.Count);
-            return Ok(dtos);
+            _logger.LogWarning("Delete plantillasBotonesPasosTipos not found. Id: {Id}", id);
+            return NotFoundResponse<PlantillasBotonesPasosTiposGetDto>($"No existe plantillasBotonesPasosTipos con id={id}");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PlantillasBotonesPasosTiposPostDto dto)
-        {
-            _logger.LogInformation("Create PlantillasBotonesPasosTiposController requested");
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Create PlantillasBotonesPasosTiposController rejected: invalid model state");
-                return BadRequest(ModelState);
-            }
-            var entity = _mapper.Map<LkPlantillasBotonesPasosTipos>(dto);
-            entity.CreatedAt = DateTime.UtcNow;
-            entity.UpdatedAt = DateTime.UtcNow;
-            entity.IsActive = 1;
-            await _service.AddAsync(entity);
-            var createdDto = _mapper.Map<PlantillasBotonesPasosTiposGetDto>(entity);
-            _logger.LogInformation("Create PlantillasBotonesPasosTiposController succeeded. Id: {Id}", entity.IdPasoTipo);
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdPasoTipo }, createdDto);
-        }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            _logger.LogInformation("Delete PlantillasBotonesPasosTiposController requested. Id: {Id}", id);
-            try
-            {
-                await _service.DeleteAsync(id);
-                _logger.LogInformation("Delete PlantillasBotonesPasosTiposController succeeded. Id: {Id}", id);
-                return Ok(new { message = "Paso tipo eliminado correctamente" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Delete PlantillasBotonesPasosTiposController failed. Id: {Id}", id);
-                return NotFound(new { message = ex.Message });
-            }
-        }
+        await _plantillasBotonesPasosTiposService.DeleteAsync(id);
+        _logger.LogInformation("Delete plantillasBotonesPasosTipos succeeded. Id: {Id}", id);
+        return OkResponse(new { id, deleted = true });
     }
 }

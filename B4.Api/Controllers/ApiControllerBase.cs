@@ -1,4 +1,4 @@
-﻿using B4.Models.Common;
+using B4.Models.Common;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;

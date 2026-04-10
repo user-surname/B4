@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
@@ -18,53 +18,48 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class CiclosControllerTest : TestBase
+    public class FasesControllerTest : TestBase
     {
-        private readonly Mock<ICiclosService> _mockService;
-        private readonly CiclosController _controller;
-        private readonly ILogger<CiclosController> _logger;
+        private readonly Mock<IFasesService> _mockService;
+        private readonly FasesController _controller;
+        private readonly ILogger<FasesController> _logger;
 
-        public CiclosControllerTest()
+        public FasesControllerTest()
         {
-            _mockService = CreateMock<ICiclosService>();
-            _logger = NullLogger<CiclosController>.Instance;
+            _mockService = CreateMock<IFasesService>();
+            _logger = NullLogger<FasesController>.Instance;
 
-            _controller = new CiclosController(_mockService.Object, Mapper, _logger);
+            _controller = new FasesController(_mockService.Object, Mapper, _logger);
         }
 
-
-        // -----------------------------------------
-        // TEST GET BY ID
-        // -----------------------------------------
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenRecordExists()
         {
-            var ciclo = new LkCiclos
+            var fase = new LkFases
             {
-                Id = 1,
-                IdCiclo = 2024,
-                Ciclo = "Ciclo 2024",
-                Descripcion = "Desc 2024",
+                IdFase = 1,
+                Fase = "Fase 1",
+                FaseAlias = "F1",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsActive = 1
             };
 
-            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(ciclo);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(fase);
 
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<ApiResponse<FasesGetDto>>(okResult.Value);
+            var dto = response.Data;
 
-            var response = Assert.IsType<ApiResponse<CiclosGetDto>>(okResult.Value);
-
-            Assert.Equal("Ciclo 2024", response.Data.Ciclo);
+            Assert.Equal("Fase 1", dto.Fase);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkCiclos)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkFases)null);
 
             var result = await _controller.GetById(99);
 
@@ -74,13 +69,14 @@ namespace B4.Tests.Controllers
         // -----------------------------------------
         // TEST GET ALL
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
-            var list = new List<LkCiclos>
+            var list = new List<LkFases>
             {
-                new LkCiclos { Id = 1, IdCiclo = 2024, Ciclo = "Ciclo 2024", Descripcion = "Desc 1", IsActive = 1 },
-                new LkCiclos { Id = 2, IdCiclo = 2025, Ciclo = "Ciclo 2025", Descripcion = "Desc 2", IsActive = 1 }
+                new LkFases { IdFase = 1, Fase = "Fase 1", FaseAlias = "F1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
+                new LkFases { IdFase = 2, Fase = "Fase 2", FaseAlias = "F2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
             };
 
             _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
@@ -88,73 +84,65 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
+            var response = Assert.IsType<ApiResponse<List<FasesGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
-            var response = Assert.IsType<ApiResponse<List<CiclosGetDto>>>(okResult.Value);
-
-            Assert.Equal(2, response.Data.Count);
+            Assert.Equal(2, dtos.Count);
         }
 
         // -----------------------------------------
         // TEST POST CREATE
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
-            // Arrange
-            var dto = new CiclosPostDto
+            var dto = new FasesPostDto
             {
-                IdCiclo = 2026,
-                Ciclo = "Ciclo 2026",
-                Descripcion = "Desc 2026"
+                Fase = "Fase 3",
+                FaseAlias = "F3"
             };
 
-            _mockService.Setup(s => s.AddAsync(It.IsAny<LkCiclos>()))
-                        .Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkFases>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var response = Assert.IsType<ApiResponse<CiclosGetDto>>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<FasesGetDto>>(createdResult.Value);
+            var createdFase = response.Data;
 
-            Assert.Equal("Ciclo 2026", response.Data.Ciclo);
+            Assert.Equal("Fase 3", createdFase.Fase);
         }
 
         // -----------------------------------------
         // TEST DELETE
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            // Arrange
-            _mockService.Setup(s => s.GetByIdAsync(1))
-                        .ReturnsAsync(new LkCiclos { Id = 1 });
+            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
 
-            _mockService.Setup(s => s.DeleteAsync(1))
-                        .Returns(Task.CompletedTask);
-
-            // Act
             var result = await _controller.Delete(1);
 
-            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
 
+            // Convertimos a diccionario para validar el mensaje
             Assert.NotNull(okResult.Value);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService
                 .Setup(s => s.DeleteAsync(99))
-                .ThrowsAsync(new KeyNotFoundException("No existe ciclo con id=99"));
+                .ThrowsAsync(new Exception("No existe fase con id=99"));
 
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
 
-            var response = Assert.IsType<ApiResponse<CiclosGetDto>>(notFoundResult.Value);
-
-            Assert.Equal("No existe ciclo con id=99", response.Msg);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }

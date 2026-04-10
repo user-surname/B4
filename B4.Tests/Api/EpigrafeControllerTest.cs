@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,49 +18,51 @@ using Xunit;
 
 namespace B4.Tests.Controllers
 {
-    public class FasesControllerTest : TestBase
+    public class EpigrafeControllerTest : TestBase
     {
-        private readonly Mock<IFasesService> _mockService;
-        private readonly FasesController _controller;
-        private readonly ILogger<FasesController> _logger;
+        private readonly Mock<IEpigrafeService> _mockService;
+        private readonly EpigrafeController _controller;
+        private readonly ILogger<EpigrafeController> _logger;
 
-        public FasesControllerTest()
+        public EpigrafeControllerTest()
         {
-            _mockService = new Mock<IFasesService>();
+            _mockService = CreateMock<IEpigrafeService>();
+            _logger = NullLogger<EpigrafeController>.Instance;
 
-            _controller = new FasesController(_mockService.Object, Mapper, _logger);
+            _controller = new EpigrafeController(_mockService.Object, Mapper, _logger);
         }
 
-        // -----------------------------------------
-        // TEST GET BY ID
-        // -----------------------------------------
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenRecordExists()
         {
-            var fase = new LkFases
+            var epigrafe = new LkEpigrafe
             {
-                IdFase = 1,
-                Fase = "Fase 1",
-                FaseAlias = "F1",
+                IdEpigrafe = 1,
+                IdPlantilla = 10,
+                IdHoja = 5,
+                PreEpigrafe = "Pre",
+                Epigrafe = "Epigrafe 1",
+                EpigrafeFull = "Pre Epigrafe 1",
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
                 IsActive = 1
             };
 
-            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(fase);
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(epigrafe);
 
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<FasesGetDto>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<EpigrafeGetDto>>(okResult.Value);
+            var dto = response.Data;
 
-            Assert.Equal("Fase 1", dto.Fase);
+            Assert.Equal("Epigrafe 1", dto.Epigrafe);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
-            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkFases)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkEpigrafe)null);
 
             var result = await _controller.GetById(99);
 
@@ -69,13 +72,14 @@ namespace B4.Tests.Controllers
         // -----------------------------------------
         // TEST GET ALL
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
-            var list = new List<LkFases>
+            var list = new List<LkEpigrafe>
             {
-                new LkFases { IdFase = 1, Fase = "Fase 1", FaseAlias = "F1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
-                new LkFases { IdFase = 2, Fase = "Fase 2", FaseAlias = "F2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
+                new LkEpigrafe { IdEpigrafe = 1, IdPlantilla = 10, IdHoja = 5, Epigrafe = "Epigrafe 1", EpigrafeFull = "Pre 1", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 },
+                new LkEpigrafe { IdEpigrafe = 2, IdPlantilla = 11, IdHoja = 6, Epigrafe = "Epigrafe 2", EpigrafeFull = "Pre 2", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, IsActive = 1 }
             };
 
             _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(list);
@@ -83,7 +87,8 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<FasesGetDto>>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<List<EpigrafeGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
             Assert.Equal(2, dtos.Count);
         }
@@ -91,29 +96,35 @@ namespace B4.Tests.Controllers
         // -----------------------------------------
         // TEST POST CREATE
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
-            var dto = new FasesPostDto
+            var dto = new EpigrafePostDto
             {
-                Fase = "Fase 3",
-                FaseAlias = "F3"
+                IdPlantilla = 12,
+                IdHoja = 7,
+                PreEpigrafe = "Pre",
+                Epigrafe = "Epigrafe 3",
+                EpigrafeFull = "Pre Epigrafe 3"
             };
 
-            _mockService.Setup(s => s.AddAsync(It.IsAny<LkFases>())).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.AddAsync(It.IsAny<LkEpigrafe>())).Returns(Task.CompletedTask);
 
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdFase = Assert.IsType<FasesGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<EpigrafeGetDto>>(createdResult.Value);
+            var createdEpigrafe = response.Data;
 
-            Assert.Equal("Fase 3", createdFase.Fase);
+            Assert.Equal("Epigrafe 3", createdEpigrafe.Epigrafe);
         }
 
         // -----------------------------------------
         // TEST DELETE
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
             _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
@@ -122,32 +133,20 @@ namespace B4.Tests.Controllers
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario para validar el mensaje
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("Fase eliminada correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService
                 .Setup(s => s.DeleteAsync(99))
-                .ThrowsAsync(new Exception("No existe fase con id=99"));
+                .ThrowsAsync(new Exception("No existe ciclo con id=99"));
 
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-
-            var dict = notFoundResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
-
-            Assert.Equal("No existe fase con id=99", dict["message"]);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }

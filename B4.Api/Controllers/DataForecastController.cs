@@ -1,50 +1,54 @@
 using AutoMapper;
-using B4.Api.Middleware;
+using B4.Api.Dto.GetDto;
+using B4.Api.Dto.PostDto;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
+using B4.Api.Middleware;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers;
 
-[ApiController]
+[CustomAuthorize(Policy = "AdminOnly")]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
-[CustomAuthorize(Policy = "AdminOnly")]
-public class DataForecastController : ControllerBase
+public class DataForecastController : ApiControllerBase
 {
-    private readonly IDataForecastService _service;
+    private readonly IDataForecastService _dataForecastService;
     private readonly IMapper _mapper;
     private readonly ILogger<DataForecastController> _logger;
 
-    public DataForecastController(IDataForecastService service, IMapper mapper, ILogger<DataForecastController> logger)
+    public DataForecastController(IDataForecastService dataForecastService, IMapper mapper, ILogger<DataForecastController> logger)
     {
-        _service = service;
+        _dataForecastService = dataForecastService;
         _mapper = mapper;
         _logger = logger;
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        _logger.LogInformation("GetById DataForecast requested. Id: {Id}", id);
-        var record = await _service.GetByIdAsync(id);
-        if (record is null)
-        {
-            _logger.LogWarning("GetById DataForecast not found. Id: {Id}", id);
-            return NotFound($"No existe DataForecast con id={id}");
-        }
-        _logger.LogInformation("GetById DataForecast succeeded. Id: {Id}", id);
-        return Ok(record);
-    }
-
+    // GET api/v1/dataForecast
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        _logger.LogInformation("GetAll DataForecast requested");
-        var records = await _service.GetAllAsync();
-        _logger.LogInformation("GetAll DataForecast returned records");
-        return Ok(records);
+        _logger.LogInformation("GetAll dataForecast requested");
+        var records = await _dataForecastService.GetAllAsync();
+        _logger.LogInformation("GetAll dataForecast returned {Count} records", records?.Count() ?? 0);
+        return OkResponse(records);
     }
+
+    // GET api/v1/dataForecast/5
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        _logger.LogInformation("GetById dataForecast requested. Id: {Id}", id);
+        var result = await ExecuteAsync(
+            () => _dataForecastService.GetByIdAsync(id)
+                                .ContinueWith(t => t.Result is null ? null : (object)t.Result),
+            $"No existe dataForecast para id={id}"
+        );
+        if (result is NotFoundObjectResult)
+            _logger.LogWarning("GetById dataForecast not found. Id: {Id}", id);
+        return result;
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DataForecast entity)
@@ -53,12 +57,13 @@ public class DataForecastController : ControllerBase
         if (!ModelState.IsValid)
         {
             _logger.LogWarning("Create DataForecast rejected: invalid model state");
-            return BadRequest(ModelState);
+            return BadRequestResponse<object>("Los datos enviados no son válidos");
         }
-        await _service.AddAsync(entity);
+        await _dataForecastService.AddAsync(entity);
         _logger.LogInformation("Create DataForecast succeeded. Id: {Id}", entity.Id);
-        return Ok(entity);
+        return OkResponse(entity);
     }
+
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] DataForecast entity)
@@ -67,18 +72,19 @@ public class DataForecastController : ControllerBase
         if (!ModelState.IsValid)
         {
             _logger.LogWarning("Update DataForecast rejected: invalid model state. Id: {Id}", id);
-            return BadRequest(ModelState);
+            return BadRequestResponse<object>("Los datos enviados no son válidos");
         }
         if (entity.Id != 0 && entity.Id != id)
         {
             _logger.LogWarning("Update DataForecast rejected: route id {RouteId} does not match body id {BodyId}", id, entity.Id);
-            return BadRequest("El id de la ruta no coincide con el id del body.");
+            return BadRequestResponse<object>("El id de la ruta no coincide con el id del body.");
         }
         entity.Id = id;
-        await _service.UpdateAsync(entity);
+        await _dataForecastService.UpdateAsync(entity);
         _logger.LogInformation("Update DataForecast succeeded. Id: {Id}", id);
-        return Ok(entity);
+        return OkResponse(entity);
     }
+
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
@@ -86,14 +92,14 @@ public class DataForecastController : ControllerBase
         _logger.LogInformation("Delete DataForecast requested. Id: {Id}", id);
         try
         {
-            await _service.DeleteAsync(id);
+            await _dataForecastService.DeleteAsync(id);
             _logger.LogInformation("Delete DataForecast succeeded. Id: {Id}", id);
-            return Ok(new { message = "Eliminado correctamente" });
+            return OkResponse(new { deleted = true });
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Delete DataForecast failed. Id: {Id}", id);
-            return NotFound(new { message = ex.Message });
+            return NotFoundResponse<object>(ex.Message);
         }
     }
 }

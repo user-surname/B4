@@ -1,4 +1,4 @@
-﻿using B4.Data.MySQL.Repositories;
+using B4.Data.MySQL.Repositories;
 using B4.Models.Entities;
 using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;

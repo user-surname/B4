@@ -3,85 +3,96 @@ using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace B4.Api.Controllers
+namespace B4.Api.Controllers;
+
+[AllowAnonymous]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class PlantControllersController : ApiControllerBase
 {
-    [ApiController]
-    [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class PlantControllersController : ControllerBase
+    private readonly IPlantControllersService _plantControllersService;
+    private readonly IMapper _mapper;
+    private readonly ILogger<PlantControllersController> _logger;
+
+    public PlantControllersController(IPlantControllersService plantControllersService, IMapper mapper, ILogger<PlantControllersController> logger)
     {
-        private readonly IPlantControllersService _service;
-        private readonly IMapper _mapper;
-        private readonly ILogger<PlantControllersController> _logger;
+        _plantControllersService = plantControllersService;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
-        public PlantControllersController(IPlantControllersService service, IMapper mapper, ILogger<PlantControllersController> logger)
+    // GET api/v1/plantControllers
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        _logger.LogInformation("GetAll plantControllers requested");
+        var records = await _plantControllersService.GetAllAsync();
+        var dtos = _mapper.Map<List<PlantControllersGetDto>>(records);
+        _logger.LogInformation("GetAll plantControllers returned {Count} records", dtos.Count);
+        return OkResponse(dtos);
+    }
+
+    // GET api/v1/plantControllers/5
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        _logger.LogInformation("GetById plantControllers requested. Id: {Id}", id);
+        var result = await ExecuteAsync(
+            () => _plantControllersService.GetByIdAsync(id)
+                                .ContinueWith(t => t.Result is null ? null : _mapper.Map<PlantControllersGetDto>(t.Result)),
+            $"No existe plantControllers para id={id}"
+        );
+        if (result is NotFoundObjectResult)
+            _logger.LogWarning("GetById plantControllers not found. Id: {Id}", id);
+        return result;
+    }
+
+    // POST api/v1/plantControllers
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] PlantControllersPostDto dto)
+    {
+        _logger.LogInformation("Create plantControllers requested");
+
+        if (dto is null)
         {
-            _service = service;
-            _mapper = mapper;
-            _logger = logger;
+            _logger.LogWarning("Create plantControllers rejected: empty body");
+            return BadRequestResponse<PlantControllersGetDto>("El cuerpo de la petición no puede estar vacío");
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        if (!ModelState.IsValid)
         {
-            _logger.LogInformation("GetById PlantControllersController requested. Id: {Id}", id);
-            var record = await _service.GetByIdAsync(id);
-            if (record == null)
-            {
-                _logger.LogWarning("GetById PlantControllersController not found. Id: {Id}", id);
-                return NotFound($"No existe registro para id={id}");
-            }
-            var dto = _mapper.Map<PlantControllersGetDto>(record);
-            _logger.LogInformation("GetById PlantControllersController succeeded. Id: {Id}", id);
-            return Ok(dto);
+            _logger.LogWarning("Create plantControllers rejected: invalid model state");
+            return BadRequestResponse<PlantControllersGetDto>("Los datos enviados no son válidos");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        var entity = _mapper.Map<LkPlantControllers>(dto);
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.UpdatedAt = DateTime.UtcNow;
+        entity.IsActive = 1;
+        await _plantControllersService.AddAsync(entity);
+
+        _logger.LogInformation("Create plantControllers succeeded. IdCompanyController: {IdCompanyController}", entity.IdCompanyController);
+        var resultDto = _mapper.Map<PlantControllersGetDto>(entity);
+        return CreatedResponse(nameof(GetById), new { id = entity.IdCompanyController }, resultDto);
+    }
+    // DELETE api/v1/plantControllers/5
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("Delete plantControllers requested. Id: {Id}", id);
+
+        var existing = await _plantControllersService.GetByIdAsync(id);
+        if (existing is null)
         {
-            _logger.LogInformation("GetAll PlantControllersController requested");
-            var records = await _service.GetAllAsync();
-            var dtos = _mapper.Map<List<PlantControllersGetDto>>(records);
-            _logger.LogInformation("GetAll PlantControllersController returned {Count} records", dtos.Count);
-            return Ok(dtos);
+            _logger.LogWarning("Delete plantControllers not found. Id: {Id}", id);
+            return NotFoundResponse<PlantControllersGetDto>($"No existe plantControllers con id={id}");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PlantControllersPostDto dto)
-        {
-            _logger.LogInformation("Create PlantControllersController requested");
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Create PlantControllersController rejected: invalid model state");
-                return BadRequest(ModelState);
-            }
-            var entity = _mapper.Map<LkPlantControllers>(dto);
-            entity.CreatedAt = DateTime.UtcNow;
-            entity.UpdatedAt = DateTime.UtcNow;
-            entity.IsActive = 1;
-            await _service.AddAsync(entity);
-            var createdDto = _mapper.Map<PlantControllersGetDto>(entity);
-            _logger.LogInformation("Create PlantControllersController succeeded. Id: {Id}", entity.IdCompanyController);
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdCompanyController }, createdDto);
-        }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            _logger.LogInformation("Delete PlantControllersController requested. Id: {Id}", id);
-            try
-            {
-                await _service.DeleteAsync(id);
-                _logger.LogInformation("Delete PlantControllersController succeeded. Id: {Id}", id);
-                return Ok(new { message = "PlantController eliminado correctamente" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Delete PlantControllersController failed. Id: {Id}", id);
-                return NotFound(new { message = ex.Message });
-            }
-        }
+        await _plantControllersService.DeleteAsync(id);
+        _logger.LogInformation("Delete plantControllers succeeded. Id: {Id}", id);
+        return OkResponse(new { id, deleted = true });
     }
 }

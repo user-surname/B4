@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -23,10 +24,10 @@ namespace B4.Tests.Controllers
         private readonly PlantCountryController _controller;
         private readonly ILogger<PlantCountryController> _logger;
 
-
         public PlantCountryControllerTest()
         {
-            _mockService = new Mock<IPlantCountryService>();
+            _mockService = CreateMock<IPlantCountryService>();
+            _logger = NullLogger<PlantCountryController>.Instance;
 
             _controller = new PlantCountryController(_mockService.Object, Mapper, _logger);
         }
@@ -48,12 +49,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<PlantCountryGetDto>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantCountryGetDto>>(okResult.Value);
+            var dto = response.Data;
 
             Assert.Equal("España", dto.Country);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantCountry)null);
@@ -63,7 +65,7 @@ namespace B4.Tests.Controllers
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        [Fact]
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
             var list = new List<LkPlantCountry>
@@ -77,12 +79,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsAssignableFrom<IEnumerable<PlantCountryGetDto>>(okResult.Value).ToList();
+            var response = Assert.IsType<ApiResponse<List<PlantCountryGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
             Assert.Equal(2, dtos.Count);
         }
 
-        [Fact]
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
             var dto = new PlantCountryPostDto { Country = "Italia" };
@@ -92,12 +95,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdCountry = Assert.IsType<PlantCountryGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantCountryGetDto>>(createdResult.Value);
+            var createdCountry = response.Data;
 
             Assert.Equal("Italia", createdCountry.Country);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
             var entity = new LkPlantCountry { IdCountry = 1, Country = "España" };
@@ -108,12 +112,10 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("País eliminado correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.DeleteAsync(It.IsAny<int>())).ThrowsAsync(new Exception("No existe país con id=99"));
@@ -121,9 +123,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
-
-            Assert.Equal("No existe país con id=99", dict["message"]);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }

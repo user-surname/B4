@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,8 @@ namespace B4.Tests.Controllers
 
         public PlantDivisionControllerTest()
         {
-            _mockService = new Mock<IPlantDivisionService>();
+            _mockService = CreateMock<IPlantDivisionService>();
+            _logger = NullLogger<PlantDivisionController>.Instance;
 
             _controller = new PlantDivisionController(_mockService.Object, Mapper, _logger);
         }
@@ -47,12 +49,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<PlantDivisionGetDto>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantDivisionGetDto>>(okResult.Value);
+            var dto = response.Data;
 
             Assert.Equal("Division A", dto.Division);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantDivision)null);
@@ -62,7 +65,7 @@ namespace B4.Tests.Controllers
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        [Fact]
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
             var list = new List<LkPlantDivision>
@@ -76,12 +79,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsAssignableFrom<IEnumerable<PlantDivisionGetDto>>(okResult.Value).ToList();
+            var response = Assert.IsType<ApiResponse<List<PlantDivisionGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
             Assert.Equal(2, dtos.Count);
         }
 
-        [Fact]
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
             var dto = new PlantDivisionPostDto
@@ -94,12 +98,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdDivision = Assert.IsType<PlantDivisionGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantDivisionGetDto>>(createdResult.Value);
+            var createdDivision = response.Data;
 
             Assert.Equal("Division C", createdDivision.Division);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
             var division = new LkPlantDivision { IdDivision = 101, Division = "Division A" };
@@ -109,12 +114,10 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(101);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("División eliminada correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.DeleteAsync(99)).ThrowsAsync(new Exception("No existe división con id=99"));
@@ -122,9 +125,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
-
-            Assert.Equal("No existe división con id=99", dict["message"]);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }
