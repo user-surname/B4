@@ -61,11 +61,6 @@ try
         throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
     }
 
-    if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
-    {
-        ConfigureNLogPostgreSql(sharedConfig, logger);
-    }
-
     // AutoMapper
     builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
     // Aqui se inicializa la infraestructura de DataFactory para la API.
@@ -117,148 +112,6 @@ try
     logger.Info("Iniciando migraciones...");
     B4.Api.Extensions.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
     logger.Info("Base de datos actualizada correctamente.");
-
-
-    /*
-
-    try
-    {
-        if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-        {
-
-            logger.Info("Iniciando migraciones para MySQL...");
-            B4.Data.MySQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
-            logger.Info("Base de datos MySQL actualizada correctamente.");
-
-            var ctx = new MySQLDapperContext(sharedConfig);
-
-            builder.Services.AddSingleton(ctx);
-
-            // LK repos (MySQL)
-            builder.Services.AddScoped<ICiclosRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.CiclosRepository(ctx));
-            builder.Services.AddScoped<IEpigrafeRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
-            builder.Services.AddScoped<IFasesRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.FasesRepository(ctx));
-            builder.Services.AddScoped<IPlantCompanyRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantCompanyRepository(ctx));
-            builder.Services.AddScoped<IPlantControllersRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantControllersRepository(ctx));
-            builder.Services.AddScoped<IPlantCountryRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantCountryRepository(ctx));
-            builder.Services.AddScoped<IPlantCurrencyRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
-            builder.Services.AddScoped<IPlantDivisionCompanyRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionCompanyRepository(ctx));
-            builder.Services.AddScoped<IPlantDivisionRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionRepository(ctx));
-            builder.Services.AddScoped<IPlantillasBotonesPasosTiposRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantillasBotonesPasosTiposRepository(ctx));
-            builder.Services.AddScoped<IPlantSubdivisionRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantSubdivisionRepository(ctx));
-            builder.Services.AddScoped<IPlantTreeRepository>(_ => new B4.Data.MySQL.Repositories.LkRepositories.PlantTreeRepository(ctx));
-
-            // DATA repos (MySQL)
-            builder.Services.AddScoped<IDataComentariosRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
-            builder.Services.AddScoped<IDataBudgetRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
-            builder.Services.AddScoped<IDataBudgetBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetBwRepository(ctx));
-            builder.Services.AddScoped<IDataForecastRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataForecastRepository(ctx));
-            builder.Services.AddScoped<IDataForecastBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataForecastBwRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesFyRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
-            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
-            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesMonthRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthRepository(ctx));
-            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
-
-            builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.MySQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
-
-            builder.Services.AddScoped<IPlantCurrencyRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantCurrencyRepository(ctx));
-
-            builder.Services.AddScoped<IPlantDivisionCompanyRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionCompanyRepository(ctx));
-
-            builder.Services.AddScoped<IPlantDivisionRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantDivisionRepository(ctx));
-
-            builder.Services.AddScoped<IPlantillasBotonesPasosTiposRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantillasBotonesPasosTiposRepository(ctx));
-
-            builder.Services.AddScoped<IPlantSubdivisionRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantSubdivisionRepository(ctx));
-
-            builder.Services.AddScoped<IPlantTreeRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.PlantTreeRepository(ctx));
-
-            builder.Services.AddScoped<IDataComentariosRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
-
-            builder.Services.AddScoped<IDataBudgetRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
-
-            builder.Services.AddScoped<IDataForecastRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataForecastRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesFyRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ =>
-                new B4.Data.MySQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
-
-            builder.Services.AddScoped<IEpigrafeRepository>(_ =>
-                new B4.Data.MySQL.Repositories.LkRepositories.EpigrafeRepository(ctx));
-
-            builder.Services.AddScoped<IUsuarioRepository>(_ =>
-                new B4.Data.MySQL.Repositories.UsuarioRepository(ctx));
-
-            builder.Services.AddScoped<IControlRepository>(_ =>
-                new B4.Data.MySQL.Repositories.ControlRepository(ctx));
-        }
-        else if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
-        {
-            logger.Info("Iniciando migraciones para PostgreSQL...");
-            B4.Data.PostgreSQL.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
-            logger.Info("Base de datos PostgreSQL actualizada correctamente.");
-
-            var ctx = new PostgreSQLDapperContext(sharedConfig);
-
-            builder.Services.AddSingleton(ctx);
-
-            // LK repos (PostgreSQL)  Eañade los que falten según tu proyecto
-            builder.Services.AddScoped<IEpigrafeRepository>(_ => new B4.Data.PostgreSQL.Repositories.LKRepositories.EpigrafeRepository(ctx));
-            // Si tienes más LK repos en Postgres, regístralos aquí igual que en MySQL:
-            // builder.Services.AddScoped<ICiclosRepository>(_ => new ...);
-            // builder.Services.AddScoped<IFasesRepository>(_ => new ...);
-            // etc.
-
-            // DATA repos (PostgreSQL)
-            builder.Services.AddScoped<IDataComentariosRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataComentariosRepository(ctx));
-            builder.Services.AddScoped<IDataBudgetRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetRepository(ctx));
-            //builder.Services.AddScoped<IDataBudgetBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBudgetBwRepository(ctx));
-            builder.Services.AddScoped<IDataForecastRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastRepository(ctx));
-            builder.Services.AddScoped<IDataForecastBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataForecastBwRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesFyRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyRepository(ctx));
-            builder.Services.AddScoped<IDataBridgesFyBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwRepository(ctx));
-            builder.Services.AddScoped<IDataBridgesFyBwEurRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesFyBwEurRepository(ctx));
-
-            builder.Services.AddScoped<IDataBridgesMonthRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthRepository(ctx));
-            builder.Services.AddScoped<IDataBridgesMonthBwRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataBridgesMonthBwRepository(ctx));
-
-            builder.Services.AddScoped<IDataTipoCambioRepository>(_ => new B4.Data.PostgreSQL.Repositories.DataRepositories.DataTipoCambioRepository(ctx));
-
-        }
-        else
-        {
-            logger.Error("Valor desconocido para 'bbdd' en configuracion: {0}", bbdd);
-            throw new InvalidOperationException($"Valor desconocido para 'bbdd': {bbdd}");
-        }
-    }
-    catch (Exception ex)
-    {
-        logger.Fatal(ex, $"Error durante la actualizacion de la base de datos {bbdd}.");
-        throw;
-    }
-
-    */
 
     // --------------------------------------------------
     // MIDDLEWARES / INFRA
@@ -436,7 +289,12 @@ try
     // --------------------------------------------------
     // BUILD APP
     // --------------------------------------------------
+    logger.Info("API B4 iniciando...");
+
+
     var app = builder.Build();
+
+    logger.Info("API B4 iniciando...");
 
     // Swagger
     if (app.Environment.IsDevelopment())
@@ -526,74 +384,6 @@ catch (Exception ex)
 finally
 {
     LogManager.Shutdown();
-}
-
-static void ConfigureNLogPostgreSql(IConfiguration configuration, Logger logger)
-{
-    var connectionString = configuration.GetConnectionString("PostgresConnectionB4Control");
-    if (string.IsNullOrWhiteSpace(connectionString))
-    {
-        logger.Warn("NLog PostgreSQL desactivado: falta ConnectionStrings:PostgresConnectionB4Control.");
-        return;
-    }
-
-    EnsureNLogTableExists(connectionString);
-
-    var nlogConfig = LogManager.Configuration;
-    if (nlogConfig is null)
-    {
-        logger.Warn("NLog PostgreSQL desactivado: configuración NLog no disponible.");
-        return;
-    }
-
-    if (nlogConfig.FindTargetByName("postgresDb") is not null)
-    {
-        return;
-    }
-
-    var dbTarget = new DatabaseTarget("postgresDb")
-    {
-        DBProvider = "Npgsql.NpgsqlConnection, Npgsql",
-        ConnectionString = connectionString,
-        CommandText = @"
-            INSERT INTO app_logs (level, logger, message, exception, machine_name, request_url)
-            VALUES (@level, @logger, @message, @exception, @machine_name, @request_url);"
-    };
-
-    dbTarget.Parameters.Add(new DatabaseParameterInfo("@level", "${level:uppercase=true}"));
-    dbTarget.Parameters.Add(new DatabaseParameterInfo("@logger", "${logger}"));
-    dbTarget.Parameters.Add(new DatabaseParameterInfo("@message", "${message}"));
-    dbTarget.Parameters.Add(new DatabaseParameterInfo("@exception", "${exception:format=tostring}"));
-    dbTarget.Parameters.Add(new DatabaseParameterInfo("@machine_name", "${machinename}"));
-    dbTarget.Parameters.Add(new DatabaseParameterInfo("@request_url", "${aspnet-request-url}"));
-
-    nlogConfig.AddTarget(dbTarget);
-    nlogConfig.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Info, dbTarget));
-    LogManager.ReconfigExistingLoggers();
-
-    logger.Info("NLog PostgreSQL target activo.");
-}
-
-static void EnsureNLogTableExists(string connectionString)
-{
-    const string sql = @"
-        CREATE TABLE IF NOT EXISTS app_logs (
-            id BIGSERIAL PRIMARY KEY,
-            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-            level VARCHAR(20) NOT NULL,
-            logger VARCHAR(300) NULL,
-            message TEXT NOT NULL,
-            exception TEXT NULL,
-            machine_name VARCHAR(200) NULL,
-            request_url TEXT NULL
-        );
-
-        CREATE INDEX IF NOT EXISTS idx_app_logs_created_at ON app_logs (created_at DESC);";
-
-    using var connection = new NpgsqlConnection(connectionString);
-    connection.Open();
-    using var command = new NpgsqlCommand(sql, connection);
-    command.ExecuteNonQuery();
 }
 
 // ✁ENecesario para tests con WebApplicationFactory (PUNTO 7)

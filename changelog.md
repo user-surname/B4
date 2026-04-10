@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20260410.1 - Slava
+
+- B4
+	-B4.Api.Program.cs - Datafactory integrado en el arranque de la aplicación
+	-B4.Api.Program.cs - Codigo obsoleto eliminado
+
 ## v0.20260408.1 - Slava
 
 - B4
