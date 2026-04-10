@@ -6,6 +6,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -20,12 +21,13 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<IPlantControllersService> _mockService;
         private readonly PlantControllersController _controller;
+        private readonly ILogger<PlantControllersController> _logger;
 
         public PlantControllersControllerTest()
         {
             _mockService = new Mock<IPlantControllersService>();
 
-            _controller = new PlantControllersController(_mockService.Object, Mapper);
+            _controller = new PlantControllersController(_mockService.Object, Mapper, _logger);
         }
 
         [Fact]

@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Api
@@ -17,13 +18,15 @@ namespace B4.Tests.Api
         private readonly Mock<IDataBridgesMonthService> _mockService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly DataBridgesMonthController _controller;
+        private readonly ILogger<DataBridgesMonthController> _logger;
+
 
         public DataBridgesMonthControllerTest()
         {
             _mockService = new Mock<IDataBridgesMonthService>();
             _mockMapper = new Mock<IMapper>();
 
-            _controller = new DataBridgesMonthController(_mockService.Object, _mockMapper.Object);
+            _controller = new DataBridgesMonthController(_mockService.Object, _mockMapper.Object, _logger);
         }
 
         [Fact]

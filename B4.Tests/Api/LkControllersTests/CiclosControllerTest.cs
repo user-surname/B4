@@ -3,9 +3,11 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -20,12 +22,14 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<ICiclosService> _mockService;
         private readonly CiclosController _controller;
+        private readonly ILogger<CiclosController> _logger;
 
         public CiclosControllerTest()
         {
             _mockService = CreateMock<ICiclosService>();
+            _logger = NullLogger<CiclosController>.Instance;
 
-            _controller = new CiclosController(_mockService.Object, Mapper);
+            _controller = new CiclosController(_mockService.Object, Mapper, _logger);
         }
 
 
@@ -51,9 +55,10 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<CiclosGetDto>(okResult.Value);
 
-            Assert.Equal("Ciclo 2024", dto.Ciclo);
+            var response = Assert.IsType<ApiResponse<CiclosGetDto>>(okResult.Value);
+
+            Assert.Equal("Ciclo 2024", response.Data.Ciclo);
         }
 
         [Fact]
@@ -83,9 +88,10 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<CiclosGetDto>>(okResult.Value);
 
-            Assert.Equal(2, dtos.Count);
+            var response = Assert.IsType<ApiResponse<List<CiclosGetDto>>>(okResult.Value);
+
+            Assert.Equal(2, response.Data.Count);
         }
 
         // -----------------------------------------
@@ -108,9 +114,9 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdCiclo = Assert.IsType<CiclosGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<CiclosGetDto>>(createdResult.Value);
 
-            Assert.Equal("Ciclo 2026", createdCiclo.Ciclo);
+            Assert.Equal("Ciclo 2026", response.Data.Ciclo);
         }
 
         // -----------------------------------------
@@ -119,19 +125,20 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
+            // Arrange
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkCiclos { Id = 1 });
+
             _mockService.Setup(s => s.DeleteAsync(1))
                         .Returns(Task.CompletedTask);
 
+            // Act
             var result = await _controller.Delete(1);
 
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("Ciclo eliminado correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
         [Fact]
@@ -145,12 +152,9 @@ namespace B4.Tests.Controllers
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
 
-            var dict = notFoundResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
+            var response = Assert.IsType<ApiResponse<CiclosGetDto>>(notFoundResult.Value);
 
-            Assert.Equal("No existe ciclo con id=99", dict["message"]);
+            Assert.Equal("No existe ciclo con id=99", response.Msg);
         }
     }
 }

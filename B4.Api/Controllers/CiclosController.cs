@@ -8,15 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers;
 
-/// <summary>
-/// EJEMPLO MIGRADO: CiclosController usando ApiControllerBase y ApiResponse.
-///
-/// Cambios respecto a la versión anterior:
-///   - Hereda de ApiControllerBase en lugar de ControllerBase
-///   - Elimina los objetos anónimos { coderror, msg... } manuales
-///   - No necesita try/catch en endpoints simples (el GlobalExceptionHandlerMiddleware lo cubre)
-///   - El ResponseWrapperMiddleware puede retirarse o dejarse solo para rutas legacy
-/// </summary>
 [AllowAnonymous]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]

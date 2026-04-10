@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Api
@@ -17,13 +18,14 @@ namespace B4.Tests.Api
         private readonly Mock<IDataTipoCambioService> _mockService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly DataTipoCambioController _controller;
+        private readonly ILogger<DataTipoCambioController> _logger;
 
         public DataTipoCambioControllerTest()
         {
             _mockService = new Mock<IDataTipoCambioService>();
             _mockMapper = new Mock<IMapper>();
 
-            _controller = new DataTipoCambioController(_mockService.Object, _mockMapper.Object);
+            _controller = new DataTipoCambioController(_mockService.Object, _mockMapper.Object, _logger);
         }
 
         [Fact]

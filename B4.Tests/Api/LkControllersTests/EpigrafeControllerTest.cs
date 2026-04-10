@@ -6,6 +6,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -20,11 +21,13 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<IEpigrafeService> _mockService;
         private readonly EpigrafeController _controller;
+        private readonly ILogger<EpigrafeController> _logger;
+
         public EpigrafeControllerTest()
         {
             _mockService = new Mock<IEpigrafeService>();
 
-            _controller = new EpigrafeController(_mockService.Object, Mapper);
+            _controller = new EpigrafeController(_mockService.Object, Mapper, _logger);
         }
 
         // -----------------------------------------

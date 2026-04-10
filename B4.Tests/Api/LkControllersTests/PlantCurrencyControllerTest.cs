@@ -6,6 +6,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -20,12 +21,14 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<IPlantCurrencyService> _mockService;
         private readonly PlantCurrencyController _controller;
+        private readonly ILogger<PlantCurrencyController> _logger;
+
 
         public PlantCurrencyControllerTest()
         {
             _mockService = new Mock<IPlantCurrencyService>();
 
-            _controller = new PlantCurrencyController(_mockService.Object, Mapper);
+            _controller = new PlantCurrencyController(_mockService.Object, Mapper, _logger);
         }
 
         [Fact]

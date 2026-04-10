@@ -1,13 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Api
@@ -17,13 +18,14 @@ namespace B4.Tests.Api
         private readonly Mock<IDataBudgetService> _mockService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly DataBudgetController _controller;
+        private readonly ILogger<DataBudgetController> _logger;
 
         public DataBudgetControllerTest()
         {
             _mockService = new Mock<IDataBudgetService>();
             _mockMapper = new Mock<IMapper>();
 
-            _controller = new DataBudgetController(_mockService.Object, _mockMapper.Object);
+            _controller = new DataBudgetController(_mockService.Object, _mockMapper.Object, _logger);
         }
 
         [Fact]

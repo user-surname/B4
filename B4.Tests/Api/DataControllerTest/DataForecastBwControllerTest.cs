@@ -1,12 +1,13 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Api
@@ -16,13 +17,14 @@ namespace B4.Tests.Api
         private readonly Mock<IDataForecastBwService> _mockService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly DataForecastBwController _controller;
+        private readonly ILogger<DataForecastBwController> _logger;
 
         public DataForecastBwControllerTest()
         {
             _mockService = new Mock<IDataForecastBwService>();
             _mockMapper = new Mock<IMapper>();
 
-            _controller = new DataForecastBwController(_mockService.Object, _mockMapper.Object);
+            _controller = new DataForecastBwController(_mockService.Object, _mockMapper.Object, _logger);
         }
 
         [Fact]

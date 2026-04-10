@@ -6,6 +6,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -20,12 +21,13 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<IFasesService> _mockService;
         private readonly FasesController _controller;
+        private readonly ILogger<FasesController> _logger;
 
         public FasesControllerTest()
         {
             _mockService = new Mock<IFasesService>();
 
-            _controller = new FasesController(_mockService.Object, Mapper);
+            _controller = new FasesController(_mockService.Object, Mapper, _logger);
         }
 
         // -----------------------------------------

@@ -6,6 +6,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -21,6 +22,9 @@ namespace B4.Data.PostgreSQL.Repositories
         private readonly Mock<IControlService> _mockService;
         private readonly IMapper _mapper;
         private readonly ControlController _controller;
+        private readonly ILogger<ControlController> _logger;
+
+
 
         public ControlControllerTest()
         {
@@ -36,7 +40,7 @@ namespace B4.Data.PostgreSQL.Repositories
 
             _mapper = config.CreateMapper();
 
-            _controller = new ControlController(_mockService.Object, _mapper);
+            _controller = new ControlController(_mockService.Object, _mapper, _logger);
         }
 
         // -------------------------------------------------

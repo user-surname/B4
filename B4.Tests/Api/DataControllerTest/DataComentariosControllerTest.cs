@@ -1,12 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoMapper;
 using B4.Api.Controllers;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace B4.Tests.Api
@@ -16,13 +17,15 @@ namespace B4.Tests.Api
         private readonly Mock<IDataComentariosService> _mockService;
         private readonly Mock<IMapper> _mockMapper;
         private readonly DataComentariosController _controller;
+        private readonly ILogger<DataComentariosController> _logger;
+
 
         public DataComentariosControllerTest()
         {
             _mockService = new Mock<IDataComentariosService>();
             _mockMapper = new Mock<IMapper>();
 
-            _controller = new DataComentariosController(_mockService.Object, _mockMapper.Object);
+            _controller = new DataComentariosController(_mockService.Object, _mockMapper.Object, _logger);
         }
 
         [Fact]

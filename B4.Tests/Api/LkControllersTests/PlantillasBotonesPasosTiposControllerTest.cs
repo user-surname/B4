@@ -6,6 +6,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -20,12 +21,14 @@ namespace B4.Tests.Controllers
     {
         private readonly Mock<IPlantillasBotonesPasosTiposService> _mockService;
         private readonly PlantillasBotonesPasosTiposController _controller;
+        private readonly ILogger<PlantillasBotonesPasosTiposController> _logger;
+
 
         public PlantillasBotonesPasosTiposControllerTest()
         {
             _mockService = new Mock<IPlantillasBotonesPasosTiposService>();
 
-            _controller = new PlantillasBotonesPasosTiposController(_mockService.Object, Mapper);
+            _controller = new PlantillasBotonesPasosTiposController(_mockService.Object, Mapper, _logger);
         }
 
         [Fact]

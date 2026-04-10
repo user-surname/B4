@@ -7,6 +7,7 @@ using B4.Api.Middleware;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
@@ -21,6 +22,8 @@ namespace B4.Tests.Api
     {
         private readonly Mock<IDataActualsService> _mockService;
         private readonly DataActualsController _controller;
+        private readonly ILogger<DataActualsController> _logger;
+
 
         public DataActualsControllerTest()
         {
@@ -36,7 +39,7 @@ namespace B4.Tests.Api
 
             var mapper = config.CreateMapper();
 
-            _controller = new DataActualsController(_mockService.Object, mapper);
+            _controller = new DataActualsController(_mockService.Object, mapper, _logger);
         }
 
         [Fact]

@@ -1,6 +1,6 @@
 using Azure.Core.Serialization;
-using B4.Api.Extensions;
 using B4.Api.Middleware;
+using B4.Data.DataFactory.Extensions;
 using B4.Data.MySQL;
 using B4.Data.PostgreSQL;
 using B4.Data.PostgreSQL.Services;
@@ -71,7 +71,6 @@ try
     // Aqui se inicializa la infraestructura de DataFactory para la API.
     // DataFactory: infraestructura comun y repositorios ya migrados.
     builder.Services.AddDataFactoryModule(builder.Configuration);
-
     // --------------------------------------------------
     // SERVICES (DOMAIN)
     // --------------------------------------------------
@@ -114,7 +113,14 @@ try
     // --------------------------------------------------
     // DB + REPOSITORIES (según bbdd)
     // --------------------------------------------------
-    
+
+    logger.Info("Iniciando migraciones...");
+    B4.Api.Extensions.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
+    logger.Info("Base de datos actualizada correctamente.");
+
+
+    /*
+
     try
     {
         if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
@@ -251,6 +257,8 @@ try
         logger.Fatal(ex, $"Error durante la actualizacion de la base de datos {bbdd}.");
         throw;
     }
+
+    */
 
     // --------------------------------------------------
     // MIDDLEWARES / INFRA
