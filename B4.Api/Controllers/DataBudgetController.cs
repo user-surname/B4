@@ -1,50 +1,54 @@
 using AutoMapper;
-using B4.Api.Middleware;
+using B4.Api.Dto.GetDto;
+using B4.Api.Dto.PostDto;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
+using B4.Api.Middleware;
 using Microsoft.AspNetCore.Mvc;
 
 namespace B4.Api.Controllers;
 
-[ApiController]
+[CustomAuthorize(Policy = "AdminOnly")]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/[controller]")]
-[CustomAuthorize(Policy = "AdminOnly")]
-public class DataBudgetController : ControllerBase
+public class DataBudgetController : ApiControllerBase
 {
-    private readonly IDataBudgetService _service;
+    private readonly IDataBudgetService _dataBudgetService;
     private readonly IMapper _mapper;
     private readonly ILogger<DataBudgetController> _logger;
 
-    public DataBudgetController(IDataBudgetService service, IMapper mapper, ILogger<DataBudgetController> logger)
+    public DataBudgetController(IDataBudgetService dataBudgetService, IMapper mapper, ILogger<DataBudgetController> logger)
     {
-        _service = service;
+        _dataBudgetService = dataBudgetService;
         _mapper = mapper;
         _logger = logger;
     }
 
-    [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        _logger.LogInformation("GetById DataBudget requested. Id: {Id}", id);
-        var record = await _service.GetByIdAsync(id);
-        if (record is null)
-        {
-            _logger.LogWarning("GetById DataBudget not found. Id: {Id}", id);
-            return NotFound($"No existe DataBudget con id={id}");
-        }
-        _logger.LogInformation("GetById DataBudget succeeded. Id: {Id}", id);
-        return Ok(record);
-    }
-
+    // GET api/v1/dataBudget
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        _logger.LogInformation("GetAll DataBudget requested");
-        var records = await _service.GetAllAsync();
-        _logger.LogInformation("GetAll DataBudget returned records");
-        return Ok(records);
+        _logger.LogInformation("GetAll dataBudget requested");
+        var records = await _dataBudgetService.GetAllAsync();
+        _logger.LogInformation("GetAll dataBudget returned {Count} records", records?.Count() ?? 0);
+        return OkResponse(records);
     }
+
+    // GET api/v1/dataBudget/5
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        _logger.LogInformation("GetById dataBudget requested. Id: {Id}", id);
+        var result = await ExecuteAsync(
+            () => _dataBudgetService.GetByIdAsync(id)
+                                .ContinueWith(t => t.Result is null ? null : (object)t.Result),
+            $"No existe dataBudget para id={id}"
+        );
+        if (result is NotFoundObjectResult)
+            _logger.LogWarning("GetById dataBudget not found. Id: {Id}", id);
+        return result;
+    }
+
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] DataBudget entity)
@@ -53,12 +57,13 @@ public class DataBudgetController : ControllerBase
         if (!ModelState.IsValid)
         {
             _logger.LogWarning("Create DataBudget rejected: invalid model state");
-            return BadRequest(ModelState);
+            return BadRequestResponse<object>("Los datos enviados no son válidos");
         }
-        await _service.AddAsync(entity);
+        await _dataBudgetService.AddAsync(entity);
         _logger.LogInformation("Create DataBudget succeeded. Id: {Id}", entity.Id);
-        return Ok(entity);
+        return OkResponse(entity);
     }
+
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Update(int id, [FromBody] DataBudget entity)
@@ -67,18 +72,19 @@ public class DataBudgetController : ControllerBase
         if (!ModelState.IsValid)
         {
             _logger.LogWarning("Update DataBudget rejected: invalid model state. Id: {Id}", id);
-            return BadRequest(ModelState);
+            return BadRequestResponse<object>("Los datos enviados no son válidos");
         }
         if (entity.Id != 0 && entity.Id != id)
         {
             _logger.LogWarning("Update DataBudget rejected: route id {RouteId} does not match body id {BodyId}", id, entity.Id);
-            return BadRequest("El id de la ruta no coincide con el id del body.");
+            return BadRequestResponse<object>("El id de la ruta no coincide con el id del body.");
         }
         entity.Id = id;
-        await _service.UpdateAsync(entity);
+        await _dataBudgetService.UpdateAsync(entity);
         _logger.LogInformation("Update DataBudget succeeded. Id: {Id}", id);
-        return Ok(entity);
+        return OkResponse(entity);
     }
+
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
@@ -86,14 +92,14 @@ public class DataBudgetController : ControllerBase
         _logger.LogInformation("Delete DataBudget requested. Id: {Id}", id);
         try
         {
-            await _service.DeleteAsync(id);
+            await _dataBudgetService.DeleteAsync(id);
             _logger.LogInformation("Delete DataBudget succeeded. Id: {Id}", id);
-            return Ok(new { message = "Eliminado correctamente" });
+            return OkResponse(new { deleted = true });
         }
         catch (Exception ex)
         {
             _logger.LogWarning(ex, "Delete DataBudget failed. Id: {Id}", id);
-            return NotFound(new { message = ex.Message });
+            return NotFoundResponse<object>(ex.Message);
         }
     }
 }

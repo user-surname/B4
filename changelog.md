@@ -2,6 +2,7 @@
 
 ## v0.20260410.1 - Slava
 
+<<<<<<< HEAD
 - B4
 	-B4.Api.Program.cs - Datafactory integrado en el arranque de la aplicación
 	-B4.Api.Program.cs - Codigo obsoleto eliminado
@@ -10,6 +11,9 @@
 
 - B4
 	- B4.App1 - Frontend WinUI 3 Creado y funcionando
+=======
+- B4.Tests.Api - Tests actualizados con apiresponse y logger
+>>>>>>> CorreccionTests
 
 ## v0.20260325.1 - Slava
 

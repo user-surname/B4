@@ -4,6 +4,7 @@ using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Api
+namespace B4.Tests.Api.Controllers
 {
     public class DataActualsControllerTest
     {
@@ -24,10 +25,10 @@ namespace B4.Tests.Api
         private readonly DataActualsController _controller;
         private readonly ILogger<DataActualsController> _logger;
 
-
         public DataActualsControllerTest()
         {
             _mockService = new Mock<IDataActualsService>();
+            _logger = NullLogger<DataActualsController>.Instance;
 
             var expression = new MapperConfigurationExpression();
             expression.AddProfile<MappingProfile>();
@@ -51,12 +52,22 @@ namespace B4.Tests.Api
                 Ejercicio = 2024,
                 IdCiclo = 1,
                 IdFase = 2,
-                IdCurrency = 2, // EUR
+                IdCurrency = 2,
                 IdEpigrafe = 300,
-                Mes00 = 0, Mes01 = 1, Mes02 = 2, Mes03 = 3,
-                Mes04 = 4, Mes05 = 5, Mes06 = 6, Mes07 = 7,
-                Mes08 = 8, Mes09 = 9, Mes10 = 10, Mes11 = 11,
-                Mes12 = 12, Mes13 = 13
+                Mes00 = 0,
+                Mes01 = 1,
+                Mes02 = 2,
+                Mes03 = 3,
+                Mes04 = 4,
+                Mes05 = 5,
+                Mes06 = 6,
+                Mes07 = 7,
+                Mes08 = 8,
+                Mes09 = 9,
+                Mes10 = 10,
+                Mes11 = 11,
+                Mes12 = 12,
+                Mes13 = 13
             };
 
             _mockService
@@ -66,7 +77,10 @@ namespace B4.Tests.Api
             var result = await _controller.GetActualsByPlantaEjercicioEpigrafe(10, 2024, 300);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<DataActualsGetDto>(ok.Value);
+
+            var response = Assert.IsType<ApiResponse<DataActualsGetDto>>(ok.Value);
+
+            var dto = response.Data;
 
             Assert.Equal("10", dto.Head.Planta);
             Assert.Equal(2024, dto.Head.Ejercicio);
@@ -85,7 +99,11 @@ namespace B4.Tests.Api
 
             var result = await _controller.GetActualsByPlantaEjercicioEpigrafe(10, 2024, 300);
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            var notFound = Assert.IsType<NotFoundObjectResult>(result);
+
+            var response = Assert.IsType<ApiResponse<DataActualsGetDto>>(notFound.Value);
+
+            Assert.Contains("No existen actuals", response.Msg);
         }
 
         [Fact]
@@ -95,7 +113,11 @@ namespace B4.Tests.Api
                 10, 2024, 1, "EUR",
                 Array.Empty<DataActualsPostDto>());
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+
+            var response = Assert.IsType<ApiResponse<object>>(badRequest.Value);
+
+            Assert.Contains("vacío", response.Msg);
         }
 
         [Fact]
@@ -107,17 +129,17 @@ namespace B4.Tests.Api
 
             var body = new[]
             {
-                new DataActualsPostDto { IdEpigrafe = 100, Mes01 = 1, Mes02 = 2, Mes03 = 3, Mes04 = 4, Mes05 = 5, Mes06 = 6, Mes07 = 7, Mes08 = 8, Mes09 = 9, Mes10 = 10, Mes11 = 11, Mes12 = 12, Mes13 = 13 },
-                new DataActualsPostDto { IdEpigrafe = 200, Mes01 = 1, Mes02 = 2, Mes03 = 3, Mes04 = 4, Mes05 = 5, Mes06 = 6, Mes07 = 7, Mes08 = 8, Mes09 = 9, Mes10 = 10, Mes11 = 11, Mes12 = 12, Mes13 = 13 }
-            };
+        new DataActualsPostDto { IdEpigrafe = 100, Mes01 = 1, Mes02 = 2, Mes03 = 3, Mes04 = 4, Mes05 = 5, Mes06 = 6, Mes07 = 7, Mes08 = 8, Mes09 = 9, Mes10 = 10, Mes11 = 11, Mes12 = 12, Mes13 = 13 },
+        new DataActualsPostDto { IdEpigrafe = 200, Mes01 = 1, Mes02 = 2, Mes03 = 3, Mes04 = 4, Mes05 = 5, Mes06 = 6, Mes07 = 7, Mes08 = 8, Mes09 = 9, Mes10 = 10, Mes11 = 11, Mes12 = 12, Mes13 = 13 }
+    };
 
             var result = await _controller.PostActualsByPlantaEjercicio(10, 2024, 1, "EUR", body);
 
             var ok = Assert.IsType<OkObjectResult>(result);
 
-            var insertedProp = ok.Value.GetType().GetProperty("inserted");
-            Assert.NotNull(insertedProp);
-            Assert.Equal(2, (int)insertedProp.GetValue(ok.Value));
+            var response = Assert.IsType<ApiResponse<InsertResultDto>>(ok.Value);
+
+            Assert.Equal(2, response.Data.Inserted);
 
             _mockService.Verify(
                 s => s.AddRangeAsync(10, 2024, 1, "EUR", It.IsAny<IEnumerable<DataActuals>>()),

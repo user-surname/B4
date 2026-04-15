@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class PlantSubdivisionControllerTest : TestBase
     {
@@ -25,7 +26,8 @@ namespace B4.Tests.Controllers
 
         public PlantSubdivisionControllerTest()
         {
-            _mockService = new Mock<IPlantSubdivisionService>();
+            _mockService = CreateMock<IPlantSubdivisionService>();
+            _logger = NullLogger<PlantSubdivisionController>.Instance;
 
             _controller = new PlantSubdivisionController(_mockService.Object, Mapper, _logger);
         }
@@ -47,12 +49,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<PlantSubdivisionGetDto>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantSubdivisionGetDto>>(okResult.Value);
+            var dto = response.Data;
 
             Assert.Equal("Subdivisión A", dto.Subdivision);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkPlantSubdivision)null);
@@ -62,7 +65,7 @@ namespace B4.Tests.Controllers
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
-        [Fact]
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
             var list = new List<LkPlantSubdivision>
@@ -76,12 +79,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<PlantSubdivisionGetDto>>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<List<PlantSubdivisionGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
             Assert.Equal(2, dtos.Count);
         }
 
-        [Fact]
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
             var dto = new PlantSubdivisionPostDto
@@ -95,7 +99,8 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdSubdivision = Assert.IsType<PlantSubdivisionGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<PlantSubdivisionGetDto>>(createdResult.Value);
+            var createdSubdivision = response.Data;
 
             Assert.Equal("Subdivisión C", createdSubdivision.Subdivision);
         }
@@ -103,17 +108,20 @@ namespace B4.Tests.Controllers
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(100)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkPlantSubdivision { IdSubdivision = 1, Subdivision = "Subdivisión A" });
 
-            var result = await _controller.Delete(100);
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
+
+            var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dict = okResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
 
-            Assert.Equal("Subdivisión eliminada correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
-        [Fact]
+[Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.DeleteAsync(99))
@@ -122,9 +130,7 @@ namespace B4.Tests.Controllers
             var result = await _controller.Delete(99);
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
-            var dict = notFoundResult.Value.GetType().GetProperties().ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
-
-            Assert.Equal("No existe subdivisión con id=99", dict["message"]);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }

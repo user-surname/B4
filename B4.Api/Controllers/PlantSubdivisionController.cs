@@ -3,85 +3,96 @@ using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace B4.Api.Controllers
+namespace B4.Api.Controllers;
+
+[AllowAnonymous]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class PlantSubdivisionController : ApiControllerBase
 {
-    [ApiController]
-    [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class PlantSubdivisionController : ControllerBase
+    private readonly IPlantSubdivisionService _plantSubdivisionService;
+    private readonly IMapper _mapper;
+    private readonly ILogger<PlantSubdivisionController> _logger;
+
+    public PlantSubdivisionController(IPlantSubdivisionService plantSubdivisionService, IMapper mapper, ILogger<PlantSubdivisionController> logger)
     {
-        private readonly IPlantSubdivisionService _service;
-        private readonly IMapper _mapper;
-        private readonly ILogger<PlantSubdivisionController> _logger;
+        _plantSubdivisionService = plantSubdivisionService;
+        _mapper = mapper;
+        _logger = logger;
+    }
 
-        public PlantSubdivisionController(IPlantSubdivisionService service, IMapper mapper, ILogger<PlantSubdivisionController> logger)
+    // GET api/v1/plantSubdivision
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        _logger.LogInformation("GetAll plantSubdivision requested");
+        var records = await _plantSubdivisionService.GetAllAsync();
+        var dtos = _mapper.Map<List<PlantSubdivisionGetDto>>(records);
+        _logger.LogInformation("GetAll plantSubdivision returned {Count} records", dtos.Count);
+        return OkResponse(dtos);
+    }
+
+    // GET api/v1/plantSubdivision/5
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        _logger.LogInformation("GetById plantSubdivision requested. Id: {Id}", id);
+        var result = await ExecuteAsync(
+            () => _plantSubdivisionService.GetByIdAsync(id)
+                                .ContinueWith(t => t.Result is null ? null : _mapper.Map<PlantSubdivisionGetDto>(t.Result)),
+            $"No existe plantSubdivision para id={id}"
+        );
+        if (result is NotFoundObjectResult)
+            _logger.LogWarning("GetById plantSubdivision not found. Id: {Id}", id);
+        return result;
+    }
+
+    // POST api/v1/plantSubdivision
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] PlantSubdivisionPostDto dto)
+    {
+        _logger.LogInformation("Create plantSubdivision requested");
+
+        if (dto is null)
         {
-            _service = service;
-            _mapper = mapper;
-            _logger = logger;
+            _logger.LogWarning("Create plantSubdivision rejected: empty body");
+            return BadRequestResponse<PlantSubdivisionGetDto>("El cuerpo de la petición no puede estar vacío");
         }
 
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
+        if (!ModelState.IsValid)
         {
-            _logger.LogInformation("GetById PlantSubdivisionController requested. Id: {Id}", id);
-            var record = await _service.GetByIdAsync(id);
-            if (record == null)
-            {
-                _logger.LogWarning("GetById PlantSubdivisionController not found. Id: {Id}", id);
-                return NotFound($"No existe registro para id={id}");
-            }
-            var dto = _mapper.Map<PlantSubdivisionGetDto>(record);
-            _logger.LogInformation("GetById PlantSubdivisionController succeeded. Id: {Id}", id);
-            return Ok(dto);
+            _logger.LogWarning("Create plantSubdivision rejected: invalid model state");
+            return BadRequestResponse<PlantSubdivisionGetDto>("Los datos enviados no son válidos");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        var entity = _mapper.Map<LkPlantSubdivision>(dto);
+        entity.CreatedAt = DateTime.UtcNow;
+        entity.UpdatedAt = DateTime.UtcNow;
+        entity.IsActive = 1;
+        await _plantSubdivisionService.AddAsync(entity);
+
+        _logger.LogInformation("Create plantSubdivision succeeded. IdSubdivision: {IdSubdivision}", entity.IdSubdivision);
+        var resultDto = _mapper.Map<PlantSubdivisionGetDto>(entity);
+        return CreatedResponse(nameof(GetById), new { id = entity.IdSubdivision }, resultDto);
+    }
+    // DELETE api/v1/plantSubdivision/5
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        _logger.LogInformation("Delete plantSubdivision requested. Id: {Id}", id);
+
+        var existing = await _plantSubdivisionService.GetByIdAsync(id);
+        if (existing is null)
         {
-            _logger.LogInformation("GetAll PlantSubdivisionController requested");
-            var records = await _service.GetAllAsync();
-            var dtos = _mapper.Map<List<PlantSubdivisionGetDto>>(records);
-            _logger.LogInformation("GetAll PlantSubdivisionController returned {Count} records", dtos.Count);
-            return Ok(dtos);
+            _logger.LogWarning("Delete plantSubdivision not found. Id: {Id}", id);
+            return NotFoundResponse<PlantSubdivisionGetDto>($"No existe plantSubdivision con id={id}");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] PlantSubdivisionPostDto dto)
-        {
-            _logger.LogInformation("Create PlantSubdivisionController requested");
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Create PlantSubdivisionController rejected: invalid model state");
-                return BadRequest(ModelState);
-            }
-            var entity = _mapper.Map<LkPlantSubdivision>(dto);
-            entity.CreatedAt = DateTime.UtcNow;
-            entity.UpdatedAt = DateTime.UtcNow;
-            entity.IsActive = 1;
-            await _service.AddAsync(entity);
-            var createdDto = _mapper.Map<PlantSubdivisionGetDto>(entity);
-            _logger.LogInformation("Create PlantSubdivisionController succeeded. Id: {Id}", entity.IdSubdivision);
-            return CreatedAtAction(nameof(GetById), new { id = entity.IdSubdivision }, createdDto);
-        }
-
-        [HttpDelete("{id:int}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            _logger.LogInformation("Delete PlantSubdivisionController requested. Id: {Id}", id);
-            try
-            {
-                await _service.DeleteAsync(id);
-                _logger.LogInformation("Delete PlantSubdivisionController succeeded. Id: {Id}", id);
-                return Ok(new { message = "Subdivision eliminada correctamente" });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Delete PlantSubdivisionController failed. Id: {Id}", id);
-                return NotFound(new { message = ex.Message });
-            }
-        }
+        await _plantSubdivisionService.DeleteAsync(id);
+        _logger.LogInformation("Delete plantSubdivision succeeded. Id: {Id}", id);
+        return OkResponse(new { id, deleted = true });
     }
 }

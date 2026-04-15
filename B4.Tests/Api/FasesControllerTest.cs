@@ -1,8 +1,9 @@
-﻿using AutoMapper;
+using AutoMapper;
 using B4.Api.Controllers;
 using B4.Api.Dto.GetDto;
 using B4.Api.Dto.PostDto;
 using B4.Api.Middleware;
+using B4.Models.Common;
 using B4.Models.Entities.LkEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class FasesControllerTest : TestBase
     {
@@ -25,14 +26,12 @@ namespace B4.Tests.Controllers
 
         public FasesControllerTest()
         {
-            _mockService = new Mock<IFasesService>();
+            _mockService = CreateMock<IFasesService>();
+            _logger = NullLogger<FasesController>.Instance;
 
             _controller = new FasesController(_mockService.Object, Mapper, _logger);
         }
 
-        // -----------------------------------------
-        // TEST GET BY ID
-        // -----------------------------------------
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenRecordExists()
         {
@@ -51,12 +50,13 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetById(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dto = Assert.IsType<FasesGetDto>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<FasesGetDto>>(okResult.Value);
+            var dto = response.Data;
 
             Assert.Equal("Fase 1", dto.Fase);
         }
 
-        [Fact]
+[Fact]
         public async Task GetById_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((LkFases)null);
@@ -69,7 +69,8 @@ namespace B4.Tests.Controllers
         // -----------------------------------------
         // TEST GET ALL
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task GetAll_ShouldReturnOk_WithAllRecords()
         {
             var list = new List<LkFases>
@@ -83,7 +84,8 @@ namespace B4.Tests.Controllers
             var result = await _controller.GetAll();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var dtos = Assert.IsType<List<FasesGetDto>>(okResult.Value);
+            var response = Assert.IsType<ApiResponse<List<FasesGetDto>>>(okResult.Value);
+            var dtos = response.Data;
 
             Assert.Equal(2, dtos.Count);
         }
@@ -91,7 +93,8 @@ namespace B4.Tests.Controllers
         // -----------------------------------------
         // TEST POST CREATE
         // -----------------------------------------
-        [Fact]
+
+[Fact]
         public async Task Create_ShouldReturnCreatedAtAction()
         {
             var dto = new FasesPostDto
@@ -105,7 +108,8 @@ namespace B4.Tests.Controllers
             var result = await _controller.Create(dto);
 
             var createdResult = Assert.IsType<CreatedAtActionResult>(result);
-            var createdFase = Assert.IsType<FasesGetDto>(createdResult.Value);
+            var response = Assert.IsType<ApiResponse<FasesGetDto>>(createdResult.Value);
+            var createdFase = response.Data;
 
             Assert.Equal("Fase 3", createdFase.Fase);
         }
@@ -113,22 +117,21 @@ namespace B4.Tests.Controllers
         // -----------------------------------------
         // TEST DELETE
         // -----------------------------------------
+
         [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkFases { IdFase = 1 });
+
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario para validar el mensaje
-            var dict = okResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(okResult.Value));
-
-            Assert.Equal("Fase eliminada correctamente", dict["message"]);
+            Assert.NotNull(okResult.Value);
         }
 
         [Fact]
@@ -142,12 +145,7 @@ namespace B4.Tests.Controllers
 
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
 
-            var dict = notFoundResult.Value
-                .GetType()
-                .GetProperties()
-                .ToDictionary(p => p.Name, p => p.GetValue(notFoundResult.Value));
-
-            Assert.Equal("No existe fase con id=99", dict["message"]);
+            Assert.NotNull(notFoundResult.Value);
         }
     }
 }

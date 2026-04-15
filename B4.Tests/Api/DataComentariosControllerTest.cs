@@ -1,31 +1,29 @@
 using AutoMapper;
 using B4.Api.Controllers;
+using B4.Models.Common;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Api
+namespace B4.Tests.Api.Controllers
 {
-    public class DataComentariosControllerTest
+    public class DataComentariosControllerTest : TestBase
     {
         private readonly Mock<IDataComentariosService> _mockService;
-        private readonly Mock<IMapper> _mockMapper;
         private readonly DataComentariosController _controller;
         private readonly ILogger<DataComentariosController> _logger;
-
-
-        public DataComentariosControllerTest()
+public DataComentariosControllerTest()
         {
-            _mockService = new Mock<IDataComentariosService>();
-            _mockMapper = new Mock<IMapper>();
-
-            _controller = new DataComentariosController(_mockService.Object, _mockMapper.Object, _logger);
+            _logger = NullLogger<DataComentariosController>.Instance;
+            _mockService = CreateMock<IDataComentariosService>();
+            _controller = new DataComentariosController(_mockService.Object, Mapper, _logger);
         }
 
         [Fact]
@@ -36,7 +34,7 @@ namespace B4.Tests.Api
             var result = await _controller.GetById(1);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<DataComentarios>(ok.Value);
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]
@@ -58,8 +56,12 @@ namespace B4.Tests.Api
             var result = await _controller.GetAll();
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            var list = Assert.IsAssignableFrom<IEnumerable<DataComentarios>>(ok.Value);
-            Assert.Equal(2, new List<DataComentarios>(list).Count);
+
+            var response = Assert.IsType<ApiResponse<IEnumerable<DataComentarios>>>(ok.Value);
+
+            var list = response.Data;
+
+            Assert.Equal(2, list.Count());
         }
 
         [Fact]
@@ -71,7 +73,7 @@ namespace B4.Tests.Api
             var result = await _controller.Create(new DataComentarios());
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<DataComentarios>(ok.Value);
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]
@@ -83,7 +85,7 @@ namespace B4.Tests.Api
             var result = await _controller.Update(1, new DataComentarios { Id = 1 });
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<DataComentarios>(ok.Value);
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]

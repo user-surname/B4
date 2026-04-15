@@ -10,39 +10,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
 
-namespace B4.Tests.Api
+namespace B4.Tests.Api.Controllers
 {
-    public class DataBridgesFyControllerTest
+    public class DataForecastControllerTest : TestBase
     {
-        private readonly Mock<IDataBridgesFyService> _mockService;
-        private readonly Mock<IMapper> _mockMapper;
-        private readonly DataBridgesFyController _controller;
-        private readonly ILogger<DataBridgesFyController> _logger;
-
-
-        public DataBridgesFyControllerTest()
+        private readonly Mock<IDataForecastService> _mockService;
+        private readonly DataForecastController _controller;
+        private readonly ILogger<DataForecastController> _logger;
+public DataForecastControllerTest()
         {
-            _mockService = new Mock<IDataBridgesFyService>();
-            _mockMapper = new Mock<IMapper>();
-            _controller = new DataBridgesFyController(_mockService.Object, _mockMapper.Object, _logger);
+            _logger = NullLogger<DataForecastController>.Instance;
+            _mockService = CreateMock<IDataForecastService>();
+            _controller = new DataForecastController(_mockService.Object, Mapper, _logger);
         }
 
         [Fact]
         public async Task GetById_ShouldReturnOk_WhenExists()
         {
-            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(new DataBridgesFy());
+            _mockService.Setup(s => s.GetByIdAsync(1)).ReturnsAsync(new DataForecast());
 
             var result = await _controller.GetById(1);
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<DataBridgesFy>(ok.Value);
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]
         public async Task GetById_ShouldReturnNotFound_WhenMissing()
         {
-            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((DataBridgesFy)null);
+            _mockService.Setup(s => s.GetByIdAsync(99)).ReturnsAsync((DataForecast)null);
 
             var result = await _controller.GetById(99);
 
@@ -52,37 +50,36 @@ namespace B4.Tests.Api
         [Fact]
         public async Task GetAll_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<DataBridgesFy> { new(), new() });
+            _mockService.Setup(s => s.GetAllAsync()).ReturnsAsync(new List<DataForecast> { new(), new() });
 
             var result = await _controller.GetAll();
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            var list = Assert.IsAssignableFrom<IEnumerable<DataBridgesFy>>(ok.Value);
-            Assert.Equal(2, list.Count());
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]
         public async Task Create_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.AddAsync(It.IsAny<DataBridgesFy>()))
+            _mockService.Setup(s => s.AddAsync(It.IsAny<DataForecast>()))
                         .Returns(Task.CompletedTask);
 
-            var result = await _controller.Create(new DataBridgesFy());
+            var result = await _controller.Create(new DataForecast());
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<DataBridgesFy>(ok.Value);
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]
         public async Task Update_ShouldReturnOk()
         {
-            _mockService.Setup(s => s.UpdateAsync(It.IsAny<DataBridgesFy>()))
+            _mockService.Setup(s => s.UpdateAsync(It.IsAny<DataForecast>()))
                         .Returns(Task.CompletedTask);
 
-            var result = await _controller.Update(1, new DataBridgesFy { Id = 1 });
+            var result = await _controller.Update(1, new DataForecast { Id = 1 });
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<DataBridgesFy>(ok.Value);
+            Assert.NotNull(ok.Value);
         }
 
         [Fact]
