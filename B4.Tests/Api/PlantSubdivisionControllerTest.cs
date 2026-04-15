@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class PlantSubdivisionControllerTest : TestBase
     {
@@ -105,14 +105,19 @@ namespace B4.Tests.Controllers
             Assert.Equal("Subdivisión C", createdSubdivision.Subdivision);
         }
 
-[Fact]
+        [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(100)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkPlantSubdivision { IdSubdivision = 1, Subdivision = "Subdivisión A" });
 
-            var result = await _controller.Delete(100);
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
+
+            var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
+
             Assert.NotNull(okResult.Value);
         }
 

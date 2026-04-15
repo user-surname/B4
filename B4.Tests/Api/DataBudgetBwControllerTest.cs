@@ -9,8 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class DataBudgetBwControllerTest : TestBase
     {

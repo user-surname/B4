@@ -15,7 +15,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class ControlControllerTest : TestBase
     {

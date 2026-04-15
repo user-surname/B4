@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class EpigrafeControllerTest : TestBase
     {
@@ -124,10 +124,14 @@ namespace B4.Tests.Controllers
         // TEST DELETE
         // -----------------------------------------
 
-[Fact]
+        [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkEpigrafe { IdEpigrafe = 1 });
+
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
@@ -136,7 +140,7 @@ namespace B4.Tests.Controllers
             Assert.NotNull(okResult.Value);
         }
 
-[Fact]
+        [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService

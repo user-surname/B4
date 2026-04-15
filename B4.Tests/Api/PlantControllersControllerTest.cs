@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class PlantControllersControllerTest : TestBase
     {

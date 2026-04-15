@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.20260410.1 - Slava
+
+- B4.Tests.Api - Tests actualizados con apiresponse y logger
+
 ## v0.20260325.1 - Slava
 
 - B4

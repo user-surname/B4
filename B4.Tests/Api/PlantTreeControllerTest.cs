@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class PlantTreeControllerTest : TestBase
     {
@@ -116,11 +116,15 @@ namespace B4.Tests.Controllers
 [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkPlantTree { IdTree = 1, IdDivision = 10, IdDivisionCompany = 20, IdSubdivision = 30, IdCountry = 40 });
+
             _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
+
             Assert.NotNull(okResult.Value);
         }
 

@@ -9,15 +9,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging.Abstractions;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class DataActualsBwControllerTest : TestBase
     {
         private readonly Mock<IDataActualsBwService> _mockService;
         private readonly DataActualsBwController _controller;
         private readonly ILogger<DataActualsBwController> _logger;
-public DataActualsBwControllerTest()
+        public DataActualsBwControllerTest()
         {
             _logger = NullLogger<DataActualsBwController>.Instance;
             _mockService = CreateMock<IDataActualsBwService>();

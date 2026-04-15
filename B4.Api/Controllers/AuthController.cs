@@ -13,7 +13,7 @@ namespace B4.Api.Controllers
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class AuthController : ControllerBase
+    public class AuthController : ApiControllerBase
     {
         private readonly JwtService _jwtService;
         private readonly IUsuarioRepository _usuarioRepository;

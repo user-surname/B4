@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class FasesControllerTest : TestBase
     {
@@ -118,20 +118,23 @@ namespace B4.Tests.Controllers
         // TEST DELETE
         // -----------------------------------------
 
-[Fact]
+        [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(1)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkFases { IdFase = 1 });
+
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
 
             var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
 
-            // Convertimos a diccionario para validar el mensaje
             Assert.NotNull(okResult.Value);
         }
 
-[Fact]
+        [Fact]
         public async Task Delete_ShouldReturnNotFound_WhenRecordDoesNotExist()
         {
             _mockService

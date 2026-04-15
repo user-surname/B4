@@ -16,7 +16,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class PlantillasBotonesPasosTiposControllerTest : TestBase
     {
@@ -108,14 +108,19 @@ namespace B4.Tests.Controllers
             Assert.Equal("Tipo C", createdEntity.Pasotipo);
         }
 
-[Fact]
+        [Fact]
         public async Task Delete_ShouldReturnOk_WhenRecordExists()
         {
-            _mockService.Setup(s => s.DeleteAsync(101)).Returns(Task.CompletedTask);
+            _mockService.Setup(s => s.GetByIdAsync(1))
+                        .ReturnsAsync(new LkPlantillasBotonesPasosTipos { IdPasoTipo = 1 });
 
-            var result = await _controller.Delete(101);
+            _mockService.Setup(s => s.DeleteAsync(1))
+                        .Returns(Task.CompletedTask);
+
+            var result = await _controller.Delete(1);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
+
             Assert.NotNull(okResult.Value);
         }
 

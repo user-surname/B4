@@ -1,16 +1,18 @@
 using AutoMapper;
 using B4.Api.Controllers;
+using B4.Models.Common;
 using B4.Models.Entities.DataEntities;
 using B4.Models.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace B4.Tests.Controllers
+namespace B4.Tests.Api.Controllers
 {
     public class DataComentariosControllerTest : TestBase
     {
@@ -54,8 +56,12 @@ public DataComentariosControllerTest()
             var result = await _controller.GetAll();
 
             var ok = Assert.IsType<OkObjectResult>(result);
-            var list = Assert.IsAssignableFrom<IEnumerable<DataComentarios>>(ok.Value);
-            Assert.Equal(2, new List<DataComentarios>(list).Count);
+
+            var response = Assert.IsType<ApiResponse<IEnumerable<DataComentarios>>>(ok.Value);
+
+            var list = response.Data;
+
+            Assert.Equal(2, list.Count());
         }
 
         [Fact]
