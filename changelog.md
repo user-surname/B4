@@ -1,6 +1,13 @@
 # Changelog
 
-## v0.20260410.2 - Slava
+## v0.20260417.1 - Slava
+
+- B4
+	- B4.Api - tabla log_actividad implementada
+	- B4.WinUI - Nuevo frontend con WinUI3 con funcionalidades de Winhance
+	- B4.Api.Program - Optimizado con classes en /Extensions
+
+## v0.20260410.1 - Slava
 
 - B4.Tests.Api - Tests actualizados con apiresponse y logger
 
@@ -14,7 +21,6 @@
 
 - B4
 	- B4.App1 - Frontend WinUI 3 Creado y funcionando
-
 
 ## v0.20260325.1 - Slava
 
