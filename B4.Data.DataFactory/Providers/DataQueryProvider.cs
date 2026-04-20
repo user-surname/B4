@@ -113,6 +113,10 @@ namespace B4.Data.DataFactory.Providers
             () => new MySqlDataComentariosQueries(),
             () => new PostgreSqlDataComentariosQueries());
 
+        public ILogActividadQueries LogActividadQueries => Resolve<ILogActividadQueries>(
+            () => new MySqlLogActividadQueries(),
+            () => new PostgreSqlLogActividadQueries());
+
         public IDataTipoCambioQueries DataTipoCambioQueries => Resolve<IDataTipoCambioQueries>(
             () => new MySqlDataTipoCambioQueries(),
             () => new PostgreSqlDataTipoCambioQueries());

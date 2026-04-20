@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="B4.WinUI.Pages.LoginPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="16,14,16,16">
+        <StackPanel Spacing="14">
+            <StackPanel Orientation="Horizontal" Spacing="12">
+                <SymbolIcon Symbol="Contact" />
+                <StackPanel>
+                    <TextBlock FontSize="28" FontWeight="Bold" Text="Login" />
+                    <TextBlock Opacity="0.75" Text="Pantalla visual de acceso para B4 API." />
+                </StackPanel>
+            </StackPanel>
+
+            <Border
+                MaxWidth="460"
+                Background="{ThemeResource LayerFillColorAltBrush}"
+                CornerRadius="8"
+                Padding="18">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock FontSize="20" FontWeight="SemiBold" Text="B4 API Login (JWT)" />
+                    <TextBox Grid.Row="1" Header="Email" PlaceholderText="usuario@empresa.com" Text="{Binding Email, Mode=TwoWay}" />
+                    <PasswordBox Grid.Row="2" Header="Password" PlaceholderText="********" PasswordChanged="PasswordBox_OnPasswordChanged" />
+                    <Button Grid.Row="3" HorizontalAlignment="Left" Content="Login" Click="LoginButton_OnClick" />
+                    <TextBlock
+                        Grid.Row="4"
+                        Opacity="0.7"
+                        Text="{Binding StatusMessage}"
+                        TextWrapping="Wrap" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </Grid>
+</Page>

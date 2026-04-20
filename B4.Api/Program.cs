@@ -1,59 +1,43 @@
-using Azure.Core.Serialization;
-using B4.Api.Middleware;
-using B4.Data.DataFactory.Extensions;
-using B4.Data.MySQL;
-using B4.Data.PostgreSQL;
-using B4.Data.PostgreSQL.Services;
-using B4.Domain.Services;
-using B4.Models.Entities.DataEntities;
-using B4.Models.RepositoryInterfaces;
-using B4.Models.RepositoryInterfaces.DataInterfaces;
-using B4.Models.RepositoryInterfaces.LkInterfaces;
-using B4.Models.ServiceInterfaces;
+using B4.Api.Extensions;
 using B4.Shared;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
 using NLog;
-using NLog.Config;
-using NLog.Targets;
+using NLog.Extensions.Logging;
 using NLog.Web;
-using Npgsql;
-using System;
 using System.IO;
-using System.IO.Compression;
-using System.Text;
-using System.Text.Json;
 
-// --------------------------------------------------
-// CREACIÓN DEL BUILDER
-// --------------------------------------------------
 var builder = WebApplication.CreateBuilder(args);
 
-// NLog
+// Carga la configuración compartida (sharedConfig), que contiene parámetros
+// comunes como el tipo de base de datos ("bbdd"), cadenas de conexión y JWT.
+// Esta configuración es independiente del appsettings.json del proyecto.
+var sharedConfig = SharedConfig.Load();
 
+// Lee qué motor de base de datos se va a usar (ej: "MySQL" o "PostgreSQL").
+// Esta clave determina qué repositorios e infraestructura se registran en el DI.
+var bbdd = sharedConfig["bbdd"]?.Trim();
+
+LogManager.Configuration.Variables["dbType"] = bbdd;
+
+//  1. Cargar configuración ANTES de NLog
+var preConfig = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .Build();
+
+//  2. Inicializar NLog con esa configuración
 var logger = LogManager.Setup()
     .LoadConfigurationFromFile(Path.Combine(AppContext.BaseDirectory, "nlog.config"))
+    .LoadConfigurationFromSection(preConfig) 
     .GetCurrentClassLogger();
 
+//  3. Reemplazar logging por NLog
 builder.Logging.ClearProviders();
 builder.Host.UseNLog();
-
-var nlogConfig = LogManager.Configuration;
 
 try
 {
     logger.Info("Iniciando API B4...");
-
-    var sharedConfig = SharedConfig.Load();
-    var bbdd = sharedConfig["bbdd"]?.Trim();
-    var config = SharedConfig.Load();
-    string connectionString;
-    string dbProvider;
 
     if (string.IsNullOrWhiteSpace(bbdd))
     {
@@ -61,317 +45,20 @@ try
         throw new InvalidOperationException("Debe especificar la base de datos a usar en 'bbdd'.");
     }
 
-    // AutoMapper
-    builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
-    // Aqui se inicializa la infraestructura de DataFactory para la API.
-    // DataFactory: infraestructura comun y repositorios ya migrados.
-    builder.Services.AddDataFactoryModule(builder.Configuration);
-    // --------------------------------------------------
-    // SERVICES (DOMAIN)
-    // --------------------------------------------------
-    // LK Services
-    builder.Services.AddScoped<ICiclosService, CiclosService>();
-    builder.Services.AddScoped<IEpigrafeService, EpigrafeService>();
-    builder.Services.AddScoped<IFasesService, FasesService>();
-    builder.Services.AddScoped<IPlantCompanyService, PlantCompanyService>();
-    builder.Services.AddScoped<IPlantControllersService, PlantControllersService>();
-    builder.Services.AddScoped<IPlantCountryService, PlantCountryService>();
-    builder.Services.AddScoped<IPlantCurrencyService, PlantCurrencyService>();
-    builder.Services.AddScoped<IPlantDivisionCompanyService, PlantDivisionCompanyService>();
-    builder.Services.AddScoped<IPlantDivisionService, PlantDivisionService>();
-    builder.Services.AddScoped<IPlantillasBotonesPasosTiposService, PlantillasBotonesPasosTiposService>();
-    builder.Services.AddScoped<IPlantSubdivisionService, PlantSubdivisionService>();
-    builder.Services.AddScoped<IPlantTreeService, PlantTreeService>();
-    builder.Services.AddScoped<IControlService, ControlService>();
-    builder.Services.AddScoped<IControlPlantaService, ControlPlantaService>();
-
-
-    // DATA Services (contribuido)
-    builder.Services.AddScoped<IDataBudgetService, DataBudgetService>();
-    builder.Services.AddScoped<IDataForecastService, DataForecastService>();
-    builder.Services.AddScoped<IDataComentariosService, DataComentariosService>();
-    builder.Services.AddScoped<IDataTipoCambioService, DataTipoCambioService>();
-    builder.Services.AddScoped<IDataBridgesFyService, DataBridgesFyService>();
-    builder.Services.AddScoped<IDataBridgesMonthService, DataBridgesMonthService>();
-
-    // Si ya migraste DataActuals al patrón service, registra también:
-    builder.Services.AddScoped<IDataActualsService, DataActualsService>();
-
-    // DATA BW Services (read-only)
-    builder.Services.AddScoped<IDataActualsBwService, DataActualsBwService>();
-    builder.Services.AddScoped<IDataBudgetBwService, DataBudgetBwService>();
-    builder.Services.AddScoped<IDataForecastBwService, DataForecastBwService>();
-    builder.Services.AddScoped<IDataBridgesFyBwService, DataBridgesFyBwService>();
-    builder.Services.AddScoped<IDataBridgesFyBwEurService, DataBridgesFyBwEurService>();
-    builder.Services.AddScoped<IDataBridgesMonthBwService, DataBridgesMonthBwService>();
-
-    // --------------------------------------------------
-    // DB + REPOSITORIES (según bbdd)
-    // --------------------------------------------------
-
-    logger.Info("Iniciando migraciones...");
-    B4.Api.Extensions.DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
-    logger.Info("Base de datos actualizada correctamente.");
-
-    // --------------------------------------------------
-    // MIDDLEWARES / INFRA
-    // --------------------------------------------------
-    builder.Services.AddTransient<GlobalExceptionHandlerMiddleware>();
-
-    // Compresión GZIP
-    builder.Services.Configure<GzipCompressionProviderOptions>(options =>
-    {
-        options.Level = CompressionLevel.SmallestSize;
-    });
-    builder.Services.AddResponseCompression(options =>
-    {
-        options.Providers.Add<GzipCompressionProvider>();
-        options.EnableForHttps = true;
-    });
-
-    // MemoryCache (LK)
-    // MemoryCache tablas maestras
-    builder.Services.AddMemoryCache();
-    builder.Services.AddScoped<IMemoryCacheService, MemoryCacheService>();
-
-
-    // Controllers + Swagger + Versionado
-    builder.Services.AddControllers();
-    builder.Services.AddEndpointsApiExplorer();
-
-    builder.Services.AddApiVersioning(options =>
-    {
-        options.DefaultApiVersion = new ApiVersion(1, 0);
-        options.AssumeDefaultVersionWhenUnspecified = true;
-        options.ReportApiVersions = true;
-    });
-
-    builder.Services.AddVersionedApiExplorer(options =>
-    {
-        options.GroupNameFormat = "'v'VVV";
-        options.SubstituteApiVersionInUrl = true;
-    });
-
-    builder.Services.AddSwaggerGen(c =>
-    {
-        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            Scheme = "Bearer",
-            BearerFormat = "JWT",
-            In = ParameterLocation.Header,
-            Description = "Ingrese 'Bearer {token}'"
-        });
-
-        c.AddSecurityRequirement(new OpenApiSecurityRequirement
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                Array.Empty<string>()
-            }
-        });
-    });
-
-    builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
-
-    // PasswordHasher
-    builder.Services.AddSingleton<IPasswordHasherService, PasswordHasherService>();
-
-    // CORS (ya que haces app.UseCors("AllowAll"))
-    builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("AllowAll", policy =>
-            policy.AllowAnyOrigin()
-                  .AllowAnyHeader()
-                  .AllowAnyMethod());
-    });
-
-    // --------------------------------------------------
-    // AUTH JWT
-    // --------------------------------------------------
-    var jwtConfig = sharedConfig.GetSection("Jwt");
-    var key = jwtConfig["Key"];
-    if (string.IsNullOrEmpty(key))
-        throw new Exception("JWT Key no está configurada en appsettings.json");
-
-    builder.Services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    })
-    .AddJwtBearer(options =>
-    {
-        var jwtKey = jwtConfig["Key"];
-        var issuer = jwtConfig["Issuer"];
-        var audience = jwtConfig["Audience"];
-
-        if (string.IsNullOrWhiteSpace(jwtKey))
-            throw new InvalidOperationException("La clave JWT (Jwt:Key) no está configurada.");
-        if (string.IsNullOrWhiteSpace(issuer))
-            throw new InvalidOperationException("El issuer JWT (Jwt:Issuer) no está configurado.");
-        if (string.IsNullOrWhiteSpace(audience))
-            throw new InvalidOperationException("La audiencia JWT (Jwt:Audience) no está configurada.");
-
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = issuer,
-            ValidAudience = audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
-        };
-
-        options.Events = new JwtBearerEvents
-        {
-            OnChallenge = context =>
-            {
-                // Evita el mensaje genérico de WWW-Authenticate
-                context.HandleResponse();
-
-                context.Response.StatusCode = 401;
-                context.Response.ContentType = "application/json";
-
-                var result = JsonSerializer.Serialize (new
-                {
-                    coderror = 401,
-                    action = context?.Request?.Path.Value,
-                    msg = "No estás autorizado",
-                    ts = DateTime.UtcNow,
-                    exectimems = 0,
-                    count = 0,
-                    data = (object)null
-                });
-
-                return context.Response.WriteAsync(result);
-            }
-        };
-
-    });
-
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-
-        // Política global que requiere autenticación para todas las rutas por defecto
-        options.FallbackPolicy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .Build();
-    });
-
-    builder.Services.AddScoped<JwtService>();
-
-    builder.Services.AddAuthorization(options =>
-    {
-        options.FallbackPolicy = new AuthorizationPolicyBuilder()
-            .RequireAuthenticatedUser()
-            .Build();
-    });
-
-    // Añadir servicios de controladores y configurar JSON
-    builder.Services.AddControllers()
-        .AddJsonOptions(options =>
-        {
-            // Convierte PascalCase del backend a camelCase para Angular
-            options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-        });
-
-
-    // --------------------------------------------------
-    // BUILD APP
-    // --------------------------------------------------
-    logger.Info("API B4 iniciando...");
-
+    // Registro de servicios en el contenedor de inyección de dependencias (DI):
+    builder.Services
+        .AddB4ApiCore()          // Middlewares, compresión, CORS, Swagger, caché y versionado
+        .AddB4DomainServices()   // Servicios de dominio/negocio (ciclos, controles, datos, etc.)
+        .AddB4Infrastructure(builder.Configuration, sharedConfig, bbdd, logger) // DB, migraciones y repositorios
+        .AddB4JwtAuth(sharedConfig); // Autenticación JWT y políticas de autorización
 
     var app = builder.Build();
 
-    logger.Info("API B4 iniciando...");
+    // Configura el pipeline de middlewares HTTP en el orden correcto
+    // (ver ApplicationBuilderExtensions para el detalle de cada paso)
+    app.UseB4MiddlewarePipeline();
 
-    // Swagger
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-            foreach (var description in provider.ApiVersionDescriptions)
-            {
-                c.SwaggerEndpoint(
-                    $"/swagger/{description.GroupName}/swagger.json",
-                    description.GroupName.ToUpperInvariant()
-                );
-            }
-        });
-
-        app.UseDeveloperExceptionPage();
-    }
-
-    app.UseHttpsRedirection();
-    app.UseRouting();
-
-    // Global errors JSON
-    app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
-    // try/catch para errores de binding
-    app.Use(async (context, next) =>
-    {
-        var endpoint = context.GetEndpoint();
-        if (endpoint == null)
-        {
-            context.Response.StatusCode = 404;
-            context.Response.ContentType = "application/json";
-            await context.Response.WriteAsJsonAsync(new
-            {
-                coderror = 404,
-                action = context.Request.Path,
-                msg = "Ruta o parámetro enviado no es válido",
-                ts = DateTime.UtcNow,
-                exectimems = 0,
-                count = 0,
-                data = (object)null
-            });
-            return;
-        }
-
-        await next();
-    });
-
-    app.UseAuthentication();
-    app.UseAuthorization();
-
-    // Middleware para rutas inexistentes
-    app.UseStatusCodePages(async context =>
-    {
-        var response = context.HttpContext.Response;
-
-        if (response.StatusCode == StatusCodes.Status404NotFound)
-        {
-            response.ContentType = "application/json";
-
-            var problemDetails = new ProblemDetails
-            {
-                Status = StatusCodes.Status404NotFound,
-                Title = "Route Not Found",
-                Type = "https://httpstatuses.com/404",
-                Detail = "The requested route does not exist.",
-                Instance = context.HttpContext.Request.Path
-            };
-
-            await response.WriteAsJsonAsync(problemDetails);
-        }
-    });
-
-    app.UseCors("AllowAll");
-
+    // Mapea los controladores de la API a sus rutas correspondientes
     app.MapControllers();
 
     logger.Info("API B4 iniciada correctamente (NLog Activo)");
@@ -379,13 +66,17 @@ try
 }
 catch (Exception ex)
 {
+    // Captura cualquier error crítico durante el arranque (ej: fallo de migración,
+    // configuración inválida, etc.) y lo registra como FATAL antes de terminar.
     logger.Fatal(ex, "Error crítico durante el inicio de la API B4.");
 }
 finally
 {
+    // Garantiza que NLog libera sus recursos correctamente (vacía buffers, cierra ficheros)
+    // independientemente de si la app arrancó bien o falló.
     LogManager.Shutdown();
 }
 
-// ✁ENecesario para tests con WebApplicationFactory (PUNTO 7)
+// Declaración parcial de Program necesaria para que los tests de integración
+// (WebApplicationFactory<Program>) puedan referenciar el entry point de la app.
 public partial class Program { }
-

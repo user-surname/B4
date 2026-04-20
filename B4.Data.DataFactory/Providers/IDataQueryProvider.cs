@@ -38,6 +38,7 @@ namespace B4.Data.DataFactory.Providers
         IDataForecastQueries DataForecastQueries { get; }
         IDataForecastBwQueries DataForecastBwQueries { get; }
         IDataComentariosQueries DataComentariosQueries { get; }
+        ILogActividadQueries LogActividadQueries { get; }
         IDataTipoCambioQueries DataTipoCambioQueries { get; }
         IDataBridgesFyQueries DataBridgesFyQueries { get; }
         IDataBridgesFyBwQueries DataBridgesFyBwQueries { get; }

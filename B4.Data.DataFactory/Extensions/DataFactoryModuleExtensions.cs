@@ -47,6 +47,7 @@ namespace B4.Data.DataFactory.Extensions
             services.AddScoped<IDataForecastRepository, DataForecastRepository>();
             services.AddScoped<IDataForecastBwRepository, DataForecastBwRepository>();
             services.AddScoped<IDataComentariosRepository, DataComentariosRepository>();
+            services.AddScoped<ILogActividadRepository, LogActividadRepository>();
             services.AddScoped<IDataTipoCambioRepository, DataTipoCambioRepository>();
             services.AddScoped<IDataBridgesFyRepository, DataBridgesFyRepository>();
             services.AddScoped<IDataBridgesFyBwRepository, DataBridgesFyBwRepository>();
