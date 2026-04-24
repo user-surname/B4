@@ -2,8 +2,8 @@ using Xunit;
 using Npgsql;
 using Dapper;
 using Microsoft.Extensions.Configuration;
-using B4.Data.PostgreSQL;
-using B4.Data.PostgreSQL.Repositories.DataRepositories;
+using B4.Data.DataFactory;
+using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.DataEntities;
 
 namespace B4.Tests.PostgreSQLTests.Data

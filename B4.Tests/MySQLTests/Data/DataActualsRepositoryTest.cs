@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using B4.Data.MySQL;
-using B4.Data.MySQL.Repositories.DataRepositories;
+using B4.Data.DataFactory;
+using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.DataEntities;
 using Dapper;
 using Microsoft.Extensions.Configuration;

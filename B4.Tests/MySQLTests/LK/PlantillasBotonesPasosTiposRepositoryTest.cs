@@ -1,6 +1,6 @@
 ﻿namespace B4.Tests.MySQLTests.LK;
 
-using B4.Data.MySQL;
+using B4.Data.DataFactory;
 using Microsoft.Extensions.Configuration;
 using Dapper;
 using System;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using B4.Data.MySQL.Repositories.LkRepositories;
+using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.LkEntities;
 
 public class PlantillasBotonesPasosTiposRepositoryTest : IDisposable

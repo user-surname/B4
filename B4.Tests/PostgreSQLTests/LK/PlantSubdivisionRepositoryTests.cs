@@ -1,8 +1,8 @@
 using Xunit;
 using Npgsql;
 using Dapper;
-using B4.Data.PostgreSQL;
-using B4.Data.PostgreSQL.Repositories;
+using B4.Data.DataFactory;
+using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.LkEntities;
 
 namespace B4.Tests.PostgreSQLTests.LK
