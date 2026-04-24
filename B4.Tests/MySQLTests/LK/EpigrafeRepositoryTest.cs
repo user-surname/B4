@@ -13,11 +13,8 @@ using B4.Models.Entities.LkEntities;
 public class EpigrafeRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly EpigrafeRepository _repository;
-
-    // Lista que almacena los IDs que cada test inserta en la BD.
-    // Luego seran borrados automaticamente en Dispose().
     private readonly List<int> _insertedIds = new();
 
     public EpigrafeRepositoryTest()
@@ -34,7 +31,7 @@ public class EpigrafeRepositoryTest : IDisposable
         var dataFactoryOptions = new DataFactoryOptions
         {
             Provider = "MySQL",
-            ConnectionString = connectionString
+            MySqlConnectionString = connectionString
         };
 
         var options = Options.Create(dataFactoryOptions);

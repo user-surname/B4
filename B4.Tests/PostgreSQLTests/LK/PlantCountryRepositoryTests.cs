@@ -1,5 +1,4 @@
 using Xunit;
-using Npgsql;
 using Dapper;
 using B4.Data.DataFactory;
 using B4.Data.DataFactory.Repositories;
@@ -13,9 +12,9 @@ namespace B4.Tests.PostgreSQLTests.LK
 {
     public class PlantCountryRepositoryTests : IDisposable
     {
-        private readonly PlantCountryRepository _repo;
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
+        private readonly PlantCountryRepository _repo;
         private readonly List<int> _ids = new();
 
         public PlantCountryRepositoryTests()
@@ -35,7 +34,7 @@ namespace B4.Tests.PostgreSQLTests.LK
 
         public void Dispose()
         {
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             conn.Execute("DELETE FROM b4.lk_plant_country WHERE idcountry = ANY(@Ids)",
                 new { Ids = _ids.ToArray() });
         }
@@ -43,7 +42,7 @@ namespace B4.Tests.PostgreSQLTests.LK
         [Fact]
         public async Task Test_Connection()
         {
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             await conn.OpenAsync();
             Assert.Equal(System.Data.ConnectionState.Open, conn.State);
         }

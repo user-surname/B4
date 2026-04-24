@@ -1,5 +1,4 @@
 using Xunit;
-using Npgsql;
 using Dapper;
 using B4.Data.DataFactory;
 using B4.Data.DataFactory.Repositories;
@@ -13,9 +12,9 @@ namespace B4.Tests.PostgreSQLTests.LK
 {
     public class PlantDivisionCompanyRepositoryTests : IDisposable
     {
-        private readonly PlantDivisionCompanyRepository _repo;
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
+        private readonly PlantDivisionCompanyRepository _repo;
         private readonly List<int> _ids = new();
 
         public PlantDivisionCompanyRepositoryTests()
@@ -35,7 +34,7 @@ namespace B4.Tests.PostgreSQLTests.LK
 
         public void Dispose()
         {
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             conn.Execute("DELETE FROM b4.lk_plant_division_company WHERE iddivisioncompany = ANY(@Ids)",
                 new { Ids = _ids.ToArray() });
         }

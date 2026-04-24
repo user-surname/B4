@@ -13,10 +13,8 @@ using B4.Models.Entities.DataEntities;
 public class DataForecastRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly DataForecastRepository _repository;
-
-    // IDs generados automáticamente por AUTO_INCREMENT
     private readonly List<int> _insertedIds = new();
 
     public DataForecastRepositoryTest()
@@ -31,7 +29,7 @@ public class DataForecastRepositoryTest : IDisposable
         var dataFactoryOptions = new DataFactoryOptions
         {
             Provider = "MySQL",
-            ConnectionString = connectionString
+            MySqlConnectionString = connectionString
         };
 
         var options = Options.Create(dataFactoryOptions);

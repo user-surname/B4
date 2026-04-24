@@ -13,10 +13,8 @@ using B4.Models.Entities.LkEntities;
 public class FasesRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly FasesRepository _repository;
-
-    // Lista de IDs insertados durante cada test para limpiarlos después
     private readonly List<int> _insertedIds = new();
 
     public FasesRepositoryTest()
@@ -32,7 +30,7 @@ public class FasesRepositoryTest : IDisposable
         var dataFactoryOptions = new DataFactoryOptions
         {
             Provider = "MySQL",
-            ConnectionString = connectionString
+            MySqlConnectionString = connectionString
         };
 
         var options = Options.Create(dataFactoryOptions);

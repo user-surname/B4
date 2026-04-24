@@ -21,7 +21,6 @@ namespace B4.Tests.MySQLTests.Data
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
         private readonly DataBridgesMonthRepository _repository;
-
         private readonly List<int> _insertedIds = new();
 
         public DataBridgesMonthRepositoryTest()
@@ -36,7 +35,7 @@ namespace B4.Tests.MySQLTests.Data
             var dataFactoryOptions = new DataFactoryOptions
             {
                 Provider = "MySQL",
-                ConnectionString = connectionString
+                MySqlConnectionString = connectionString
             };
 
             var options = Options.Create(dataFactoryOptions);

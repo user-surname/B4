@@ -13,10 +13,8 @@ using Dapper;
 public class ControlPlantaRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly ControlPlantaRepository _repository;
-
-    // Lista para IDs insertados en cada test
     private readonly List<int> _insertedIds = new();
 
     public ControlPlantaRepositoryTest()

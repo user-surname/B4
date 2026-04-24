@@ -1,5 +1,4 @@
 using Xunit;
-using Npgsql;
 using Dapper;
 using B4.Data.DataFactory;
 using B4.Data.DataFactory.Repositories;
@@ -13,9 +12,9 @@ namespace B4.Tests.PostgreSQLTests.Data
 {
     public class DataTipoCambioRepositoryTests : IDisposable
     {
-        private readonly DataTipoCambioRepository _repo;
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
+        private readonly DataTipoCambioRepository _repo;
         private readonly List<int> _insertedIds = new();
 
         public DataTipoCambioRepositoryTests()
@@ -23,7 +22,7 @@ namespace B4.Tests.PostgreSQLTests.Data
             var dataFactoryOptions = new DataFactoryOptions
             {
                 Provider = "PostgreSQL",
-                ConnectionString = TestConfig.Conn
+                PostgreSqlConnectionString = TestConfig.Conn
             };
 
             var options = Options.Create(dataFactoryOptions);
@@ -38,7 +37,7 @@ namespace B4.Tests.PostgreSQLTests.Data
             if (_insertedIds.Count == 0)
                 return;
 
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             conn.Execute(
                 "DELETE FROM b4.data_tipo_cambio WHERE id = ANY(@Ids)",
                 new { Ids = _insertedIds.ToArray() }
@@ -49,7 +48,7 @@ namespace B4.Tests.PostgreSQLTests.Data
         [Fact]
         public async Task Test_Connection()
         {
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             await conn.OpenAsync();
 
             Assert.Equal(System.Data.ConnectionState.Open, conn.State);

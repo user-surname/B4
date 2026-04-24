@@ -1,33 +1,51 @@
-using B4.Data.DataFactory;
+using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
 using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.LkEntities;
 using Dapper;
-using Npgsql;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace B4.Tests.PostgreSQLTests.LK
 {
     public class CiclosRepositoryTests : IDisposable
     {
+        private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
         private readonly LkCiclosRepository _repo;
         private readonly List<int> _insertedIds = new();
 
-        public CiclosRepositoryTests() {}
+        public CiclosRepositoryTests()
+        {
+            var dataFactoryOptions = new DataFactoryOptions
+            {
+                Provider = "PostgreSQL",
+                PostgreSqlConnectionString = TestConfig.Conn
+            };
+
+            var options = Options.Create(dataFactoryOptions);
+            _context = new DbConnectionFactory(options);
+            _queryProvider = new DataQueryProvider(options);
+            _repo = new LkCiclosRepository(_context, _queryProvider);
+        }
 
         public void Dispose()
         {
-            if (_insertedIds.Count > 0)
-            {
-                using var conn = new NpgsqlConnection(TestConfig.Conn);
-                conn.Execute("DELETE FROM b4.lk_ciclos WHERE id = ANY(@Ids)",
-                    new { Ids = _insertedIds.ToArray() });
-            }
+            if (_insertedIds.Count == 0)
+                return;
+
+            using var conn = _context.CreateConnection();
+            conn.Execute("DELETE FROM b4.lk_ciclos WHERE id = ANY(@Ids)",
+                new { Ids = _insertedIds.ToArray() });
+
+            _insertedIds.Clear();
         }
 
         [Fact]
         public async Task Test_Connection()
         {
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             await conn.OpenAsync();
             Assert.Equal(System.Data.ConnectionState.Open, conn.State);
         }
@@ -40,7 +58,7 @@ namespace B4.Tests.PostgreSQLTests.LK
             await _repo.AddAsync(entity);
 
             // PostgreSQL SERIAL autoincrement doesn't update entity.Id → fetch max(id)
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             var id = await conn.ExecuteScalarAsync<int>("SELECT MAX(id) FROM b4.lk_ciclos");
             _insertedIds.Add(id);
 
@@ -57,7 +75,7 @@ namespace B4.Tests.PostgreSQLTests.LK
             var entity = CreateSample();
 
             await _repo.AddAsync(entity);
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             var id = await conn.ExecuteScalarAsync<int>("SELECT MAX(id) FROM b4.lk_ciclos");
             _insertedIds.Add(id);
 
@@ -84,7 +102,7 @@ namespace B4.Tests.PostgreSQLTests.LK
             var entity = CreateSample();
 
             await _repo.AddAsync(entity);
-            using var conn = new NpgsqlConnection(TestConfig.Conn);
+            using var conn = _context.CreateConnection();
             var id = await conn.ExecuteScalarAsync<int>("SELECT MAX(id) FROM b4.lk_ciclos");
             _insertedIds.Add(id);
 
