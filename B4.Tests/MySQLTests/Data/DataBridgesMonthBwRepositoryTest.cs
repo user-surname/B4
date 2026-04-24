@@ -15,7 +15,6 @@ using Microsoft.Extensions.Options;
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
         private readonly DataBridgesMonthBwRepository _repository;
-
         private readonly List<int> _insertedIds = new();
 
         public DataBridgesMonthBwRepositoryTest()
@@ -30,7 +29,7 @@ using Microsoft.Extensions.Options;
             var dataFactoryOptions = new DataFactoryOptions
             {
                 Provider = "MySQL",
-                ConnectionString = connectionString
+                MySqlConnectionString = connectionString
             };
 
             var options = Options.Create(dataFactoryOptions);

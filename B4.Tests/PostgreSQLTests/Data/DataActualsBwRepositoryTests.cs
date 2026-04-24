@@ -1,5 +1,4 @@
 using Xunit;
-using Npgsql;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using B4.Data.DataFactory;
@@ -14,9 +13,9 @@ namespace B4.Tests.PostgreSQLTests.Data
 {
     public class DataActualsBwRepositoryTests : IDisposable
     {
-        private readonly DataActualsBwRepository _repo;
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
+        private readonly DataActualsBwRepository _repo;
         private readonly List<int> _insertedIds = new();
 
         public DataActualsBwRepositoryTests()
@@ -24,7 +23,7 @@ namespace B4.Tests.PostgreSQLTests.Data
             var dataFactoryOptions = new DataFactoryOptions
             {
                 Provider = "PostgreSQL",
-                ConnectionString = TestConfig.Conn
+                PostgreSqlConnectionString = TestConfig.Conn
             };
 
             var options = Options.Create(dataFactoryOptions);

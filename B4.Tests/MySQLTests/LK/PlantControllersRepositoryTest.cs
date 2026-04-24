@@ -18,9 +18,8 @@ using B4.Models.Entities.LkEntities;
 public class PlantControllersRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly PlantControllersRepository _repository;
-
     private readonly List<int> _insertedIds = new();
 
     public PlantControllersRepositoryTest()
@@ -35,7 +34,7 @@ public class PlantControllersRepositoryTest : IDisposable
         var dataFactoryOptions = new DataFactoryOptions
         {
             Provider = "MySQL",
-            ConnectionString = connectionString
+            MySqlConnectionString = connectionString
         };
 
         var options = Options.Create(dataFactoryOptions);

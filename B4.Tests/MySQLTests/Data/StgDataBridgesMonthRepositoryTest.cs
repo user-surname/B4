@@ -34,7 +34,7 @@ namespace B4.Tests.MySQLTests.Data
             var dataFactoryOptions = new DataFactoryOptions
             {
                 Provider = "MySQL",
-                ConnectionString = connectionString
+                MySqlConnectionString = connectionString
             };
 
             var options = Options.Create(dataFactoryOptions);

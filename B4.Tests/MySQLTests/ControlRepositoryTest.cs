@@ -18,10 +18,8 @@ using Xunit;
 public class ControlRepositoryTests : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly ControlRepository _repository;
-
-    // Lista que almacena los IDs insertados en cada test para borrarlos después
     private readonly List<int> _insertedIds = new();
 
     public ControlRepositoryTests()

@@ -13,9 +13,8 @@ using B4.Models.Entities.DataEntities;
 public class DataActualsBwRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly DataActualsBwRepository _repository;
-
     private readonly List<int> _insertedIds = new();
 
     public DataActualsBwRepositoryTest()
@@ -30,7 +29,7 @@ public class DataActualsBwRepositoryTest : IDisposable
         var dataFactoryOptions = new DataFactoryOptions
         {
             Provider = "MySQL",
-            ConnectionString = connectionString
+            MySqlConnectionString = connectionString
         };
 
         var options = Options.Create(dataFactoryOptions);

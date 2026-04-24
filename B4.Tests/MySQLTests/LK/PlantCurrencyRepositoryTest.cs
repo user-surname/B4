@@ -17,7 +17,7 @@ using B4.Models.Entities.LkEntities;
 public class PlantCurrencyRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
-        private readonly IDataQueryProvider _queryProvider;
+    private readonly IDataQueryProvider _queryProvider;
     private readonly PlantCurrencyRepository _repository;
     private readonly List<int> _insertedIds = new();
 
@@ -33,7 +33,7 @@ public class PlantCurrencyRepositoryTest : IDisposable
         var dataFactoryOptions = new DataFactoryOptions
         {
             Provider = "MySQL",
-            ConnectionString = connectionString
+            MySqlConnectionString = connectionString
         };
 
         var options = Options.Create(dataFactoryOptions);
