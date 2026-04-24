@@ -15,12 +15,12 @@ namespace B4.Data.DataFactory.Queries.MySQL
         /// <returns>Texto SQL de la consulta.</returns>
         public string GetByIdQuery()
         {
-            return "SELECT * FROM Usuarios WHERE Id = @Id LIMIT 1;";
+            return "SELECT * FROM USUARIOS WHERE Id = @Id LIMIT 1;";
         }
 
         public string GetByEmailQuery()
         {
-            return "SELECT id, email, hashed_password AS HashedPassword, role FROM Usuarios WHERE email = @Email;";
+            return "SELECT id, email, hashed_password AS HashedPassword, role FROM USUARIOS WHERE email = @Email;";
         }
     }
 }

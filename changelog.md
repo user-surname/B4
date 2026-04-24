@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.20260424.1 - Slava
+
+- B4
+	- B4.DataFactory - Repositorios Stg y Usuario añadidios
+	- B4.Tests - Tests actualizados para utilizar DataFactory-
+
 ## v0.20260417.1 - Slava
 
 - B4
