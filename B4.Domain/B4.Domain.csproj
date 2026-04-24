@@ -36,8 +36,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\B4.Helpers\B4.Helpers.csproj" />
-    <ProjectReference Include="..\B4.Data.MySQL\B4.Data.MySQL.csproj" />
-    <ProjectReference Include="..\B4.Data.PostgreSQL\B4.Data.PostgreSQL.csproj" />
     <ProjectReference Include="..\B4.Models\B4.Models.csproj" />
 
     <ProjectReference Include="..\B4.Shared\B4.Shared.csproj" />

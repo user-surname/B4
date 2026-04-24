@@ -1,35 +1,27 @@
-﻿namespace B4.Tests.MySQLTests.LK;
+﻿
 
-using B4.Data.MySQL;
-using Microsoft.Extensions.Configuration;
-using Dapper;
-using B4.Data.MySQL.Repositories.LkRepositories;
+using B4.Data.DataFactory;
+using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.LkEntities;
+using Dapper;
+using Microsoft.Extensions.Configuration;
+
+namespace B4.Tests.MySQLTests.LK;
 
 public class CiclosRepositoryTest : IDisposable
 {
-    private readonly MySQLDapperContext _context;
-    private readonly CiclosRepository _repository;
+    private readonly LkCiclosRepository _repository;
 
     // IDs generados automáticamente por AUTO_INCREMENT
     private readonly List<int> _insertedIds = new();
 
-    public CiclosRepositoryTest()
-    {
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build();
-
-        _context = new MySQLDapperContext(config);
-        _repository = new CiclosRepository(_context);
-    }
+    public CiclosRepositoryTest() {}
 
     public void Dispose()
     {
         if (_insertedIds.Count == 0)
             return;
 
-        using var conn = _context.CreateConnection();
         conn.Execute("DELETE FROM LK_CICLOS WHERE id IN @ids", new { ids = _insertedIds });
         _insertedIds.Clear();
     }
