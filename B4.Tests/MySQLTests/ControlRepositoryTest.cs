@@ -1,3 +1,7 @@
+﻿using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
+using Microsoft.Extensions.Options;
 ﻿namespace B4.Tests.MySQLTests;
 
 using B4.Data.DataFactory;
@@ -13,7 +17,8 @@ using Xunit;
 
 public class ControlRepositoryTests : IDisposable
 {
-    private readonly MySQLDapperContext _context;
+    private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
     private readonly ControlRepository _repository;
 
     // Lista que almacena los IDs insertados en cada test para borrarlos después
@@ -26,8 +31,20 @@ public class ControlRepositoryTests : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new MySQLDapperContext(config);
-        _repository = new ControlRepository(_context);
+        var connectionString = config.GetConnectionString("MySQLConnectionB4Data")
+            ?? throw new InvalidOperationException("Connection string 'MySQLConnectionB4Data' not found.");
+
+        var dataFactoryOptions = new DataFactoryOptions
+        {
+            Provider = "MySQL",
+            MySqlConnectionString = connectionString
+        };
+
+        var options = Options.Create(dataFactoryOptions);
+
+        _context = new DbConnectionFactory(options);
+        _queryProvider = new DataQueryProvider(options);
+        _repository = new ControlRepository(_context, _queryProvider);
     }
 
     // Dispose se ejecuta después de cada test

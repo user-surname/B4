@@ -5,16 +5,32 @@ using B4.Data.DataFactory;
 using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.LkEntities;
 
+using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
+using Microsoft.Extensions.Options;
 namespace B4.Tests.PostgreSQLTests.LK
 {
     public class PlantillasBotonesPasosTiposRepositoryTests : IDisposable
     {
         private readonly PlantillasBotonesPasosTiposRepository _repo;
+        private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
         private readonly List<int> _ids = new();
 
         public PlantillasBotonesPasosTiposRepositoryTests()
         {
-            _repo = new PlantillasBotonesPasosTiposRepository(new PostgreSQLDapperContext(TestConfig.Configuration));
+            var dataFactoryOptions = new DataFactoryOptions
+            {
+                Provider = "PostgreSQL",
+                PostgreSqlConnectionString = TestConfig.Conn
+            };
+
+            var options = Options.Create(dataFactoryOptions);
+
+            _context = new DbConnectionFactory(options);
+            _queryProvider = new DataQueryProvider(options);
+            _repo = new PlantillasBotonesPasosTiposRepository(_context, _queryProvider);
         }
 
         public void Dispose()

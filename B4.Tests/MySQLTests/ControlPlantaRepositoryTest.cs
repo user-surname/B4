@@ -1,3 +1,7 @@
+using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
+using Microsoft.Extensions.Options;
 ﻿namespace B4.Tests.MySQLTests;
 
 using B4.Data.DataFactory;
@@ -8,7 +12,8 @@ using Dapper;
 
 public class ControlPlantaRepositoryTest : IDisposable
 {
-    private readonly MySQLDapperContext _context;
+    private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
     private readonly ControlPlantaRepository _repository;
 
     // Lista para IDs insertados en cada test
@@ -22,8 +27,20 @@ public class ControlPlantaRepositoryTest : IDisposable
             .Build();
 
         // Crear contexto y repositorio
-        _context = new MySQLDapperContext(config);
-        _repository = new ControlPlantaRepository(_context);
+        var connectionString = config.GetConnectionString("MySQLConnectionB4Data")
+            ?? throw new InvalidOperationException("Connection string 'MySQLConnectionB4Data' not found.");
+
+        var dataFactoryOptions = new DataFactoryOptions
+        {
+            Provider = "MySQL",
+            MySqlConnectionString = connectionString
+        };
+
+        var options = Options.Create(dataFactoryOptions);
+
+        _context = new DbConnectionFactory(options);
+        _queryProvider = new DataQueryProvider(options);
+        _repository = new ControlPlantaRepository(_context, _queryProvider);
     }
 
     public void Dispose()

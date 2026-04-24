@@ -1,3 +1,7 @@
+using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
+using Microsoft.Extensions.Options;
 ﻿namespace B4.Tests.MySQLTests.LK;
 
 using B4.Data.DataFactory;
@@ -8,7 +12,8 @@ using B4.Models.Entities.LkEntities;
 
 public class FasesRepositoryTest : IDisposable
 {
-    private readonly MySQLDapperContext _context;
+    private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
     private readonly FasesRepository _repository;
 
     // Lista de IDs insertados durante cada test para limpiarlos después
@@ -21,8 +26,20 @@ public class FasesRepositoryTest : IDisposable
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        _context = new MySQLDapperContext(config);
-        _repository = new FasesRepository(_context);
+        var connectionString = config.GetConnectionString("MySQLConnectionB4Data")
+            ?? throw new InvalidOperationException("Connection string 'MySQLConnectionB4Data' not found.");
+
+        var dataFactoryOptions = new DataFactoryOptions
+        {
+            Provider = "MySQL",
+            ConnectionString = connectionString
+        };
+
+        var options = Options.Create(dataFactoryOptions);
+
+        _context = new DbConnectionFactory(options);
+        _queryProvider = new DataQueryProvider(options);
+        _repository = new FasesRepository(_context, _queryProvider);
     }
 
     // Limpieza después de cada test

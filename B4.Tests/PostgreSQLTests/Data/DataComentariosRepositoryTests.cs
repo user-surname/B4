@@ -5,18 +5,32 @@ using B4.Data.DataFactory;
 using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities.DataEntities;
 
+using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
+using Microsoft.Extensions.Options;
 namespace B4.Tests.PostgreSQLTests.Data
 {
     public class DataComentariosRepositoryTests : IDisposable
     {
         private readonly DataComentariosRepository _repo;
-        private readonly PostgreSQLDapperContext _context;
+        private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
         private readonly List<int> _ids = new();
 
         public DataComentariosRepositoryTests()
         {
-            _context = new PostgreSQLDapperContext(TestConfig.Configuration);
-            _repo = new DataComentariosRepository(_context);
+            var dataFactoryOptions = new DataFactoryOptions
+            {
+                Provider = "PostgreSQL",
+                ConnectionString = TestConfig.Conn
+            };
+
+            var options = Options.Create(dataFactoryOptions);
+
+            _context = new DbConnectionFactory(options);
+            _queryProvider = new DataQueryProvider(options);
+            _repo = new DataComentariosRepository(_context, _queryProvider);
         }
 
         public void Dispose()

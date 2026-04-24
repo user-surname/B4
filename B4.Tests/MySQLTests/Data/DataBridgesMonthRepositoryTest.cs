@@ -1,3 +1,7 @@
+using B4.Data.DataFactory.Configuration;
+using B4.Data.DataFactory.Connections;
+using B4.Data.DataFactory.Providers;
+using Microsoft.Extensions.Options;
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +18,8 @@ namespace B4.Tests.MySQLTests.Data
 
     public class DataBridgesMonthRepositoryTest : IDisposable
     {
-        private readonly MySQLDapperContext _context;
+        private readonly IDbConnectionFactory _context;
+        private readonly IDataQueryProvider _queryProvider;
         private readonly DataBridgesMonthRepository _repository;
 
         private readonly List<int> _insertedIds = new();
@@ -25,8 +30,20 @@ namespace B4.Tests.MySQLTests.Data
                 .AddJsonFile("appsettings.json", optional: false)
                 .Build();
 
-            _context = new MySQLDapperContext(config);
-            _repository = new DataBridgesMonthRepository(_context);
+            var connectionString = config.GetConnectionString("MySQLConnectionB4Data")
+                ?? throw new InvalidOperationException("Connection string 'MySQLConnectionB4Data' not found.");
+
+            var dataFactoryOptions = new DataFactoryOptions
+            {
+                Provider = "MySQL",
+                ConnectionString = connectionString
+            };
+
+            var options = Options.Create(dataFactoryOptions);
+
+            _context = new DbConnectionFactory(options);
+            _queryProvider = new DataQueryProvider(options);
+            _repository = new DataBridgesMonthRepository(_context, _queryProvider);
         }
 
         public void Dispose()
