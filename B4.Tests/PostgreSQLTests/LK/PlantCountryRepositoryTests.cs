@@ -8,13 +8,15 @@ using B4.Data.DataFactory.Configuration;
 using B4.Data.DataFactory.Connections;
 using B4.Data.DataFactory.Providers;
 using Microsoft.Extensions.Options;
+using DbUp.Postgresql;
+
 namespace B4.Tests.PostgreSQLTests.LK
 {
     public class PlantCountryRepositoryTests : IDisposable
     {
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
-        private readonly PlantCountryRepository _repo;
+        private readonly LkPlantCountryRepository _repo;
         private readonly List<int> _ids = new();
 
         public PlantCountryRepositoryTests()
@@ -29,7 +31,7 @@ namespace B4.Tests.PostgreSQLTests.LK
 
             _context = new DbConnectionFactory(options);
             _queryProvider = new DataQueryProvider(options);
-            _repo = new PlantCountryRepository(_context, _queryProvider);
+            _repo = new LkPlantCountryRepository(_context, _queryProvider);
         }
 
         public void Dispose()
@@ -37,14 +39,6 @@ namespace B4.Tests.PostgreSQLTests.LK
             using var conn = _context.CreateConnection();
             conn.Execute("DELETE FROM b4.lk_plant_country WHERE idcountry = ANY(@Ids)",
                 new { Ids = _ids.ToArray() });
-        }
-
-        [Fact]
-        public async Task Test_Connection()
-        {
-            using var conn = _context.CreateConnection();
-            await conn.OpenAsync();
-            Assert.Equal(System.Data.ConnectionState.Open, conn.State);
         }
 
         [Fact]

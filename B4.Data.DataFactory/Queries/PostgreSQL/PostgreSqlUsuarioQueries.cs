@@ -12,7 +12,7 @@ namespace B4.Data.DataFactory.Queries.PostgreSQL
         /// Obtiene la query de PostgreSQL para recuperar un Usuario por identificador.
         /// </summary>
         /// <returns>Texto SQL de la consulta.</returns>
-        public string GetByIdQuery()
+        public string GetByEmailQuery()
         {
             return "SELECT * FROM \"Usuarios\" WHERE \"Id\" = @Id LIMIT 1;";
         }

@@ -14,7 +14,7 @@ public class EpigrafeRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
     private readonly IDataQueryProvider _queryProvider;
-    private readonly EpigrafeRepository _repository;
+    private readonly LkEpigrafeRepository _repository;
     private readonly List<int> _insertedIds = new();
 
     public EpigrafeRepositoryTest()
@@ -40,7 +40,7 @@ public class EpigrafeRepositoryTest : IDisposable
         _queryProvider = new DataQueryProvider(options);
 
         // Crear instancia del repositorio a testear
-        _repository = new EpigrafeRepository(_context, _queryProvider);
+        _repository = new LkEpigrafeRepository(_context, _queryProvider);
     }
 
     // Metodo que se ejecuta DESPUES de cada test.

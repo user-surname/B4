@@ -7,8 +7,9 @@ using Microsoft.Extensions.Options;
 using B4.Data.DataFactory;
 using B4.Data.DataFactory.Repositories;
 using B4.Models.Entities;
-using Microsoft.Extensions.Configuration;
+using B4.Models.RepositoryInterfaces;
 using Dapper;
+using Microsoft.Extensions.Configuration;
 
 public class ControlPlantaRepositoryTest : IDisposable
 {

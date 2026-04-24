@@ -14,7 +14,7 @@ public class FasesRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
     private readonly IDataQueryProvider _queryProvider;
-    private readonly FasesRepository _repository;
+    private readonly LkFasesRepository _repository;
     private readonly List<int> _insertedIds = new();
 
     public FasesRepositoryTest()
@@ -37,7 +37,7 @@ public class FasesRepositoryTest : IDisposable
 
         _context = new DbConnectionFactory(options);
         _queryProvider = new DataQueryProvider(options);
-        _repository = new FasesRepository(_context, _queryProvider);
+        _repository = new LkFasesRepository(_context, _queryProvider);
     }
 
     // Limpieza después de cada test

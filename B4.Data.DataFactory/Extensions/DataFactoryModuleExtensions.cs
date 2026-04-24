@@ -54,6 +54,19 @@ namespace B4.Data.DataFactory.Extensions
             services.AddScoped<IDataBridgesFyBwEurRepository, DataBridgesFyBwEurRepository>();
             services.AddScoped<IDataBridgesMonthRepository, DataBridgesMonthRepository>();
             services.AddScoped<IDataBridgesMonthBwRepository, DataBridgesMonthBwRepository>();
+            services.AddScoped<IStgDataActualsRepository, StgDataActualsRepository>();
+            services.AddScoped<IStgDataBudgetRepository, StgDataBudgetRepository>();
+            services.AddScoped<IStgDataForecastRepository, StgDataForecastRepository>();
+            services.AddScoped<IStgDataComentariosRepository, StgDataComentariosRepository>();
+            services.AddScoped<IStgDataBridgesFyRepository, StgDataBridgesFyRepository>();
+            services.AddScoped<IStgDataBridgesMonthRepository, StgDataBridgesMonthRepository>();
+
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+
+
+
+
+
 
             return services;
         }

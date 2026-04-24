@@ -23,6 +23,7 @@
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="dbup" Version="5.0.41" />
     <PackageReference Include="dbup-mysql" Version="6.1.0" />
+    <PackageReference Include="dbup-postgresql" Version="7.0.1" />
     <PackageReference Include="FluentAssertions" Version="8.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.23" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.23" />

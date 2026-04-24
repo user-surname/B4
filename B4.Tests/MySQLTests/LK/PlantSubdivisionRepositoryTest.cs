@@ -19,7 +19,7 @@ public class PlantSubdivisionRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
     private readonly IDataQueryProvider _queryProvider;
-    private readonly PlantSubdivisionRepository _repository;
+    private readonly LkPlantSubdivisionRepository _repository;
     private readonly List<int> _insertedIds = new();
 
     public PlantSubdivisionRepositoryTest()
@@ -41,7 +41,7 @@ public class PlantSubdivisionRepositoryTest : IDisposable
 
         _context = new DbConnectionFactory(options);
         _queryProvider = new DataQueryProvider(options);
-        _repository = new PlantSubdivisionRepository(_context, _queryProvider);
+        _repository = new LkPlantSubdivisionRepository(_context, _queryProvider);
     }
 
     public void Dispose()

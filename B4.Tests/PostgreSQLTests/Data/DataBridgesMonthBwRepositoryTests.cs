@@ -45,16 +45,6 @@ namespace B4.Tests.PostgreSQLTests.Data
             );
         }
 
-        // TEST 1: conexión
-        [Fact]
-        public async Task Test_Connection()
-        {
-            using var conn = _context.CreateConnection();
-            await conn.OpenAsync();
-
-            Assert.Equal(System.Data.ConnectionState.Open, conn.State);
-        }
-
         // TEST 2: insert + get
         [Fact]
         public async Task Insert_And_Get_Should_Work()

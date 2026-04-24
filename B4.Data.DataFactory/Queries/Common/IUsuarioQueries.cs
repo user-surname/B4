@@ -10,6 +10,6 @@ namespace B4.Data.DataFactory.Queries.Common
         /// Obtiene la query para recuperar un Usuario por identificador.
         /// </summary>
         /// <returns>Texto SQL de la consulta.</returns>
-        string GetByIdQuery();
+        string GetByEmailQuery();
     }
 }

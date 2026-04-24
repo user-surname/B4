@@ -5,9 +5,8 @@
 // ============================================================
 
 using B4.Api.Middleware;
+using B4.Data.DataFactory;
 using B4.Data.DataFactory.Extensions;
-using B4.Data.MySQL;
-using B4.Data.MySQL.Repositories;
 using B4.Data.PostgreSQL.Services;
 using B4.Domain.Services;
 using B4.Models.Entities.DataEntities;
@@ -135,6 +134,8 @@ public static class ServiceCollectionExtensions
                     .AllowAnyMethod());
         });
 
+
+
         return services;
     }
 
@@ -147,6 +148,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddB4DomainServices(this IServiceCollection services)
     {
         // --- Servicios de estructura / lookup ---
+        services.AddScoped<IUsuariosService, UsuariosService>();
         services.AddScoped<ICiclosService, CiclosService>();
         services.AddScoped<IEpigrafeService, EpigrafeService>();
         services.AddScoped<IFasesService, FasesService>();
@@ -212,33 +214,6 @@ public static class ServiceCollectionExtensions
         logger.Info("Iniciando migraciones...");
         DbUpMigrator.EnsureDatabaseUpdated(sharedConfig);
         logger.Info("Base de datos actualizada correctamente.");
-
-        // Registra los repositorios concretos según el motor de BD seleccionado.
-        // Ambas ramas implementan la misma interfaz (IUsuarioRepository),
-        // lo que permite al resto de la aplicación ser agnóstico al motor de BD.
-        if (bbdd.Equals("MySQL", StringComparison.OrdinalIgnoreCase))
-        {
-            // MySQLDapperContext encapsula la conexión Dapper a MySQL
-            services.AddScoped<MySQLDapperContext>();
-            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-        }
-        else if (bbdd.Equals("PostgreSQL", StringComparison.OrdinalIgnoreCase))
-        {
-            // Para PostgreSQL el repositorio necesita la cadena de conexión directamente
-            // (no usa DapperContext), por lo que se registra con una factory lambda
-            // que resuelve la cadena desde IConfiguration en tiempo de resolución.
-            services.AddScoped<IUsuarioRepository>(sp =>
-            {
-                var cs = sp.GetRequiredService<IConfiguration>()
-                    .GetConnectionString("PostgresConnectionB4Data");
-                if (string.IsNullOrWhiteSpace(cs))
-                {
-                    throw new InvalidOperationException("Falta ConnectionStrings:PostgresConnectionB4Data para IUsuarioRepository.");
-                }
-
-                return new B4.Data.PostgreSQL.Repositories.UsuarioRepository(cs);
-            });
-        }
 
         return services;
     }

@@ -141,6 +141,30 @@ namespace B4.Data.DataFactory.Providers
             () => new MySqlDataBridgesMonthBwQueries(),
             () => new PostgreSqlDataBridgesMonthBwQueries());
 
+        public IStgDataActualsQueries StgDataActualsQueries => Resolve<IStgDataActualsQueries>(
+            () => new MySqlStgDataActualsQueries(),
+            () => new PostgreSqlStgDataActualsQueries());
+
+        public IStgDataBridgesFyQueries StgDataBridgesFyQueries => Resolve<IStgDataBridgesFyQueries>(
+            () => new MySqlStgDataBridgesFyQueries(),
+            () => new PostgreSqlStgDataBridgesFyQueries());
+
+        public IStgDataBridgesMonthQueries StgDataBridgesMonthQueries => Resolve<IStgDataBridgesMonthQueries>(
+            () => new MySqlStgDataBridgesMonthQueries(),
+            () => new PostgreSqlStgDataBridgesMonthQueries());
+
+        public IStgDataBudgetQueries StgDataBudgetQueries => Resolve<IStgDataBudgetQueries>(
+            () => new MySqlStgDataBudgetQueries(),
+            () => new PostgreSqlStgDataBudgetQueries());
+
+        public IStgDataComentariosQueries StgDataComentariosQueries => Resolve<IStgDataComentariosQueries>(
+            () => new MySqlStgDataComentariosQueries(),
+            () => new PostgreSqlStgDataComentariosQueries());
+
+        public IStgDataForecastQueries StgDataForecastQueries => Resolve<IStgDataForecastQueries>(
+            () => new MySqlStgDataForecastQueries(),
+            () => new PostgreSqlStgDataForecastQueries());
+
         // ------------------------------------------------------------------
         // Helper generico: evita duplicar el if/else en cada propiedad
         // ------------------------------------------------------------------

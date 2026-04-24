@@ -45,5 +45,12 @@ namespace B4.Data.DataFactory.Providers
         IDataBridgesFyBwEurQueries DataBridgesFyBwEurQueries { get; }
         IDataBridgesMonthQueries DataBridgesMonthQueries { get; }
         IDataBridgesMonthBwQueries DataBridgesMonthBwQueries { get; }
+        IStgDataActualsQueries StgDataActualsQueries { get; }
+        IStgDataBridgesFyQueries StgDataBridgesFyQueries { get; }
+        IStgDataBridgesMonthQueries StgDataBridgesMonthQueries { get; }
+        IStgDataBudgetQueries StgDataBudgetQueries { get; }
+        IStgDataComentariosQueries StgDataComentariosQueries { get; }
+        IStgDataForecastQueries StgDataForecastQueries { get; }
+
     }
 }

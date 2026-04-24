@@ -8,6 +8,7 @@ namespace B4.Data.DataFactory.Queries.MySQL
     /// </summary>
     public sealed class MySqlUsuarioQueries : IUsuarioQueries
     {
+
         /// <summary>
         /// Obtiene la query de MySQL para recuperar un Usuario por identificador.
         /// </summary>
@@ -15,6 +16,11 @@ namespace B4.Data.DataFactory.Queries.MySQL
         public string GetByIdQuery()
         {
             return "SELECT * FROM Usuarios WHERE Id = @Id LIMIT 1;";
+        }
+
+        public string GetByEmailQuery()
+        {
+            return "SELECT id, email, hashed_password AS HashedPassword, role FROM Usuarios WHERE email = @Email;";
         }
     }
 }

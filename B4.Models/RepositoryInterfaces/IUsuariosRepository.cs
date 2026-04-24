@@ -9,6 +9,7 @@ namespace B4.Models.RepositoryInterfaces
     // Hereda de IRepository<Control> para tener los métodos CRUD básicos
     public interface IUsuariosRepository : IRepository<Entities.DataEntities.Usuario>
     {
+        Task<Usuario> GetByEmailAsync(string email);
 
         // Métodos específicos que no son genéricos
 

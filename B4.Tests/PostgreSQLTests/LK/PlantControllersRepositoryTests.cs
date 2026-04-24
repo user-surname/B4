@@ -14,7 +14,7 @@ namespace B4.Tests.PostgreSQLTests.LK
     {
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
-        private readonly PlantControllersRepository _repo;
+        private readonly LkPlantControllersRepository _repo;
         private readonly List<int> _ids = new();
 
         public PlantControllersRepositoryTests()
@@ -29,7 +29,7 @@ namespace B4.Tests.PostgreSQLTests.LK
 
             _context = new DbConnectionFactory(options);
             _queryProvider = new DataQueryProvider(options);
-            _repo = new PlantControllersRepository(_context, _queryProvider);
+            _repo = new LkPlantControllersRepository(_context, _queryProvider);
         }
 
         public void Dispose()

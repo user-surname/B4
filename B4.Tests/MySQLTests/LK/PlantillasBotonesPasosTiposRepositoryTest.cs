@@ -19,7 +19,7 @@ public class PlantillasBotonesPasosTiposRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
     private readonly IDataQueryProvider _queryProvider;
-    private readonly PlantillasBotonesPasosTiposRepository _repository;
+    private readonly LkPlantillasBotonesPasosTiposRepository _repository;
     private readonly List<int> _insertedIds = new();
 
     public PlantillasBotonesPasosTiposRepositoryTest()
@@ -41,7 +41,7 @@ public class PlantillasBotonesPasosTiposRepositoryTest : IDisposable
 
         _context = new DbConnectionFactory(options);
         _queryProvider = new DataQueryProvider(options);
-        _repository = new PlantillasBotonesPasosTiposRepository(_context, _queryProvider);
+        _repository = new LkPlantillasBotonesPasosTiposRepository(_context, _queryProvider);
     }
 
     public void Dispose()

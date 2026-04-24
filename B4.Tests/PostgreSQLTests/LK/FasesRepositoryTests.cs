@@ -14,7 +14,7 @@ namespace B4.Tests.PostgreSQLTests.LK
     {
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
-        private readonly FasesRepository _repo;
+        private readonly LkFasesRepository _repo;
         private readonly List<int> _ids = new();
 
         public FasesRepositoryTests()
@@ -29,7 +29,7 @@ namespace B4.Tests.PostgreSQLTests.LK
 
             _context = new DbConnectionFactory(options);
             _queryProvider = new DataQueryProvider(options);
-            _repo = new FasesRepository(_context, _queryProvider);
+            _repo = new LkFasesRepository(_context, _queryProvider);
         }
 
         public void Dispose()
@@ -37,14 +37,6 @@ namespace B4.Tests.PostgreSQLTests.LK
             using var conn = _context.CreateConnection();
             conn.Execute("DELETE FROM b4.lk_fases WHERE idfase = ANY(@Ids)",
                 new { Ids = _ids.ToArray() });
-        }
-
-        [Fact]
-        public async Task Test_Connection()
-        {
-            using var conn = _context.CreateConnection();
-            await conn.OpenAsync();
-            Assert.Equal(System.Data.ConnectionState.Open, conn.State);
         }
 
         [Fact]

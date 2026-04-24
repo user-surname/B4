@@ -18,7 +18,7 @@ public class PlantCurrencyRepositoryTest : IDisposable
 {
     private readonly IDbConnectionFactory _context;
     private readonly IDataQueryProvider _queryProvider;
-    private readonly PlantCurrencyRepository _repository;
+    private readonly LkPlantCurrencyRepository _repository;
     private readonly List<int> _insertedIds = new();
 
     public PlantCurrencyRepositoryTest()
@@ -40,7 +40,7 @@ public class PlantCurrencyRepositoryTest : IDisposable
 
         _context = new DbConnectionFactory(options);
         _queryProvider = new DataQueryProvider(options);
-        _repository = new PlantCurrencyRepository(_context, _queryProvider);
+        _repository = new LkPlantCurrencyRepository(_context, _queryProvider);
     }
 
     public void Dispose()

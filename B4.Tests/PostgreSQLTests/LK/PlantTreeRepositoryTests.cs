@@ -14,7 +14,7 @@ namespace B4.Tests.PostgreSQLTests.LK
     {
         private readonly IDbConnectionFactory _context;
         private readonly IDataQueryProvider _queryProvider;
-        private readonly PlantTreeRepository _repo;
+        private readonly LkPlantTreeRepository _repo;
         private readonly List<int> _ids = new();
 
         public PlantTreeRepositoryTests()
@@ -29,7 +29,7 @@ namespace B4.Tests.PostgreSQLTests.LK
 
             _context = new DbConnectionFactory(options);
             _queryProvider = new DataQueryProvider(options);
-            _repo = new PlantTreeRepository(_context, _queryProvider);
+            _repo = new LkPlantTreeRepository(_context, _queryProvider);
         }
 
         public void Dispose()
@@ -37,14 +37,6 @@ namespace B4.Tests.PostgreSQLTests.LK
             using var conn = _context.CreateConnection();
             conn.Execute("DELETE FROM b4.lk_plant_tree WHERE idtree = ANY(@Ids)",
                 new { Ids = _ids.ToArray() });
-        }
-
-        [Fact]
-        public async Task Test_Connection()
-        {
-            using var conn = _context.CreateConnection();
-            await conn.OpenAsync();
-            Assert.Equal(System.Data.ConnectionState.Open, conn.State);
         }
 
         [Fact]

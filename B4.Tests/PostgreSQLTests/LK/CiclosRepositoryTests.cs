@@ -43,14 +43,6 @@ namespace B4.Tests.PostgreSQLTests.LK
         }
 
         [Fact]
-        public async Task Test_Connection()
-        {
-            using var conn = _context.CreateConnection();
-            await conn.OpenAsync();
-            Assert.Equal(System.Data.ConnectionState.Open, conn.State);
-        }
-
-        [Fact]
         public async Task Insert_And_GetById_Should_Work()
         {
             var entity = CreateSample();

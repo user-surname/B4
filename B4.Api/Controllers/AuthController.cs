@@ -1,10 +1,11 @@
-using B4.Data.MySQL.Repositories;
+using B4.Domain.Services;
 using B4.Models.Entities;
-using B4.Models.RepositoryInterfaces;
 using B4.Models.RepositoryInterfaces.LkInterfaces;
+using B4.Models.ServiceInterfaces;
 using B4.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using B4.Data.DataFactory;
 
 namespace B4.Api.Controllers
 {
@@ -16,18 +17,18 @@ namespace B4.Api.Controllers
     public class AuthController : ApiControllerBase
     {
         private readonly JwtService _jwtService;
-        private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IUsuariosService _usuarioService;
         private readonly IPasswordHasherService _passwordHasherService;
         private readonly ILogger<AuthController> _logger;
 
         public AuthController(
             JwtService jwtService,
-            IUsuarioRepository usuarioRepository,
+            IUsuariosService usuariosService,
             IPasswordHasherService passwordHasherService,
             ILogger<AuthController> logger)
         {
             _jwtService = jwtService;
-            _usuarioRepository = usuarioRepository;
+            _usuarioService = usuariosService;
             _passwordHasherService = passwordHasherService;
             _logger = logger;
         }
@@ -50,7 +51,7 @@ namespace B4.Api.Controllers
 
                 // 1️ Buscar usuario
                 _logger.LogDebug("Looking up user by email: {Email}", request.Email);
-                var usuario = await _usuarioRepository.GetByEmailAsync(request.Email);
+                var usuario = await _usuarioService.GetByEmailAsync(request.Email);
 
                 if (usuario == null || string.IsNullOrEmpty(usuario.HashedPassword))
                 {
